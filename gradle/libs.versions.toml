@@ -38,6 +38,7 @@ lifecycle = "2.11.0"
 localbroadcastmanager = "1.1.0"
 markwon = "4.6.2"
 material = "1.11.0" # TODO: update to newer version after bug is fixed. See https://github.com/TeamNewPipe/NewPipe/pull/13018
+material-icons = "1.7.8"
 material3 = "1.11.0-alpha07"
 media = "1.7.1"
 mockitoCore = "5.23.0"
@@ -77,6 +78,7 @@ androidx-activity = { module = "androidx.activity:activity-compose", version.ref
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "browser" }
 androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
+androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "material-icons" }
 androidx-compose-test-ui-junit = { module = "androidx.compose.ui:ui-test-junit4-android", version.ref = "compose" }
 androidx-compose-test-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "compose" }
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }

@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.android.legacy.kapt)
     alias(libs.plugins.google.ksp)
+    alias(libs.plugins.jetbrains.kotlin.compose)
     alias(libs.plugins.jetbrains.kotlin.parcelize)
     alias(libs.plugins.jetbrains.kotlinx.serialization)
     alias(libs.plugins.about.libraries)
@@ -26,6 +27,14 @@ val normalizedWorkingBranch = workingBranch
 
 kotlin {
     jvmToolchain(21)
+
+    compilerOptions {
+        optIn.addAll(
+            "androidx.compose.material3.ExperimentalMaterial3Api",
+            "androidx.compose.material3.ExperimentalMaterial3ExpressiveApi",
+            "androidx.compose.foundation.layout.ExperimentalLayoutApi"
+        )
+    }
 }
 
 configure<ApplicationExtension> {
@@ -243,6 +252,17 @@ dependencies {
     // Manager for complex RecyclerView layouts
     implementation(libs.lisawray.groupie.core)
     implementation(libs.lisawray.groupie.viewbinding)
+
+    // Compose UI (YouFlow)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.jetbrains.compose.foundation)
+    implementation(libs.jetbrains.compose.material3)
+    implementation(libs.jetbrains.compose.preview)
+    implementation(libs.jetbrains.compose.runtime)
+    implementation(libs.jetbrains.compose.ui)
+    implementation(libs.jetbrains.lifecycle.viewmodel)
+    debugImplementation(libs.jetbrains.compose.tooling)
 
     // Image loading
     implementation(libs.coil.compose)

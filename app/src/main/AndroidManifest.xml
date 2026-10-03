@@ -34,16 +34,23 @@
         android:theme="@style/OpeningTheme"
         tools:ignore="AllowBackup">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.YouFlowActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:launchMode="singleTask">
+            android:theme="@style/Theme.YouFlow">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Classic view based UI: still hosts the watch screen, player and channel pages. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" />
 
         <receiver
             android:name="androidx.media.session.MediaButtonReceiver"
