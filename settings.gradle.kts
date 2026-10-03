@@ -31,9 +31,10 @@ include("shared")
 // We assume, that NewPipe and NewPipe Extractor have the same parent directory.
 // If this is not the case, please change the path in includeBuild().
 
-//    includeBuild("../NewPipeExtractor") {
-//        dependencySubstitution {
-//            substitute(module("com.github.TeamNewPipe:NewPipeExtractor"))
-//                .using(project(":extractor"))
-//        }
-//    }
+// JitPack has not built the pinned commit, so the extractor is built from the sibling checkout.
+includeBuild("../NewPipeExtractor") {
+    dependencySubstitution {
+        substitute(module("com.github.TeamNewPipe:NewPipeExtractor"))
+            .using(project(":extractor"))
+    }
+}
