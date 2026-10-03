@@ -52,7 +52,7 @@ fun YouScreen(actions: AppActions, contentPadding: PaddingValues, vm: YouViewMod
                 Text("Videos you watch will show up here.", modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
             } else {
                 LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(history.take(20), key = { it.url }) { video -> VideoTile(video, onClick = { actions.openVideo(video.url, video.title) }) }
+                    items(history.take(20), key = { it.url }) { video -> VideoTile(video, onClick = { actions.openVideo(video) }) }
                 }
             }
         }

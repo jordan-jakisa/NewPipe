@@ -32,7 +32,8 @@ kotlin {
         optIn.addAll(
             "androidx.compose.material3.ExperimentalMaterial3Api",
             "androidx.compose.material3.ExperimentalMaterial3ExpressiveApi",
-            "androidx.compose.foundation.layout.ExperimentalLayoutApi"
+            "androidx.compose.foundation.layout.ExperimentalLayoutApi",
+            "androidx.media3.common.util.UnstableApi"
         )
     }
 }

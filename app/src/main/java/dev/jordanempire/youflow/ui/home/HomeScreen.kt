@@ -99,7 +99,7 @@ fun HomeScreen(actions: AppActions, contentPadding: PaddingValues, vm: HomeViewM
                 items(videos, key = { it.url }) { video ->
                     VideoCard(
                         video,
-                        onClick = { actions.openVideo(video.url, video.title) },
+                        onClick = { actions.openVideo(video) },
                         onChannelClick = { video.channelUrl?.let(actions.openChannel) }
                     )
                 }

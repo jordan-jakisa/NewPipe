@@ -37,7 +37,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import dev.jordanempire.youflow.player.playqueue.PlaylistPlayQueue
 import dev.jordanempire.youflow.ui.AppActions
 import dev.jordanempire.youflow.ui.components.LoadingBox
 import dev.jordanempire.youflow.ui.components.MessageBox
@@ -53,7 +52,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.schabi.newpipe.extractor.Page
-import org.schabi.newpipe.extractor.stream.StreamInfoItem
 
 class PlaylistViewModel(app: Application, private val url: String) : AndroidViewModel(app) {
     private val repo = YouTubeRepository(app)
@@ -102,20 +100,6 @@ class PlaylistViewModel(app: Application, private val url: String) : AndroidView
             loadingMore = false
         }
     }
-
-    /** Queue that starts at [index] and keeps the videos loaded so far. */
-    fun queueFrom(index: Int): PlaylistPlayQueue? {
-        val l = loaded ?: return null
-        val videos = (_state.value as? UiState.Content)?.data?.second ?: return null
-        val streams = videos.map { v ->
-            StreamInfoItem(0, v.url, v.title, org.schabi.newpipe.extractor.stream.StreamType.VIDEO_STREAM).apply {
-                uploaderName = v.channel
-                uploaderUrl = v.channelUrl
-                duration = v.durationSeconds
-            }
-        }
-        return PlaylistPlayQueue(0, l.details.url, next, streams, index)
-    }
 }
 
 @Composable
@@ -161,7 +145,7 @@ fun PlaylistScreen(url: String, actions: AppActions, onBack: () -> Unit) {
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Row {
-                                Button(onClick = { vm.queueFrom(0)?.let(actions.playQueue) }) {
+                                Button(onClick = { actions.playVideos(videos, 0) }) {
                                     Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
                                     Text("Play all", modifier = Modifier.padding(start = 6.dp))
                                 }
@@ -169,7 +153,7 @@ fun PlaylistScreen(url: String, actions: AppActions, onBack: () -> Unit) {
                         }
                     }
                     itemsIndexed(videos, key = { index, v -> "$index:${v.url}" }) { index, video ->
-                        VideoRow(video, index = index, onClick = { vm.queueFrom(index)?.let(actions.playQueue) })
+                        VideoRow(video, index = index, onClick = { actions.playVideos(videos, index) })
                     }
                 }
             }

@@ -49,7 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dev.jordanempire.youflow.ui.util.keyedViewModel
-import dev.jordanempire.youflow.player.playqueue.ChannelTabPlayQueue
 import dev.jordanempire.youflow.ui.AppActions
 import dev.jordanempire.youflow.ui.components.ChannelRow
 import dev.jordanempire.youflow.ui.components.LoadingBox
@@ -162,11 +161,6 @@ class ChannelViewModel(app: Application, private val url: String) : AndroidViewM
             }
         }
     }
-
-    fun playAllQueue(): ChannelTabPlayQueue? {
-        val handler = loaded?.handlers?.getOrNull(_tab.value) ?: return null
-        return ChannelTabPlayQueue(0, handler)
-    }
 }
 
 @Composable
@@ -206,7 +200,7 @@ fun ChannelScreen(url: String, actions: AppActions, onBack: () -> Unit) {
                             details = details,
                             subscribed = subscribed,
                             onToggleSubscribe = { vm.toggleSubscribe(details) },
-                            onPlayAll = { vm.playAllQueue()?.let(actions.playQueue) },
+                            onPlayAll = { (items as? UiState.Content)?.data?.filterIsInstance<VideoItem>()?.let { if (it.isNotEmpty()) actions.playVideos(it, 0) } },
                             statusBarTop = padding.calculateTopPadding()
                         )
                     }
@@ -232,7 +226,7 @@ fun ChannelScreen(url: String, actions: AppActions, onBack: () -> Unit) {
                                 when (item) {
                                     is VideoItem -> VideoCard(
                                         item,
-                                        onClick = { actions.openVideo(item.url, item.title) },
+                                        onClick = { actions.openVideo(item) },
                                         onChannelClick = {},
                                         modifier = Modifier.padding(top = 12.dp)
                                     )
