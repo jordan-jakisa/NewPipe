@@ -25,6 +25,9 @@ import kotlinx.coroutines.rx3.await
 import kotlinx.coroutines.rx3.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import org.schabi.newpipe.extractor.InfoItem
+import org.schabi.newpipe.extractor.comments.CommentsInfo
+import org.schabi.newpipe.extractor.comments.CommentsInfoItem
+import dev.jordanempire.youflow.ui.model.CommentItem
 import org.schabi.newpipe.extractor.Page
 import org.schabi.newpipe.extractor.channel.ChannelInfo
 import org.schabi.newpipe.extractor.linkhandler.ListLinkHandler
@@ -215,6 +218,37 @@ class YouTubeRepository(private val context: Context) {
         val more = ExtractorHelper.getMorePlaylistItems(serviceId, url, page).await()
         Paged(more.items.map { it.toVideo() }, more.nextPage)
     }
+
+    class LoadedComments(val info: CommentsInfo, val items: List<CommentItem>, val next: Page?, val disabled: Boolean, val count: Int)
+
+    suspend fun comments(videoUrl: String): LoadedComments = withContext(Dispatchers.IO) {
+        val info = ExtractorHelper.getCommentsInfo(serviceId, videoUrl, false).await()
+        LoadedComments(info, info.relatedItems.map { it.toComment() }, info.nextPage, info.isCommentsDisabled, info.commentsCount)
+    }
+
+    suspend fun moreComments(info: CommentsInfo, page: Page): Paged<CommentItem> = withContext(Dispatchers.IO) {
+        val more = ExtractorHelper.getMoreCommentItems(serviceId, info, page).await()
+        Paged(more.items.map { it.toComment() }, more.nextPage)
+    }
+
+    suspend fun replies(videoUrl: String, token: Any): Paged<CommentItem> = withContext(Dispatchers.IO) {
+        val more = ExtractorHelper.getMoreCommentItems(serviceId, videoUrl, token as Page).await()
+        Paged(more.items.map { it.toComment() }, more.nextPage)
+    }
+
+    private fun CommentsInfoItem.toComment() = CommentItem(
+        id = commentId.orEmpty(),
+        author = uploaderName.orEmpty(),
+        avatar = ImageStrategy.choosePreferredImage(uploaderAvatars),
+        text = commentText?.content?.let { androidx.core.text.HtmlCompat.fromHtml(it, androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT).toString() }.orEmpty(),
+        likes = textualLikeCount?.takeIf { it.isNotBlank() } ?: likeCount.takeIf { it > 0 }?.toString(),
+        posted = textualUploadDate,
+        hearted = isHeartedByUploader,
+        pinned = isPinned,
+        isOwner = isChannelOwner,
+        replyCount = replyCount.coerceAtLeast(0),
+        repliesToken = replies
+    )
 
     fun isSubscribed(url: String): Flow<Boolean> = subscriptions().map { list -> list.any { it.url == url } }
 

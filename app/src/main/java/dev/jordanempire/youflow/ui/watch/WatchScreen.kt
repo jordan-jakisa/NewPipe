@@ -119,15 +119,19 @@ fun WatchScreen(
     val state by engine.state.collectAsState()
     val subscribed by vm.subscribed.collectAsState()
     val info = state.info
+    var showSettings by remember { mutableStateOf(false) }
+    var showComments by remember { mutableStateOf(false) }
+    if (showSettings) PlayerSettingsSheet(engine, state) { showSettings = false }
+    if (showComments) CommentsSheet(onDismiss = { showComments = false })
 
     if (fullscreen) {
-        PlayerBox(engine, state, fullscreen = true, onToggleFullscreen, onCollapse, Modifier.fillMaxSize().background(Color.Black))
+        PlayerBox(engine, state, fullscreen = true, onToggleFullscreen, onCollapse, { showSettings = true }, Modifier.fillMaxSize().background(Color.Black))
         return
     }
 
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
         PlayerBox(
-            engine, state, fullscreen = false, onToggleFullscreen, onCollapse,
+            engine, state, fullscreen = false, onToggleFullscreen, onCollapse, { showSettings = true },
             Modifier.fillMaxWidth().background(Color.Black).statusBarsPadding().aspectRatio(state.videoAspect.coerceIn(1f, 16f / 9f))
         )
         LazyColumn(Modifier.fillMaxSize(), contentPadding = WindowInsets.navigationBars.asPaddingValues()) {
@@ -137,7 +141,7 @@ fun WatchScreen(
                     Text(info?.name ?: entry?.title.orEmpty(), style = MaterialTheme.typography.titleLargeEmphasized)
                     val meta = listOfNotNull(
                         info?.viewCount?.takeIf { it >= 0 }?.let { formatCount(it, "views") },
-                        info?.textualUploadDate
+                        info?.let(::formatUploaded)
                     ).joinToString(" · ")
                     if (meta.isNotEmpty()) {
                         Text(meta, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 2.dp))
@@ -148,6 +152,7 @@ fun WatchScreen(
                 item(key = "channel") { ChannelRow(info, subscribed, actions, onSubscribe = { vm.toggleSubscribe(info) }) }
                 item(key = "actions") { ActionRow(info, engine) }
                 item(key = "description") { DescriptionCard(info) }
+                item(key = "comments") { CommentsTeaser(info.url, onClick = { showComments = true }) }
                 val related = info.relatedItems.filterIsInstance<StreamInfoItem>()
                 items(related, key = { it.url }) { item ->
                     VideoCard(
@@ -169,6 +174,7 @@ private fun PlayerBox(
     fullscreen: Boolean,
     onToggleFullscreen: () -> Unit,
     onCollapse: () -> Unit,
+    onSettings: () -> Unit,
     modifier: Modifier
 ) {
     Box(modifier) {
@@ -178,7 +184,7 @@ private fun PlayerBox(
             contentScale = androidx.compose.ui.layout.ContentScale.Fit,
             modifier = Modifier.fillMaxSize()
         )
-        PlayerControls(engine, state, fullscreen, onToggleFullscreen, onCollapse)
+        PlayerControls(engine, state, fullscreen, onToggleFullscreen, onCollapse, onSettings)
     }
 }
 
@@ -278,3 +284,15 @@ internal fun StreamInfoItem.toVideoItem() = VideoItem(
     isLive = streamType == org.schabi.newpipe.extractor.stream.StreamType.LIVE_STREAM,
     isShort = isShortFormContent
 )
+
+/** "3 days ago" from the exact upload date when there is one, else YouTube's own text. */
+private fun formatUploaded(info: StreamInfo): String? {
+    val date = info.uploadDate
+    if (date != null) {
+        val millis = date.offsetDateTime().toInstant().toEpochMilli()
+        return android.text.format.DateUtils.getRelativeTimeSpanString(
+            millis, System.currentTimeMillis(), android.text.format.DateUtils.MINUTE_IN_MILLIS
+        ).toString()
+    }
+    return info.textualUploadDate?.takeIf { it.isNotBlank() }
+}

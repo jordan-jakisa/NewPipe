@@ -74,3 +74,19 @@ data class PlaylistDetails(
     val streamCount: Long,
     val description: String?
 )
+
+@Immutable
+data class CommentItem(
+    val id: String,
+    val author: String,
+    val avatar: String?,
+    val text: String,
+    val likes: String?,
+    val posted: String?,
+    val hearted: Boolean,
+    val pinned: Boolean,
+    val isOwner: Boolean,
+    val replyCount: Int,
+    /** Opaque token to load replies, null when there are none. */
+    val repliesToken: Any?
+)

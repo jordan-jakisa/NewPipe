@@ -8,7 +8,13 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.height
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,14 +29,13 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Replay
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -66,6 +71,7 @@ fun PlayerControls(
     fullscreen: Boolean,
     onToggleFullscreen: () -> Unit,
     onCollapse: () -> Unit,
+    onSettings: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var visible by remember { mutableStateOf(true) }
@@ -86,7 +92,7 @@ fun PlayerControls(
         }
     }
 
-    Box(
+    BoxWithConstraints(
         modifier
             .fillMaxSize()
             .pointerInput(Unit) {
@@ -103,34 +109,41 @@ fun PlayerControls(
                 )
             }
     ) {
+        // The inline player is only ~200dp tall, so everything shrinks to avoid overlapping.
+        val compact = maxHeight < 300.dp
         AnimatedVisibility(visible, enter = fadeIn(), exit = fadeOut(), modifier = Modifier.fillMaxSize()) {
             Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Scrim, Color.Transparent, Color.Transparent, Scrim)))) {
                 // Top bar
-                Row(Modifier.align(Alignment.TopStart).padding(4.dp)) {
-                    IconButton(onClick = onCollapse) {
-                        Icon(Icons.Filled.KeyboardArrowDown, contentDescription = "Minimize", tint = Color.White, modifier = Modifier.size(32.dp))
+                Row(Modifier.align(Alignment.TopStart).fillMaxWidth().padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onCollapse, modifier = Modifier.size(40.dp)) {
+                        Icon(Icons.Filled.KeyboardArrowDown, contentDescription = "Minimize", tint = Color.White, modifier = Modifier.size(28.dp))
+                    }
+                    Box(Modifier.weight(1f))
+                    IconButton(onClick = onSettings, modifier = Modifier.size(40.dp)) {
+                        Icon(Icons.Filled.Settings, contentDescription = "Player settings", tint = Color.White, modifier = Modifier.size(22.dp))
                     }
                 }
                 // Transport
                 Row(
                     Modifier.align(Alignment.Center),
-                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(if (compact) 14.dp else 24.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    CircleButton(Icons.Filled.SkipPrevious, "Previous", enabled = true) { engine.previous(); interaction++ }
-                    PlayPauseButton(state) { engine.togglePlayPause(); interaction++ }
-                    CircleButton(Icons.Filled.SkipNext, "Next", enabled = state.hasNext) { engine.next(); interaction++ }
+                    CircleButton(Icons.Filled.SkipPrevious, "Previous", enabled = true, size = if (compact) 38.dp else 48.dp) { engine.previous(); interaction++ }
+                    PlayPauseButton(state, size = if (compact) 52.dp else 68.dp) { engine.togglePlayPause(); interaction++ }
+                    CircleButton(Icons.Filled.SkipNext, "Next", enabled = state.hasNext, size = if (compact) 38.dp else 48.dp) { engine.next(); interaction++ }
                 }
                 // Bottom: seek bar, time, fullscreen
-                Column(Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(horizontal = 12.dp)) {
+                Column(Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(horizontal = 16.dp)) {
                     SeekBar(engine, state, onInteraction = { interaction++ })
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         TimeLabel(engine, state, Modifier.weight(1f))
-                        IconButton(onClick = onToggleFullscreen) {
+                        IconButton(onClick = onToggleFullscreen, modifier = Modifier.size(36.dp)) {
                             Icon(
                                 if (fullscreen) Icons.Filled.FullscreenExit else Icons.Filled.Fullscreen,
                                 contentDescription = if (fullscreen) "Exit fullscreen" else "Fullscreen",
-                                tint = Color.White
+                                tint = Color.White,
+                                modifier = Modifier.size(24.dp)
                             )
                         }
                     }
@@ -160,7 +173,7 @@ fun PlayerControls(
 }
 
 @Composable
-private fun CircleButton(icon: androidx.compose.ui.graphics.vector.ImageVector, description: String, enabled: Boolean, onClick: () -> Unit) {
+private fun CircleButton(icon: androidx.compose.ui.graphics.vector.ImageVector, description: String, enabled: Boolean, size: androidx.compose.ui.unit.Dp, onClick: () -> Unit) {
     val alpha by animateFloatAsState(if (enabled) 1f else 0.4f, label = "alpha")
     Surface(
         onClick = onClick,
@@ -168,13 +181,13 @@ private fun CircleButton(icon: androidx.compose.ui.graphics.vector.ImageVector, 
         shape = RoundedCornerShape(50),
         color = Color.Black.copy(alpha = 0.35f * alpha),
         contentColor = Color.White.copy(alpha = alpha),
-        modifier = Modifier.size(52.dp)
-    ) { Box(contentAlignment = Alignment.Center) { Icon(icon, contentDescription = description, modifier = Modifier.size(28.dp)) } }
+        modifier = Modifier.size(size)
+    ) { Box(contentAlignment = Alignment.Center) { Icon(icon, contentDescription = description, modifier = Modifier.size(size * 0.55f)) } }
 }
 
 /** The play button squares off while playing and rounds again when paused. */
 @Composable
-private fun PlayPauseButton(state: PlayerState, onClick: () -> Unit) {
+private fun PlayPauseButton(state: PlayerState, size: androidx.compose.ui.unit.Dp, onClick: () -> Unit) {
     val corner by animateFloatAsState(if (state.playWhenReady) 28f else 50f, label = "corner")
     val container by animateColorAsState(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.92f), label = "container")
     Surface(
@@ -182,7 +195,7 @@ private fun PlayPauseButton(state: PlayerState, onClick: () -> Unit) {
         shape = RoundedCornerShape(percent = corner.toInt()),
         color = container,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        modifier = Modifier.size(72.dp)
+        modifier = Modifier.size(size)
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(
@@ -192,7 +205,7 @@ private fun PlayPauseButton(state: PlayerState, onClick: () -> Unit) {
                     else -> Icons.Filled.PlayArrow
                 },
                 contentDescription = if (state.playWhenReady) "Pause" else "Play",
-                modifier = Modifier.size(40.dp)
+                modifier = Modifier.size(size * 0.55f)
             )
         }
     }
@@ -201,22 +214,47 @@ private fun PlayPauseButton(state: PlayerState, onClick: () -> Unit) {
 @Composable
 private fun SeekBar(engine: PlaybackEngine, state: PlayerState, onInteraction: () -> Unit) {
     val position by engine.position.collectAsState()
+    val buffered by engine.buffered.collectAsState()
     var dragging by remember { mutableStateOf<Float?>(null) }
     val duration = state.durationMs.coerceAtLeast(1)
     if (state.isLive) return
-    Slider(
-        value = dragging ?: (position.toFloat() / duration).coerceIn(0f, 1f),
-        onValueChange = { dragging = it; onInteraction() },
-        onValueChangeFinished = {
-            dragging?.let { engine.seekTo((it * duration).toLong()) }
-            dragging = null
-        },
-        colors = SliderDefaults.colors(
-            thumbColor = MaterialTheme.colorScheme.primary,
-            activeTrackColor = MaterialTheme.colorScheme.primary,
-            inactiveTrackColor = Color.White.copy(alpha = 0.3f)
-        )
-    )
+    val progress = dragging ?: (position.toFloat() / duration).coerceIn(0f, 1f)
+    val bufferedFraction = (buffered.toFloat() / duration).coerceIn(0f, 1f)
+    val active = MaterialTheme.colorScheme.primary
+    val trackHeight by animateFloatAsState(if (dragging != null) 8f else 4f, label = "track")
+    var widthPx by remember { mutableFloatStateOf(1f) }
+
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(24.dp)
+            .onSizeChanged { widthPx = it.width.toFloat().coerceAtLeast(1f) }
+            .pointerInput(duration) {
+                detectTapGestures { offset ->
+                    engine.seekTo((offset.x / size.width * duration).toLong())
+                    onInteraction()
+                }
+            }
+            .pointerInput(duration) {
+                detectHorizontalDragGestures(
+                    onDragStart = { dragging = (it.x / size.width).coerceIn(0f, 1f); onInteraction() },
+                    onHorizontalDrag = { change, _ -> dragging = (change.position.x / size.width).coerceIn(0f, 1f); onInteraction() },
+                    onDragEnd = { dragging?.let { engine.seekTo((it * duration).toLong()) }; dragging = null },
+                    onDragCancel = { dragging = null }
+                )
+            }
+    ) {
+        Canvas(Modifier.fillMaxSize()) {
+            val h = trackHeight.dp.toPx()
+            val y = size.height / 2
+            val r = androidx.compose.ui.geometry.CornerRadius(h / 2, h / 2)
+            val top = androidx.compose.ui.geometry.Offset(0f, y - h / 2)
+            drawRoundRect(Color.White.copy(alpha = 0.3f), top, androidx.compose.ui.geometry.Size(size.width, h), r)
+            drawRoundRect(Color.White.copy(alpha = 0.45f), top, androidx.compose.ui.geometry.Size(size.width * bufferedFraction, h), r)
+            drawRoundRect(active, top, androidx.compose.ui.geometry.Size(size.width * progress, h), r)
+            drawCircle(active, radius = (if (dragging != null) 9f else 6f).dp.toPx(), center = androidx.compose.ui.geometry.Offset(size.width * progress, y))
+        }
+    }
 }
 
 @Composable
