@@ -77,18 +77,6 @@ kotlin {
         }
     }
 
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "ComposeApp"
-            isStatic = true
-        }
-    }
-
-    jvm()
-
     sourceSets {
         commonMain {
             kotlin.srcDir(buildConfigGenerator.map { it.destinationDir })
@@ -137,11 +125,6 @@ kotlin {
                 implementation(libs.androidx.test.espresso.core)
             }
         }
-        val jvmTest by getting {
-            dependencies {
-                implementation(compose.desktop.currentOs)
-            }
-        }
     }
 }
 
@@ -149,11 +132,3 @@ dependencies {
     androidRuntimeClasspath(libs.jetbrains.compose.tooling)
 }
 
-aboutLibraries {
-    export {
-        outputFile = file("src/iosMain/resources/aboutlibraries.json")
-        prettyPrint = true
-        variant = "metadataIosMain"
-        excludeFields.addAll("organization", "scm", "funding")
-    }
-}
