@@ -67,9 +67,6 @@ kotlin {
             }
         }
 
-        withHostTest {
-            isIncludeAndroidResources = true
-        }
         withDeviceTestBuilder {
             sourceSetTreeName = "test"
         }.configure {
