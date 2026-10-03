@@ -19,8 +19,9 @@ class YouFlowActivity : ComponentActivity() {
         // The watch screen and player are still the classic, view based ones for now.
         val actions = AppActions(
             openVideo = { url, title -> startActivity(NavigationHelper.getStreamIntent(this, YOUTUBE, url, title)) },
-            openChannel = { url -> startActivity(NavigationHelper.getChannelIntent(this, YOUTUBE, url)) },
-            openPlaylist = { url -> startActivity(NavigationHelper.getIntentByLink(this, url)) },
+            openChannel = {},
+            openPlaylist = {},
+            playQueue = { queue -> NavigationHelper.playOnMainPlayer(this, queue, false) },
             openClassicUi = { startActivity(Intent(this, MainActivity::class.java)) },
             openSettings = { startActivity(Intent(this, SettingsActivity::class.java)) }
         )

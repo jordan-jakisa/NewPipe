@@ -25,6 +25,13 @@ import kotlinx.coroutines.rx3.await
 import kotlinx.coroutines.rx3.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import org.schabi.newpipe.extractor.InfoItem
+import org.schabi.newpipe.extractor.Page
+import org.schabi.newpipe.extractor.channel.ChannelInfo
+import org.schabi.newpipe.extractor.linkhandler.ListLinkHandler
+import org.schabi.newpipe.extractor.playlist.PlaylistInfo
+import dev.jordanempire.youflow.ui.model.ChannelDetails
+import dev.jordanempire.youflow.ui.model.ChannelTab
+import dev.jordanempire.youflow.ui.model.PlaylistDetails
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.channel.ChannelInfoItem
 import org.schabi.newpipe.extractor.playlist.PlaylistInfoItem
@@ -59,13 +66,22 @@ class YouTubeRepository(private val context: Context) {
             info.relatedItems.filterIsInstance<StreamInfoItem>().map { it.toVideo() }
         }
 
-    /** YouTube sometimes answers the first request with a redirect loop, a second try works. */
-    suspend fun kioskVideosWithRetry(kiosk: KioskRef, forceLoad: Boolean = false): List<VideoItem> =
-        try {
-            kioskVideos(kiosk, forceLoad)
-        } catch (e: java.io.IOException) {
-            kioskVideos(kiosk, true)
+    /**
+     * YouTube sometimes answers with a burst of 3xx/4xx/5xx responses ("Too many follow-up
+     * requests"). A short backoff and another try usually gets through.
+     */
+    suspend fun kioskVideosWithRetry(kiosk: KioskRef, forceLoad: Boolean = false): List<VideoItem> {
+        var delayMs = 1_500L
+        repeat(2) {
+            try {
+                return kioskVideos(kiosk, forceLoad || it > 0)
+            } catch (e: java.io.IOException) {
+                kotlinx.coroutines.delay(delayMs)
+                delayMs *= 2
+            }
         }
+        return kioskVideos(kiosk, true)
+    }
 
     suspend fun suggestions(query: String): List<String> = withContext(Dispatchers.IO) {
         ExtractorHelper.suggestionsFor(serviceId, query).await()
@@ -130,6 +146,77 @@ class YouTubeRepository(private val context: Context) {
                     )
                 }
             }
+
+    /** One page of a list plus the token for the next one. */
+    class Paged<T>(val items: List<T>, val next: Page?)
+
+    class LoadedChannel(val details: ChannelDetails, val handlers: List<ListLinkHandler>)
+
+    suspend fun channel(url: String): LoadedChannel = withContext(Dispatchers.IO) {
+        val info: ChannelInfo = ExtractorHelper.getChannelInfo(serviceId, url, false).await()
+        val labels = mapOf(
+            "videos" to "Videos", "shorts" to "Shorts", "livestreams" to "Live",
+            "playlists" to "Playlists", "albums" to "Releases", "podcasts" to "Podcasts",
+            "courses" to "Courses"
+        )
+        val handlers = mutableListOf<ListLinkHandler>()
+        val tabs = mutableListOf<ChannelTab>()
+        info.tabs.forEach { handler ->
+            val key = handler.contentFilters.firstOrNull()
+            val label = labels[key] ?: return@forEach
+            tabs += ChannelTab(key.orEmpty(), label, handlers.size)
+            handlers += handler
+        }
+        LoadedChannel(
+            ChannelDetails(
+                url = info.url,
+                name = info.name,
+                avatar = ImageStrategy.choosePreferredImage(info.avatars),
+                banner = ImageStrategy.choosePreferredImage(info.banners),
+                subscribers = info.subscriberCount.takeIf { it >= 0 },
+                description = info.description,
+                tabs = tabs
+            ),
+            handlers
+        )
+    }
+
+    suspend fun channelTab(handler: ListLinkHandler, page: Page?): Paged<ContentItem> =
+        withContext(Dispatchers.IO) {
+            if (page == null) {
+                val tab = ExtractorHelper.getChannelTab(serviceId, handler, false).await()
+                Paged(tab.relatedItems.mapNotNull { it.toContent() }, tab.nextPage)
+            } else {
+                val more = ExtractorHelper.getMoreChannelTabItems(serviceId, handler, page).await()
+                Paged(more.items.mapNotNull { it.toContent() }, more.nextPage)
+            }
+        }
+
+    class LoadedPlaylist(val details: PlaylistDetails, val info: PlaylistInfo, val videos: List<VideoItem>, val next: Page?)
+
+    suspend fun playlist(url: String): LoadedPlaylist = withContext(Dispatchers.IO) {
+        val info = ExtractorHelper.getPlaylistInfo(serviceId, url, false).await()
+        LoadedPlaylist(
+            PlaylistDetails(
+                url = info.url,
+                name = info.name,
+                thumbnail = ImageStrategy.choosePreferredImage(info.thumbnails),
+                uploader = info.uploaderName,
+                streamCount = info.streamCount,
+                description = info.description?.content
+            ),
+            info,
+            info.relatedItems.map { it.toVideo() },
+            info.nextPage
+        )
+    }
+
+    suspend fun morePlaylistVideos(url: String, page: Page): Paged<VideoItem> = withContext(Dispatchers.IO) {
+        val more = ExtractorHelper.getMorePlaylistItems(serviceId, url, page).await()
+        Paged(more.items.map { it.toVideo() }, more.nextPage)
+    }
+
+    fun isSubscribed(url: String): Flow<Boolean> = subscriptions().map { list -> list.any { it.url == url } }
 
     private fun SubscriptionEntity.toChannel() = ChannelItem(
         url = url.orEmpty(),

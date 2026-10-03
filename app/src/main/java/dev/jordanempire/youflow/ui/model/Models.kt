@@ -50,3 +50,27 @@ sealed interface UiState<out T> {
     data class Content<T>(val data: T) : UiState<T>
     data class Error(val message: String) : UiState<Nothing>
 }
+
+@Immutable
+data class ChannelTab(val key: String, val label: String, val index: Int)
+
+@Immutable
+data class ChannelDetails(
+    val url: String,
+    val name: String,
+    val avatar: String?,
+    val banner: String?,
+    val subscribers: Long?,
+    val description: String?,
+    val tabs: List<ChannelTab>
+)
+
+@Immutable
+data class PlaylistDetails(
+    val url: String,
+    val name: String,
+    val thumbnail: String?,
+    val uploader: String?,
+    val streamCount: Long,
+    val description: String?
+)

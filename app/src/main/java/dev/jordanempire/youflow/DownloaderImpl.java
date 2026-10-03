@@ -47,6 +47,15 @@ public final class DownloaderImpl extends Downloader {
                 .readTimeout(30, TimeUnit.SECONDS)
 //                .cache(new Cache(new File(context.getExternalCacheDir(), "okhttp"),
 //                        16 * 1024 * 1024))
+                .addNetworkInterceptor(chain -> {
+                    final okhttp3.Response r = chain.proceed(chain.request());
+                    if (r.code() >= 300) {
+                        android.util.Log.w("YFNet", r.code() + " " + chain.request().method() + " "
+                                + chain.request().url() + " location=" + r.header("Location")
+                                + " retry-after=" + r.header("Retry-After"));
+                    }
+                    return r;
+                })
                 .addInterceptor(new CompressionInterceptor(
                         Brotli.INSTANCE,
                         Gzip.INSTANCE))
