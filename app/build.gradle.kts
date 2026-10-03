@@ -239,7 +239,15 @@ dependencies {
     implementation(libs.squareup.okhttp)
     implementation(libs.squareup.okhttp.brotli)
 
-    // Media player
+    // Media3 (YouFlow player)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.exoplayer.dash)
+    implementation(libs.androidx.media3.exoplayer.hls)
+    implementation(libs.androidx.media3.exoplayer.smoothstreaming)
+    implementation(libs.androidx.media3.session)
+    implementation(libs.androidx.media3.ui.compose)
+
+    // Media player (legacy ExoPlayer 2, removed at cutover)
     implementation(libs.google.exoplayer.core)
     implementation(libs.google.exoplayer.dash)
     implementation(libs.google.exoplayer.database)
