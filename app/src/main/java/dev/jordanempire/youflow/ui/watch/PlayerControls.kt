@@ -166,7 +166,20 @@ fun PlayerControls(
             Column(Modifier.align(Alignment.Center).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                 Text("Can't play this video", color = Color.White, style = MaterialTheme.typography.titleMedium)
                 Text(message, color = Color.White.copy(alpha = 0.7f), style = MaterialTheme.typography.bodySmall)
-                IconButton(onClick = { engine.skipTo(state.index) }) { Icon(Icons.Filled.Replay, "Retry", tint = Color.White) }
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val launcher = androidx.activity.compose.rememberLauncherForActivityResult(
+                    androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+                ) { engine.skipTo(state.index) }
+                if (state.recaptchaUrl != null) {
+                    androidx.compose.material3.Button(onClick = {
+                        launcher.launch(
+                            android.content.Intent(context, dev.jordanempire.youflow.error.ReCaptchaActivity::class.java)
+                                .putExtra(dev.jordanempire.youflow.error.ReCaptchaActivity.RECAPTCHA_URL_EXTRA, state.recaptchaUrl)
+                        )
+                    }) { Text("Verify") }
+                } else {
+                    IconButton(onClick = { engine.skipTo(state.index) }) { Icon(Icons.Filled.Replay, "Retry", tint = Color.White) }
+                }
             }
         }
     }

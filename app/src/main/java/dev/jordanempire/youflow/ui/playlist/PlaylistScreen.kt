@@ -1,5 +1,6 @@
 package dev.jordanempire.youflow.ui.playlist
 
+import dev.jordanempire.youflow.ui.util.toUiError
 import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +40,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dev.jordanempire.youflow.ui.AppActions
 import dev.jordanempire.youflow.ui.components.LoadingBox
+import dev.jordanempire.youflow.ui.components.ErrorBox
 import dev.jordanempire.youflow.ui.components.MessageBox
 import dev.jordanempire.youflow.ui.components.Thumbnail
 import dev.jordanempire.youflow.ui.components.VideoRow
@@ -77,7 +79,7 @@ class PlaylistViewModel(app: Application, private val url: String) : AndroidView
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
-                UiState.Error(e.message ?: e.javaClass.simpleName)
+                e.toUiError()
             }
         }
     }
@@ -123,7 +125,7 @@ fun PlaylistScreen(url: String, actions: AppActions, onBack: () -> Unit) {
     ) { padding ->
         when (val s = state) {
             UiState.Loading -> LoadingBox(Modifier.padding(padding))
-            is UiState.Error -> MessageBox("Couldn't load this playlist", s.message, "Retry", vm::load, Modifier.padding(padding))
+            is UiState.Error -> ErrorBox(s, vm::load, Modifier.padding(padding), "Couldn't load this playlist")
             is UiState.Content -> {
                 val (details, videos) = s.data
                 LazyColumn(

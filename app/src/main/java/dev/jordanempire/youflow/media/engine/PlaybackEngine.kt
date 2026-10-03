@@ -25,6 +25,7 @@ import dev.jordanempire.youflow.media.PlayerDataSource
 import dev.jordanempire.youflow.media.YouFlowPlayerService
 import dev.jordanempire.youflow.media.mediaitem.MediaItemTag
 import dev.jordanempire.youflow.media.resolver.VideoPlaybackResolver
+import dev.jordanempire.youflow.ui.util.recaptchaUrl
 import dev.jordanempire.youflow.util.ExtractorHelper
 import dev.jordanempire.youflow.util.ListHelper
 import kotlinx.coroutines.CancellationException
@@ -68,6 +69,7 @@ data class PlayerState(
     val videoAspect: Float = 16f / 9f,
     val isLive: Boolean = false,
     val error: String? = null,
+    val recaptchaUrl: String? = null,
     val qualities: List<String> = emptyList(),
     val selectedQuality: Int = -1,
     val captions: List<String> = emptyList(),
@@ -88,7 +90,24 @@ class PlaybackEngine private constructor(private val app: Application) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val dataSource = PlayerDataSource(app, DefaultBandwidthMeter.getSingletonInstance(app))
 
-    val exo: ExoPlayer = ExoPlayer.Builder(app, DefaultRenderersFactory(app).setEnableDecoderFallback(true))
+    // YouTube captions arrive as side loaded TTML. Media3 parses subtitles during extraction by
+    // default, so the text renderer is switched to legacy decoding to handle them.
+    private val renderersFactory = object : DefaultRenderersFactory(app) {
+        override fun buildTextRenderers(
+            context: android.content.Context,
+            output: androidx.media3.exoplayer.text.TextOutput,
+            outputLooper: android.os.Looper,
+            extensionRendererMode: Int,
+            out: java.util.ArrayList<androidx.media3.exoplayer.Renderer>
+        ) {
+            super.buildTextRenderers(context, output, outputLooper, extensionRendererMode, out)
+            out.filterIsInstance<androidx.media3.exoplayer.text.TextRenderer>().forEach {
+                it.experimentalSetLegacyDecodingEnabled(true)
+            }
+        }
+    }.setEnableDecoderFallback(true)
+
+    val exo: ExoPlayer = ExoPlayer.Builder(app, renderersFactory)
         .setAudioAttributes(
             AudioAttributes.Builder().setUsage(C.USAGE_MEDIA).setContentType(C.AUDIO_CONTENT_TYPE_MOVIE).build(),
             true
@@ -299,7 +318,7 @@ class PlaybackEngine private constructor(private val app: Application) {
         val entry = _state.value.entry ?: return
         loadJob?.cancel()
         loadJob = scope.launch {
-            _state.update { it.copy(phase = Phase.Loading, error = null) }
+            _state.update { it.copy(phase = Phase.Loading, error = null, recaptchaUrl = null) }
             try {
                 val info = withContext(Dispatchers.IO) {
                     ExtractorHelper.getStreamInfo(ServiceList.YouTube.serviceId, entry.url, forceLoad).await()
@@ -314,7 +333,14 @@ class PlaybackEngine private constructor(private val app: Application) {
                 throw e
             } catch (e: Throwable) {
                 Log.e(TAG, "load failed", e)
-                _state.update { it.copy(phase = Phase.Error, error = e.message ?: e.javaClass.simpleName) }
+                val url = e.recaptchaUrl()
+                _state.update {
+                    it.copy(
+                        phase = Phase.Error,
+                        error = if (url != null) "YouTube wants to check you're not a robot" else e.message ?: e.javaClass.simpleName,
+                        recaptchaUrl = url
+                    )
+                }
             }
         }
     }

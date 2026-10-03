@@ -1,5 +1,6 @@
 package dev.jordanempire.youflow.ui.home
 
+import dev.jordanempire.youflow.ui.util.toUiError
 import android.app.Application
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -70,7 +71,7 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
-                UiState.Error(e.message ?: e.javaClass.simpleName)
+                e.toUiError()
             }
             _refreshing.value = false
         }

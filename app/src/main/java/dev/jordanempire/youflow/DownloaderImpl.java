@@ -49,10 +49,12 @@ public final class DownloaderImpl extends Downloader {
 //                        16 * 1024 * 1024))
                 .addNetworkInterceptor(chain -> {
                     final okhttp3.Response r = chain.proceed(chain.request());
-                    if (r.code() >= 300) {
-                        android.util.Log.w("YFNet", r.code() + " " + chain.request().method() + " "
-                                + chain.request().url() + " location=" + r.header("Location")
-                                + " retry-after=" + r.header("Retry-After"));
+                    final String location = r.header("Location");
+                    // Google answers rate limited clients with a redirect to its "sorry" page.
+                    // Following it loops forever, so surface it as a reCAPTCHA challenge instead.
+                    if (r.isRedirect() && location != null && location.contains("google.com/sorry")) {
+                        r.close();
+                        throw new SorryRedirectException(location);
                     }
                     return r;
                 })
@@ -191,6 +193,21 @@ public final class DownloaderImpl extends Downloader {
                     response.headers().toMultimap(),
                     responseBodyToReturn,
                     latestUrl);
+        } catch (final SorryRedirectException e) {
+            throw new ReCaptchaException("reCaptcha Challenge requested", e.getUrl());
+        }
+    }
+
+    private static final class SorryRedirectException extends IOException {
+        private final String url;
+
+        SorryRedirectException(final String url) {
+            super("Google asked for a reCAPTCHA: " + url);
+            this.url = url;
+        }
+
+        String getUrl() {
+            return url;
         }
     }
 }

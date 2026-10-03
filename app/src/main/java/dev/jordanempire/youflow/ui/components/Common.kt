@@ -73,7 +73,7 @@ fun <T> StateHost(
 ) {
     when (state) {
         UiState.Loading -> LoadingBox()
-        is UiState.Error -> MessageBox("Couldn't load this", state.message, "Retry", onRetry)
+        is UiState.Error -> ErrorBox(state, onRetry)
         is UiState.Content -> if (isEmpty(state.data)) emptyContent() else content(state.data)
     }
 }
@@ -86,4 +86,29 @@ fun Thumbnail(url: String?, modifier: Modifier = Modifier, contentDescription: S
         contentScale = ContentScale.Crop,
         modifier = modifier
     )
+}
+
+/** Error with Retry, or a Verify button when YouTube asked for a reCAPTCHA. */
+@Composable
+fun ErrorBox(error: UiState.Error, onRetry: () -> Unit, modifier: Modifier = Modifier, title: String = "Couldn't load this") {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val launcher = androidx.activity.compose.rememberLauncherForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
+    ) { onRetry() }
+    if (error.recaptchaUrl != null) {
+        MessageBox(
+            "Quick check needed",
+            error.message,
+            "Verify",
+            {
+                launcher.launch(
+                    android.content.Intent(context, dev.jordanempire.youflow.error.ReCaptchaActivity::class.java)
+                        .putExtra(dev.jordanempire.youflow.error.ReCaptchaActivity.RECAPTCHA_URL_EXTRA, error.recaptchaUrl)
+                )
+            },
+            modifier
+        )
+    } else {
+        MessageBox(title, error.message, "Retry", onRetry, modifier)
+    }
 }

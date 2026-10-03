@@ -1,5 +1,6 @@
 package dev.jordanempire.youflow.ui.search
 
+import dev.jordanempire.youflow.ui.util.toUiError
 import android.app.Application
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
@@ -40,6 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.jordanempire.youflow.ui.AppActions
 import dev.jordanempire.youflow.ui.components.ChannelRow
 import dev.jordanempire.youflow.ui.components.LoadingBox
+import dev.jordanempire.youflow.ui.components.ErrorBox
 import dev.jordanempire.youflow.ui.components.MessageBox
 import dev.jordanempire.youflow.ui.components.PlaylistRow
 import dev.jordanempire.youflow.ui.components.VideoCard
@@ -104,7 +106,7 @@ class SearchViewModel(app: Application) : AndroidViewModel(app) {
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
-                UiState.Error(e.message ?: e.javaClass.simpleName)
+                e.toUiError()
             }
         }
     }
@@ -171,7 +173,7 @@ fun SearchScreen(actions: AppActions, onClose: () -> Unit, vm: SearchViewModel =
                 }
             }
             UiState.Loading -> LoadingBox(modifier)
-            is UiState.Error -> MessageBox("Search failed", r.message, "Retry", { vm.submit() }, modifier)
+            is UiState.Error -> ErrorBox(r, { vm.submit() }, modifier, "Search failed")
             is UiState.Content -> if (r.data.isEmpty()) {
                 MessageBox("No results", "Try different words.", modifier = modifier)
             } else {

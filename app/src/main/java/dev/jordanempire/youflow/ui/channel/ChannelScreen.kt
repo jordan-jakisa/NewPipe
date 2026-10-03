@@ -1,5 +1,6 @@
 package dev.jordanempire.youflow.ui.channel
 
+import dev.jordanempire.youflow.ui.util.toUiError
 import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -52,6 +53,7 @@ import dev.jordanempire.youflow.ui.util.keyedViewModel
 import dev.jordanempire.youflow.ui.AppActions
 import dev.jordanempire.youflow.ui.components.ChannelRow
 import dev.jordanempire.youflow.ui.components.LoadingBox
+import dev.jordanempire.youflow.ui.components.ErrorBox
 import dev.jordanempire.youflow.ui.components.MessageBox
 import dev.jordanempire.youflow.ui.components.PlaylistRow
 import dev.jordanempire.youflow.ui.components.Thumbnail
@@ -104,7 +106,7 @@ class ChannelViewModel(app: Application, private val url: String) : AndroidViewM
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
-                _channel.value = UiState.Error(e.message ?: e.javaClass.simpleName)
+                _channel.value = e.toUiError()
             }
         }
     }
@@ -127,7 +129,7 @@ class ChannelViewModel(app: Application, private val url: String) : AndroidViewM
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
-                UiState.Error(e.message ?: e.javaClass.simpleName)
+                e.toUiError()
             }
         }
     }
@@ -191,7 +193,7 @@ fun ChannelScreen(url: String, actions: AppActions, onBack: () -> Unit) {
     ) { padding ->
         when (val c = channel) {
             UiState.Loading -> LoadingBox(Modifier.padding(padding))
-            is UiState.Error -> MessageBox("Couldn't load this channel", c.message, "Retry", vm::load, Modifier.padding(padding))
+            is UiState.Error -> ErrorBox(c, vm::load, Modifier.padding(padding), "Couldn't load this channel")
             is UiState.Content -> {
                 val details = c.data
                 LazyColumn(state = listState, modifier = Modifier.fillMaxSize(), contentPadding = WindowInsets.navigationBars.asPaddingValues()) {
