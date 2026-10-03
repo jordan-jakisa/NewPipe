@@ -45,20 +45,8 @@ import newpipe.shared.generated.resources.Res
 import newpipe.shared.generated.resources.app_description
 import newpipe.shared.generated.resources.contribution_encouragement
 import newpipe.shared.generated.resources.contribution_title
-import newpipe.shared.generated.resources.donation_encouragement
-import newpipe.shared.generated.resources.donation_title
-import newpipe.shared.generated.resources.faq
-import newpipe.shared.generated.resources.faq_description
-import newpipe.shared.generated.resources.faq_title
-import newpipe.shared.generated.resources.give_back
 import newpipe.shared.generated.resources.ic_foreground
-import newpipe.shared.generated.resources.open_in_browser
-import newpipe.shared.generated.resources.privacy_policy_encouragement
-import newpipe.shared.generated.resources.privacy_policy_title
-import newpipe.shared.generated.resources.read_privacy_policy
 import newpipe.shared.generated.resources.view_on_github
-import newpipe.shared.generated.resources.website_encouragement
-import newpipe.shared.generated.resources.website_title
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
@@ -115,7 +103,7 @@ fun AboutPageContent(
             }
         }
 
-        // Links about NewPipe
+        // Link to the source code
         items(items = links, key = { link -> link.url }) { link ->
             LinkListItem(
                 link = link,
@@ -128,34 +116,10 @@ fun AboutPageContent(
 @Composable
 private fun defaultLinks() = listOf(
     Link(
-        title = stringResource(Res.string.faq_title),
-        description = stringResource(Res.string.faq_description),
-        action = stringResource(Res.string.faq),
-        url = Constants.URL_FAQ
-    ),
-    Link(
         title = stringResource(Res.string.contribution_title),
         description = stringResource(Res.string.contribution_encouragement),
         action = stringResource(Res.string.view_on_github),
         url = Constants.URL_GITHUB
-    ),
-    Link(
-        title = stringResource(Res.string.donation_title),
-        description = stringResource(Res.string.donation_encouragement),
-        action = stringResource(Res.string.give_back),
-        url = Constants.URL_DONATION
-    ),
-    Link(
-        title = stringResource(Res.string.website_title),
-        description = stringResource(Res.string.website_encouragement),
-        action = stringResource(Res.string.open_in_browser),
-        url = Constants.URL_WEBSITE
-    ),
-    Link(
-        title = stringResource(Res.string.privacy_policy_title),
-        description = stringResource(Res.string.privacy_policy_encouragement),
-        action = stringResource(Res.string.read_privacy_policy),
-        url = Constants.URL_PRIVACY
     )
 )
 

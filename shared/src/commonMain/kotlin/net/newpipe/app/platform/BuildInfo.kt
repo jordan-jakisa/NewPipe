@@ -10,6 +10,5 @@ package net.newpipe.app.platform
  */
 
 interface BuildInfo {
-    val isReleaseApk: Boolean
     val isDebug: Boolean
 }

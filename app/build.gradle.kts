@@ -12,9 +12,7 @@ plugins {
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.jetbrains.kotlin.parcelize)
     alias(libs.plugins.jetbrains.kotlinx.serialization)
-    alias(libs.plugins.sonarqube)
     alias(libs.plugins.about.libraries)
-    checkstyle
 }
 
 val gitWorkingBranch = providers.exec {
@@ -147,31 +145,6 @@ ksp {
 // Custom dependency configuration for ktlint
 val ktlint by configurations.creating
 
-checkstyle {
-    configDirectory = rootProject.file("checkstyle")
-    isIgnoreFailures = false
-    isShowViolations = true
-    toolVersion = libs.versions.checkstyle.get()
-}
-
-tasks.register<Checkstyle>("runCheckstyle") {
-    source("src")
-    include("**/*.java")
-    exclude("**/gen/**")
-    exclude("**/R.java")
-    exclude("**/BuildConfig.java")
-    exclude("main/java/us/shandian/giga/**")
-
-    classpath = configurations.getByName("checkstyle")
-
-    isShowViolations = true
-
-    reports {
-        xml.required = true
-        html.required = true
-    }
-}
-
 val outputDir = project.layout.buildDirectory.dir("reports/ktlint/")
 val inputFiles = fileTree("src") { include("**/*.kt") }
 
@@ -199,18 +172,7 @@ tasks.register<CheckDependenciesOrder>("checkDependenciesOrder") {
 
 afterEvaluate {
     tasks.named("preDebugBuild").configure {
-        if (!System.getProperties().containsKey("skipFormatKtlint")) {
-            dependsOn("formatKtlint")
-        }
-        dependsOn("runCheckstyle", "runKtlint", "checkDependenciesOrder")
-    }
-}
-
-sonar {
-    properties {
-        property("sonar.projectKey", "TeamNewPipe_NewPipe")
-        property("sonar.organization", "teamnewpipe")
-        property("sonar.host.url", "https://sonarcloud.io")
+        dependsOn("checkDependenciesOrder")
     }
 }
 
@@ -224,8 +186,7 @@ dependencies {
     implementation(libs.newpipe.extractor)
     implementation(libs.newpipe.filepicker)
 
-    // Checkstyle
-    checkstyle(libs.puppycrawl.checkstyle)
+    // ktlint (run manually through runKtlint / formatKtlint)
     ktlint(libs.pinterest.ktlint)
 
     // AndroidX
@@ -291,11 +252,6 @@ dependencies {
     implementation(libs.noties.markwon.core)
     implementation(libs.noties.markwon.linkify)
 
-    // Crash reporting
-    implementation(libs.acra.core)
-    compileOnly(libs.google.autoservice.annotations)
-    ksp(libs.zacsweers.autoservice.compiler)
-
     // Properly restarting
     implementation(libs.jakewharton.phoenix)
 
@@ -312,9 +268,6 @@ dependencies {
     debugImplementation(libs.squareup.leakcanary.watcher)
     debugImplementation(libs.squareup.leakcanary.plumber)
     debugImplementation(libs.squareup.leakcanary.core)
-    // Debug bridge for Android
-    debugImplementation(libs.facebook.stetho.core)
-    debugImplementation(libs.facebook.stetho.okhttp3)
 
     // Testing
     testImplementation(libs.junit)

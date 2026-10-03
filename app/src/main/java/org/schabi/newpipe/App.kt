@@ -24,10 +24,10 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.SocketException
-import org.acra.ACRA.init
-import org.acra.ACRA.isACRASenderServiceProcess
-import org.acra.config.CoreConfigurationBuilder
+import org.schabi.newpipe.error.ErrorInfo
+import org.schabi.newpipe.error.ErrorUtil
 import org.schabi.newpipe.error.ReCaptchaActivity
+import org.schabi.newpipe.error.UserAction
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.downloader.Downloader
 import org.schabi.newpipe.extractor.services.youtube.extractors.YoutubeStreamExtractor
@@ -35,7 +35,6 @@ import org.schabi.newpipe.ktx.hasAssignableCause
 import org.schabi.newpipe.settings.NewPipeSettings
 import org.schabi.newpipe.util.BridgeStateSaverInitializer
 import org.schabi.newpipe.util.Localization
-import org.schabi.newpipe.util.ServiceHelper
 import org.schabi.newpipe.util.StateSaver
 import org.schabi.newpipe.util.image.ImageStrategy
 import org.schabi.newpipe.util.image.PreferredImageQuality
@@ -70,11 +69,6 @@ open class App :
         notificationsRequested = true
     }
 
-    override fun attachBaseContext(base: Context?) {
-        super.attachBaseContext(base)
-        initACRA()
-    }
-
     override fun onCreate() {
         super.onCreate()
 
@@ -107,8 +101,6 @@ open class App :
         StateSaver.init(this)
         initNotificationChannels()
 
-        ServiceHelper.initServices(this)
-
         // Initialize image loader
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         ImageStrategy.setPreferredImageQuality(
@@ -122,6 +114,7 @@ open class App :
         )
 
         configureRxJavaErrorHandler()
+        installLocalCrashHandler()
 
         YoutubeStreamExtractor.setPoTokenProvider(PoTokenProviderImpl)
     }
@@ -217,23 +210,27 @@ open class App :
     }
 
     /**
-     * Called in [.attachBaseContext] after calling the `super` method.
-     * Should be overridden if MultiDex is enabled, since it has to be initialized before ACRA.
+     * Shows uncaught exceptions in the local [ErrorActivity] (where the details can be copied or
+     * shared) before the process dies. Nothing is sent anywhere.
      */
-    protected fun initACRA() {
-        if (isACRASenderServiceProcess()) {
-            return
+    private fun installLocalCrashHandler() {
+        val previousHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            try {
+                ErrorUtil.openActivity(
+                    this,
+                    ErrorInfo(throwable, UserAction.UI_ERROR, "Uncaught exception")
+                )
+            } catch (e: Throwable) {
+                Log.e(TAG, "Could not show the crash screen", e)
+            }
+            previousHandler?.uncaughtException(thread, throwable)
         }
-
-        val acraConfig =
-            CoreConfigurationBuilder()
-                .withBuildConfigClass(BuildConfig::class.java)
-        init(this, acraConfig)
     }
 
     private fun initNotificationChannels() {
         // Keep the importance below DEFAULT to avoid making noise on every notification update for
-        // the main and update channels
+        // the main channel
         val mainChannel =
             NotificationChannelCompat
                 .Builder(
@@ -241,14 +238,6 @@ open class App :
                     NotificationManagerCompat.IMPORTANCE_LOW
                 ).setName(getString(R.string.notification_channel_name))
                 .setDescription(getString(R.string.notification_channel_description))
-                .build()
-        val appUpdateChannel =
-            NotificationChannelCompat
-                .Builder(
-                    getString(R.string.app_update_notification_channel_id),
-                    NotificationManagerCompat.IMPORTANCE_LOW
-                ).setName(getString(R.string.app_update_notification_channel_name))
-                .setDescription(getString(R.string.app_update_notification_channel_description))
                 .build()
         val hashChannel =
             NotificationChannelCompat
@@ -275,7 +264,7 @@ open class App :
                 .setDescription(getString(R.string.streams_notification_channel_description))
                 .build()
 
-        val channels = listOf(mainChannel, appUpdateChannel, hashChannel, errorReportChannel, newStreamChannel)
+        val channels = listOf(mainChannel, hashChannel, errorReportChannel, newStreamChannel)
 
         NotificationManagerCompat.from(this).createNotificationChannelsCompat(channels)
     }
