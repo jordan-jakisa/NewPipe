@@ -19,6 +19,7 @@ import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.rx3.asFlow
 import kotlinx.coroutines.rx3.await
@@ -249,6 +250,26 @@ class YouTubeRepository(private val context: Context) {
         replyCount = replyCount.coerceAtLeast(0),
         repliesToken = replies
     )
+
+    /**
+     * Shorts from the channels you subscribe to (their Shorts tab), newest mix first. With no
+     * subscriptions it falls back to a search for #shorts, because the extractor has no global feed.
+     */
+    suspend fun shorts(): List<VideoItem> {
+        val channels = subscriptions().first().take(8)
+        val fromChannels = channels.flatMap { channel ->
+            runCatching {
+                val loaded = channel(channel.url)
+                val tab = loaded.details.tabs.firstOrNull { it.key == "shorts" } ?: return@runCatching emptyList()
+                channelTab(loaded.handlers[tab.index], null).items.filterIsInstance<VideoItem>()
+                    .map { it.copy(channel = it.channel.ifBlank { channel.name }, avatar = it.avatar ?: channel.avatar) }
+            }.getOrDefault(emptyList())
+        }
+        if (fromChannels.size >= 6) return fromChannels.shuffled()
+        val searched = runCatching { search("#shorts") }.getOrDefault(emptyList())
+            .filterIsInstance<VideoItem>().filter { it.isShort || (it.durationSeconds in 1..61) }
+        return (fromChannels + searched).distinctBy { it.url }.shuffled()
+    }
 
     fun isSubscribed(url: String): Flow<Boolean> = subscriptions().map { list -> list.any { it.url == url } }
 

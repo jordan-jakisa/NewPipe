@@ -306,6 +306,10 @@ class PlaybackEngine private constructor(private val app: Application) {
 
     private fun onEnded() {
         if (!next()) {
+            val type = _state.value.info?.streamType
+            if (type == org.schabi.newpipe.extractor.stream.StreamType.LIVE_STREAM ||
+                type == org.schabi.newpipe.extractor.stream.StreamType.AUDIO_LIVE_STREAM
+            ) return
             // Autoplay the first related video once the queue is done.
             val related = _state.value.info?.relatedItems?.filterIsInstance<StreamInfoItem>()?.firstOrNull() ?: return
             val entry = QueueEntry(related.url, related.name, related.uploaderName.orEmpty(), null)

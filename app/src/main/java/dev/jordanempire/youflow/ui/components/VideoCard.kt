@@ -62,11 +62,7 @@ fun VideoCard(
             }
         }
         Row(Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Thumbnail(
-                video.avatar,
-                Modifier.size(40.dp).clip(CircleShape).background(MaterialTheme.colorScheme.secondaryContainer)
-                    .clickable(onClick = onChannelClick)
-            )
+            Avatar(video.avatar, video.channel, 40.dp, Modifier.clickable(onClick = onChannelClick))
             Column(Modifier.weight(1f)) {
                 Text(video.title, style = MaterialTheme.typography.titleMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
                 Text(

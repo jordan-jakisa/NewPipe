@@ -2,6 +2,7 @@ package dev.jordanempire.youflow.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -110,5 +112,28 @@ fun ErrorBox(error: UiState.Error, onRetry: () -> Unit, modifier: Modifier = Mod
         )
     } else {
         MessageBox(title, error.message, "Retry", onRetry, modifier)
+    }
+}
+
+/** Circular channel avatar, with the first letter of the name when YouTube sends no image. */
+@Composable
+fun Avatar(url: String?, name: String, size: androidx.compose.ui.unit.Dp, modifier: Modifier = Modifier) {
+    val shape = androidx.compose.foundation.shape.CircleShape
+    if (url != null) {
+        Thumbnail(
+            url,
+            modifier.size(size).clip(shape).background(MaterialTheme.colorScheme.secondaryContainer)
+        )
+    } else {
+        Box(
+            modifier.size(size).clip(shape).background(MaterialTheme.colorScheme.secondaryContainer),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                name.trim().take(1).uppercase(),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer
+            )
+        }
     }
 }

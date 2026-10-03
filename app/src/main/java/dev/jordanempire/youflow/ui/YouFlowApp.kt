@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.PlayCircle
+import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.filled.Subscriptions
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material.icons.outlined.Home
@@ -50,6 +52,7 @@ import dev.jordanempire.youflow.ui.home.HomeScreen
 import dev.jordanempire.youflow.ui.model.VideoItem
 import dev.jordanempire.youflow.ui.playlist.PlaylistScreen
 import dev.jordanempire.youflow.ui.search.SearchScreen
+import dev.jordanempire.youflow.ui.shorts.ShortsScreen
 import dev.jordanempire.youflow.ui.subscriptions.SubscriptionsScreen
 import dev.jordanempire.youflow.ui.watch.MiniPlayer
 import dev.jordanempire.youflow.ui.watch.WatchScreen
@@ -57,6 +60,7 @@ import dev.jordanempire.youflow.ui.you.YouScreen
 
 private enum class Tab(val label: String, val selected: ImageVector, val unselected: ImageVector) {
     Home("Home", Icons.Filled.Home, Icons.Outlined.Home),
+    Shorts("Shorts", Icons.Filled.PlayCircle, Icons.Outlined.PlayCircle),
     Subscriptions("Subscriptions", Icons.Filled.Subscriptions, Icons.Outlined.Subscriptions),
     You("You", Icons.Filled.VideoLibrary, Icons.Outlined.VideoLibrary)
 }
@@ -112,7 +116,7 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
     Scaffold(
         modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            TopAppBar(
+            if (tab != Tab.Shorts) TopAppBar(
                 title = { Text("YouFlow", style = MaterialTheme.typography.headlineSmallEmphasized) },
                 actions = {
                     IconButton(onClick = { searching = true }) { Icon(Icons.Outlined.Search, contentDescription = "Search") }
@@ -140,6 +144,7 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
     ) { padding ->
         when (tab) {
             Tab.Home -> HomeScreen(actions, padding)
+            Tab.Shorts -> ShortsScreen(actions)
             Tab.Subscriptions -> SubscriptionsScreen(actions, padding)
             Tab.You -> YouScreen(actions, padding)
         }
