@@ -68,7 +68,7 @@
         app:iconSpaceReserved="false"/>
 
     <PreferenceScreen
-        android:fragment="org.schabi.newpipe.settings.ExoPlayerSettingsFragment"
+        android:fragment="dev.jordanempire.youflow.settings.ExoPlayerSettingsFragment"
         android:key="@string/exoplayer_settings_key"
         android:summary="@string/settings_category_exoplayer_summary"
         android:title="@string/settings_category_exoplayer_title"

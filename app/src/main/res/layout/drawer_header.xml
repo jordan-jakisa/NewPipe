@@ -41,7 +41,7 @@
                 android:src="@drawable/splash_foreground"
                 tools:ignore="ContentDescription" />
 
-            <org.schabi.newpipe.views.NewPipeTextView
+            <dev.jordanempire.youflow.views.NewPipeTextView
                 android:id="@+id/drawer_header_newpipe_title"
                 android:layout_width="@dimen/drawer_header_newpipe_title_default_width"
                 android:layout_height="match_parent"

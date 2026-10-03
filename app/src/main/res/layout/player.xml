@@ -8,7 +8,7 @@
     android:gravity="center"
     android:theme="@style/WhiteTintTheme">
 
-    <org.schabi.newpipe.views.ExpandableSurfaceView
+    <dev.jordanempire.youflow.views.ExpandableSurfaceView
         android:id="@+id/surfaceView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -135,7 +135,7 @@
                             android:orientation="vertical"
                             tools:ignore="NestedWeights,RtlHardcoded">
 
-                            <org.schabi.newpipe.views.NewPipeTextView
+                            <dev.jordanempire.youflow.views.NewPipeTextView
                                 android:id="@+id/titleTextView"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -150,7 +150,7 @@
                                 tools:ignore="RtlHardcoded"
                                 tools:text="The Video Title LONG very LONG" />
 
-                            <org.schabi.newpipe.views.NewPipeTextView
+                            <dev.jordanempire.youflow.views.NewPipeTextView
                                 android:id="@+id/channelTextView"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -170,7 +170,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="1">
 
-                            <org.schabi.newpipe.views.NewPipeTextView
+                            <dev.jordanempire.youflow.views.NewPipeTextView
                                 android:id="@+id/audioTrackTextView"
                                 android:layout_width="wrap_content"
                                 android:layout_height="35dp"
@@ -192,7 +192,7 @@
 
                     </LinearLayout>
 
-                    <org.schabi.newpipe.views.NewPipeTextView
+                    <dev.jordanempire.youflow.views.NewPipeTextView
                         android:id="@+id/qualityTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
@@ -206,7 +206,7 @@
                         tools:ignore="HardcodedText,RtlHardcoded"
                         tools:text="720p" />
 
-                    <org.schabi.newpipe.views.NewPipeTextView
+                    <dev.jordanempire.youflow.views.NewPipeTextView
                         android:id="@+id/playbackSpeed"
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
@@ -283,7 +283,7 @@
                     tools:ignore="RtlHardcoded"
                     tools:visibility="visible">
 
-                    <org.schabi.newpipe.views.NewPipeTextView
+                    <dev.jordanempire.youflow.views.NewPipeTextView
                         android:id="@+id/resizeTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="35dp"
@@ -302,7 +302,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="3">
 
-                        <org.schabi.newpipe.views.NewPipeTextView
+                        <dev.jordanempire.youflow.views.NewPipeTextView
                             android:id="@+id/captionTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -400,7 +400,7 @@
                     android:orientation="vertical"
                     android:paddingBottom="12dp">
 
-                    <org.schabi.newpipe.views.NewPipeTextView
+                    <dev.jordanempire.youflow.views.NewPipeTextView
                         android:id="@+id/currentDisplaySeek"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -440,7 +440,7 @@
                 android:paddingLeft="@dimen/player_main_controls_padding"
                 android:paddingRight="@dimen/player_main_controls_padding">
 
-                <org.schabi.newpipe.views.NewPipeTextView
+                <dev.jordanempire.youflow.views.NewPipeTextView
                     android:id="@+id/playbackCurrentTime"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -452,7 +452,7 @@
                     tools:text="1:06:29" />
 
 
-                <org.schabi.newpipe.views.FocusAwareSeekBar
+                <dev.jordanempire.youflow.views.FocusAwareSeekBar
                     android:id="@+id/playbackSeekBar"
                     style="@style/Widget.AppCompat.SeekBar"
                     android:layout_width="0dp"
@@ -464,7 +464,7 @@
                     tools:progress="25"
                     tools:secondaryProgress="50" />
 
-                <org.schabi.newpipe.views.NewPipeTextView
+                <dev.jordanempire.youflow.views.NewPipeTextView
                     android:id="@+id/playbackEndTime"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -474,7 +474,7 @@
                     tools:ignore="HardcodedText"
                     tools:text="1:23:49" />
 
-                <org.schabi.newpipe.views.NewPipeTextView
+                <dev.jordanempire.youflow.views.NewPipeTextView
                     android:id="@+id/playbackLiveSync"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -787,7 +787,7 @@
         android:textColor="@color/white"
         android:visibility="gone" />
 
-    <org.schabi.newpipe.views.player.PlayerFastSeekOverlay
+    <dev.jordanempire.youflow.views.player.PlayerFastSeekOverlay
         android:id="@+id/fast_seek_overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

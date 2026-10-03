@@ -941,8 +941,8 @@ recommendations (Home "All"), and any of the "Later" items Jordan picks.
 
 **Resolved 2026-10-03:** D2 keep downloads (existing engine stays), D5 English only. Applied by
 choosing the recommendation without asking: D3 popup removed (PiP later), D6 slot customisation
-kept for now, D7 Android Auto kept, D8 TV not pursued. Still open: D1 name and `applicationId`,
-D4 minSdk, D9, D10.
+kept for now, D7 Android Auto kept, D8 TV not pursued. Still open: D9, D10. Decided: D1 app name **YouFlow**, `applicationId` and package
+`dev.jordanempire.youflow` (shared module `dev.jordanempire.youflow.shared`); D4 minSdk **31**.
 
 | # | Decision | Recommendation |
 |---|---|---|

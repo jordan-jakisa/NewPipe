@@ -33,7 +33,7 @@
 }
 
 ## For some reason NotificationModeConfigFragment wasn't kept (only referenced in a preference xml)
--keep class org.schabi.newpipe.settings.notifications.** { *; }
+-keep class dev.jordanempire.youflow.settings.notifications.** { *; }
 
 # Prevent R8 from stripping or renaming Protobuf internal fields
 -keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite {
@@ -47,11 +47,11 @@
 -keepclasseswithmembers class kotlinx.serialization.json.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
--keep,includedescriptorclasses class org.schabi.newpipe.**$$serializer { *; }
--keepclassmembers class org.schabi.newpipe.** {
+-keep,includedescriptorclasses class dev.jordanempire.youflow.**$$serializer { *; }
+-keepclassmembers class dev.jordanempire.youflow.** {
     *** Companion;
 }
--keepclasseswithmembers class org.schabi.newpipe.** {
+-keepclasseswithmembers class dev.jordanempire.youflow.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
 

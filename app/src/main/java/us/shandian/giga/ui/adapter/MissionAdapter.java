@@ -57,16 +57,16 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import org.schabi.newpipe.BuildConfig;
-import org.schabi.newpipe.R;
-import org.schabi.newpipe.error.ErrorInfo;
-import org.schabi.newpipe.error.ErrorUtil;
-import org.schabi.newpipe.error.UserAction;
+import dev.jordanempire.youflow.BuildConfig;
+import dev.jordanempire.youflow.R;
+import dev.jordanempire.youflow.error.ErrorInfo;
+import dev.jordanempire.youflow.error.ErrorUtil;
+import dev.jordanempire.youflow.error.UserAction;
 import org.schabi.newpipe.extractor.NewPipe;
-import org.schabi.newpipe.streams.io.StoredFileHelper;
-import org.schabi.newpipe.util.Localization;
-import org.schabi.newpipe.util.NavigationHelper;
-import org.schabi.newpipe.util.external_communication.ShareUtils;
+import dev.jordanempire.youflow.streams.io.StoredFileHelper;
+import dev.jordanempire.youflow.util.Localization;
+import dev.jordanempire.youflow.util.NavigationHelper;
+import dev.jordanempire.youflow.util.external_communication.ShareUtils;
 
 import java.io.File;
 import java.net.URI;

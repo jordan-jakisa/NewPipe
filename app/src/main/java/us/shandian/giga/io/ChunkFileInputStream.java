@@ -1,6 +1,6 @@
 package us.shandian.giga.io;
 
-import org.schabi.newpipe.streams.io.SharpStream;
+import dev.jordanempire.youflow.streams.io.SharpStream;
 
 import java.io.IOException;
 

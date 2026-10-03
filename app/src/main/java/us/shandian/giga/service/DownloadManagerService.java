@@ -1,7 +1,7 @@
 package us.shandian.giga.service;
 
-import static org.schabi.newpipe.BuildConfig.APPLICATION_ID;
-import static org.schabi.newpipe.BuildConfig.DEBUG;
+import static dev.jordanempire.youflow.BuildConfig.APPLICATION_ID;
+import static dev.jordanempire.youflow.BuildConfig.DEBUG;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -38,13 +38,13 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.IntentCompat;
 import androidx.preference.PreferenceManager;
 
-import org.schabi.newpipe.R;
-import org.schabi.newpipe.download.DownloadActivity;
+import dev.jordanempire.youflow.R;
+import dev.jordanempire.youflow.download.DownloadActivity;
 import org.schabi.newpipe.extractor.stream.StreamInfo;
-import org.schabi.newpipe.player.helper.LockManager;
-import org.schabi.newpipe.streams.io.StoredDirectoryHelper;
-import org.schabi.newpipe.streams.io.StoredFileHelper;
-import org.schabi.newpipe.util.Localization;
+import dev.jordanempire.youflow.player.helper.LockManager;
+import dev.jordanempire.youflow.streams.io.StoredDirectoryHelper;
+import dev.jordanempire.youflow.streams.io.StoredFileHelper;
+import dev.jordanempire.youflow.util.Localization;
 
 import java.io.File;
 import java.io.IOException;

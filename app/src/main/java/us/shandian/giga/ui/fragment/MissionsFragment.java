@@ -30,11 +30,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.nononsenseapps.filepicker.Utils;
 
-import org.schabi.newpipe.R;
-import org.schabi.newpipe.settings.NewPipeSettings;
-import org.schabi.newpipe.streams.io.NoFileManagerSafeGuard;
-import org.schabi.newpipe.streams.io.StoredFileHelper;
-import org.schabi.newpipe.util.FilePickerActivityHelper;
+import dev.jordanempire.youflow.R;
+import dev.jordanempire.youflow.settings.NewPipeSettings;
+import dev.jordanempire.youflow.streams.io.NoFileManagerSafeGuard;
+import dev.jordanempire.youflow.streams.io.StoredFileHelper;
+import dev.jordanempire.youflow.util.FilePickerActivityHelper;
 
 import java.io.File;
 import java.io.IOException;
