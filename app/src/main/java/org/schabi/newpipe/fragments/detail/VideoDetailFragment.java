@@ -9,7 +9,6 @@ import static org.schabi.newpipe.player.helper.PlayerHelper.globalScreenOrientat
 import static org.schabi.newpipe.player.helper.PlayerHelper.isClearingQueueConfirmationRequired;
 import static org.schabi.newpipe.util.DependentPreferenceHelper.getResumePlaybackEnabled;
 import static org.schabi.newpipe.util.ExtractorHelper.showMetaInfoInTextView;
-import static org.schabi.newpipe.util.ListHelper.getUrlAndNonTorrentStreams;
 import static org.schabi.newpipe.util.NavigationHelper.openPlayQueue;
 
 import android.animation.ValueAnimator;
@@ -24,7 +23,6 @@ import android.content.pm.ActivityInfo;
 import android.database.ContentObserver;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,7 +40,6 @@ import android.view.WindowManager;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
@@ -75,13 +72,10 @@ import org.schabi.newpipe.error.UserAction;
 import org.schabi.newpipe.extractor.Image;
 import org.schabi.newpipe.extractor.NewPipe;
 import org.schabi.newpipe.extractor.comments.CommentsInfoItem;
-import org.schabi.newpipe.extractor.exceptions.ContentNotSupportedException;
 import org.schabi.newpipe.extractor.exceptions.ExtractionException;
-import org.schabi.newpipe.extractor.stream.AudioStream;
 import org.schabi.newpipe.extractor.stream.Stream;
 import org.schabi.newpipe.extractor.stream.StreamInfo;
 import org.schabi.newpipe.extractor.stream.StreamType;
-import org.schabi.newpipe.extractor.stream.VideoStream;
 import org.schabi.newpipe.fragments.BackPressable;
 import org.schabi.newpipe.fragments.BaseStateFragment;
 import org.schabi.newpipe.fragments.EmptyFragment;
@@ -109,14 +103,12 @@ import org.schabi.newpipe.util.Constants;
 import org.schabi.newpipe.util.DeviceUtils;
 import org.schabi.newpipe.util.ExtractorHelper;
 import org.schabi.newpipe.util.InfoCache;
-import org.schabi.newpipe.util.ListHelper;
 import org.schabi.newpipe.util.Localization;
 import org.schabi.newpipe.util.NavigationHelper;
 import org.schabi.newpipe.util.PermissionHelper;
 import org.schabi.newpipe.util.PlayButtonHelper;
 import org.schabi.newpipe.util.StreamTypeUtil;
 import org.schabi.newpipe.util.ThemeHelper;
-import org.schabi.newpipe.util.external_communication.KoreUtils;
 import org.schabi.newpipe.util.external_communication.ShareUtils;
 import org.schabi.newpipe.util.image.CoilHelper;
 
@@ -205,7 +197,6 @@ public final class VideoDetailFragment
     int lastStableBottomSheetState = BottomSheetBehavior.STATE_EXPANDED;
     @State
     protected boolean autoPlayEnabled = true;
-    private boolean forceFullscreen = false;
 
     @Nullable
     private StreamInfo currentInfo = null;
@@ -485,7 +476,6 @@ public final class VideoDetailFragment
         });
 
         binding.detailControlsBackground.setOnClickListener(v -> openBackgroundPlayer(false));
-        binding.detailControlsPopup.setOnClickListener(v -> openPopupPlayer(false));
         binding.detailControlsPlaylistAppend.setOnClickListener(makeOnClickListener(info -> {
             if (getFM() != null && currentInfo != null) {
                 final Fragment fragment = getParentFragmentManager().
@@ -514,8 +504,6 @@ public final class VideoDetailFragment
                         info.getThumbnails())));
         binding.detailControlsOpenInBrowser.setOnClickListener(makeOnClickListener(info ->
                 ShareUtils.openUrlInBrowser(requireContext(), info.getUrl())));
-        binding.detailControlsPlayWithKodi.setOnClickListener(makeOnClickListener(info ->
-                KoreUtils.playWithKore(requireContext(), Uri.parse(info.getUrl()))));
         if (DEBUG) {
             binding.detailControlsCrashThePlayer.setOnClickListener(v ->
                     VideoDetailPlayerCrasher.onCrashThePlayer(requireContext(), player));
@@ -565,9 +553,6 @@ public final class VideoDetailFragment
 
         binding.detailControlsBackground.setOnLongClickListener(makeOnLongClickListener(info ->
             openBackgroundPlayer(true)
-        ));
-        binding.detailControlsPopup.setOnLongClickListener(makeOnLongClickListener(info ->
-            openPopupPlayer(true)
         ));
         binding.detailControlsDownload.setOnLongClickListener(makeOnLongClickListener(info ->
                 NavigationHelper.openDownloads(activity)));
@@ -627,11 +612,6 @@ public final class VideoDetailFragment
 
         binding.detailThumbnailRootLayout.requestFocus();
 
-        binding.detailControlsPlayWithKodi.setVisibility(
-                KoreUtils.shouldShowPlayWithKodi(requireContext(), serviceId)
-                        ? View.VISIBLE
-                        : View.GONE
-        );
         binding.detailControlsCrashThePlayer.setVisibility(
                 DEBUG && PreferenceManager.getDefaultSharedPreferences(getContext())
                         .getBoolean(getString(R.string.show_crash_the_player_key), false)
@@ -665,7 +645,6 @@ public final class VideoDetailFragment
             return false;
         };
         binding.detailControlsBackground.setOnTouchListener(controlsTouchListener);
-        binding.detailControlsPopup.setOnTouchListener(controlsTouchListener);
 
         binding.appBarLayout.addOnOffsetChangedListener((layout, verticalOffset) -> {
             // prevent useless updates to tab layout visibility if nothing changed
@@ -878,7 +857,7 @@ public final class VideoDetailFragment
                             }
                         }
 
-                        if (isAutoplayEnabled() || forceFullscreen) {
+                        if (isAutoplayEnabled()) {
                             openVideoPlayerAutoFullscreen();
                         }
                     }
@@ -1061,10 +1040,6 @@ public final class VideoDetailFragment
     }
 
     private void openBackgroundPlayer(final boolean append) {
-        final boolean useExternalAudioPlayer = PreferenceManager
-                .getDefaultSharedPreferences(activity)
-                .getBoolean(activity.getString(R.string.use_external_audio_player_key), false);
-
         toggleFullscreenIfInFullscreenMode();
 
         if (isPlayerAvailable()) {
@@ -1072,35 +1047,7 @@ public final class VideoDetailFragment
             player.setRecovery();
         }
 
-        if (useExternalAudioPlayer) {
-            showExternalAudioPlaybackDialog();
-        } else {
-            openNormalBackgroundPlayer(append);
-        }
-    }
-
-    private void openPopupPlayer(final boolean append) {
-        if (!PermissionHelper.isPopupEnabledElseAsk(activity)) {
-            return;
-        }
-
-        // See UI changes while remote playQueue changes
-        if (!isPlayerAvailable()) {
-            playerHolder.startService(false, this);
-        } else {
-            // FIXME Workaround #7427
-            player.setRecovery();
-        }
-
-        toggleFullscreenIfInFullscreenMode();
-
-        final PlayQueue queue = setupPlayQueueForIntent(append);
-        if (append) { //resumePlayback: false
-            NavigationHelper.enqueueOnPlayer(activity, queue, PlayerType.POPUP);
-        } else {
-            replaceQueueIfUserConfirms(() -> NavigationHelper
-                    .playOnPopupPlayer(activity, queue, true));
-        }
+        openNormalBackgroundPlayer(append);
     }
 
     /**
@@ -1126,33 +1073,19 @@ public final class VideoDetailFragment
             onScreenRotationButtonClicked();
         }
 
-        if (PreferenceManager.getDefaultSharedPreferences(activity)
-                .getBoolean(this.getString(R.string.use_external_video_player_key), false)) {
-            showExternalVideoPlaybackDialog();
-        } else {
-            replaceQueueIfUserConfirms(this::openMainPlayer);
-        }
+        replaceQueueIfUserConfirms(this::openMainPlayer);
     }
 
     /**
-     * If the option to start directly fullscreen is enabled, or if {@code forceFullscreen} is
-     * {@code true} (e.g. when switching from popup player to main player with a different video),
-     * calls {@link #openVideoPlayer(boolean)} with {@code directlyFullscreenIfApplicable = true},
+     * If the option to start directly fullscreen is enabled, calls
+     * {@link #openVideoPlayer(boolean)} with {@code directlyFullscreenIfApplicable = true},
      * so that if the user is not already in landscape and he has screen orientation locked the
-     * activity rotates and fullscreen starts. Otherwise, if the option to start directly fullscreen
-     * is disabled and {@code forceFullscreen} is {@code false}, calls
+     * activity rotates and fullscreen starts. Otherwise, calls
      * {@link #openVideoPlayer(boolean)} with {@code directlyFullscreenIfApplicable = false},
      * hence preventing it from going directly fullscreen.
-     * {@code forceFullscreen} is reset to {@code false} after this call.
      */
     public void openVideoPlayerAutoFullscreen() {
-        openVideoPlayer(forceFullscreen
-                || PlayerHelper.isStartMainPlayerFullscreenEnabled(requireContext()));
-        forceFullscreen = false;
-    }
-
-    public void setForceFullscreen(final boolean force) {
-        this.forceFullscreen = force;
+        openVideoPlayer(PlayerHelper.isStartMainPlayerFullscreenEnabled(requireContext()));
     }
 
     @Nullable
@@ -1240,36 +1173,9 @@ public final class VideoDetailFragment
         this.autoPlayEnabled = autoPlay;
     }
 
-    private void startOnExternalPlayer(@NonNull final Context context,
-                                       @NonNull final StreamInfo info,
-                                       @NonNull final Stream selectedStream) {
-        NavigationHelper.playOnExternalPlayer(context, currentInfo.getName(),
-                currentInfo.getSubChannelName(), selectedStream);
-
-        final HistoryRecordManager recordManager = new HistoryRecordManager(requireContext());
-        disposables.add(recordManager.onViewed(info).onErrorComplete()
-                .subscribe(
-                        ignored -> { /* successful */ },
-                        error -> showSnackBarError(
-                                new ErrorInfo(
-                                        error,
-                                        UserAction.PLAY_STREAM,
-                                        "Got an error when modifying history on viewed"
-                                )
-                        )
-                ));
-    }
-
-    private boolean isExternalPlayerEnabled() {
-        return PreferenceManager.getDefaultSharedPreferences(requireContext())
-                .getBoolean(getString(R.string.use_external_video_player_key), false);
-    }
-
     // This method overrides default behaviour when setAutoPlay() is called.
-    // Don't auto play if the user selected an external player or disabled it in settings
     private boolean isAutoplayEnabled() {
         return autoPlayEnabled
-                && !isExternalPlayerEnabled()
                 && (!isPlayerAvailable() || player.videoPlayerSelected())
                 && bottomSheetState != BottomSheetBehavior.STATE_HIDDEN
                 && PlayerHelper.isAutoplayAllowedByUser(requireContext());
@@ -1623,19 +1529,8 @@ public final class VideoDetailFragment
         }
 
         if (!info.getErrors().isEmpty()) {
-            // Bandcamp fan pages are not yet supported and thus a ContentNotAvailableException is
-            // thrown. This is not an error and thus should not be shown to the user.
-            for (final Throwable throwable : info.getErrors()) {
-                if (throwable instanceof ContentNotSupportedException
-                        && "Fan pages are not supported".equals(throwable.getMessage())) {
-                    info.getErrors().remove(throwable);
-                }
-            }
-
-            if (!info.getErrors().isEmpty()) {
-                showSnackBarError(new ErrorInfo(info.getErrors(), UserAction.REQUESTED_STREAM,
-                        "Some info not extracted: " + info.getUrl(), info));
-            }
+            showSnackBarError(new ErrorInfo(info.getErrors(), UserAction.REQUESTED_STREAM,
+                    "Some info not extracted: " + info.getUrl(), info));
         }
 
         binding.detailControlsDownload.setVisibility(
@@ -1646,7 +1541,6 @@ public final class VideoDetailFragment
 
         final boolean noVideoStreams =
                 info.getVideoStreams().isEmpty() && info.getVideoOnlyStreams().isEmpty();
-        binding.detailControlsPopup.setVisibility(noVideoStreams ? View.GONE : View.VISIBLE);
         binding.detailThumbnailPlayButton.setImageResource(
                 noVideoStreams ? R.drawable.ic_headset_shadow : R.drawable.ic_play_arrow_shadow);
     }
@@ -1867,8 +1761,8 @@ public final class VideoDetailFragment
             item.setTitle(info.getName());
             item.setUrl(info.getUrl());
         }
-        // They are not equal when user watches something in popup while browsing in fragment and
-        // then changes screen orientation. In that case the fragment will set itself as
+        // They are not equal when user watches something in the player while browsing in
+        // fragment and then changes screen orientation. In that case the fragment will set itself as
         // a service listener and will receive initial call to onMetadataUpdate()
         if (!queue.equalStreams(playQueue)) {
             return;
@@ -2107,11 +2001,9 @@ public final class VideoDetailFragment
                     R.color.transparent_background_color);
             binding.detailControlsPlaylistAppend.setBackgroundColor(transparent);
             binding.detailControlsBackground.setBackgroundColor(transparent);
-            binding.detailControlsPopup.setBackgroundColor(transparent);
             binding.detailControlsDownload.setBackgroundColor(transparent);
             binding.detailControlsShare.setBackgroundColor(transparent);
             binding.detailControlsOpenInBrowser.setBackgroundColor(transparent);
-            binding.detailControlsPlayWithKodi.setBackgroundColor(transparent);
         }
         if (DeviceUtils.isDesktopMode(getContext())) {
             // Remove the "hover" overlay (since it is visible on all mouse events and interferes
@@ -2178,90 +2070,6 @@ public final class VideoDetailFragment
                     dialog.dismiss();
                 })
                 .show();
-    }
-
-    private void showExternalVideoPlaybackDialog() {
-        if (currentInfo == null) {
-            return;
-        }
-
-        final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        builder.setTitle(R.string.select_quality_external_players);
-        builder.setNeutralButton(R.string.open_in_browser, (dialog, i) ->
-                ShareUtils.openUrlInBrowser(requireActivity(), url));
-
-        final List<VideoStream> videoStreamsForExternalPlayers =
-                ListHelper.getSortedStreamVideosList(
-                        activity,
-                        getUrlAndNonTorrentStreams(currentInfo.getVideoStreams()),
-                        getUrlAndNonTorrentStreams(currentInfo.getVideoOnlyStreams()),
-                        false,
-                        false
-                );
-
-        if (videoStreamsForExternalPlayers.isEmpty()) {
-            builder.setMessage(R.string.no_video_streams_available_for_external_players);
-            builder.setPositiveButton(R.string.ok, null);
-
-        } else {
-            final int selectedVideoStreamIndexForExternalPlayers =
-                    ListHelper.getDefaultResolutionIndex(activity, videoStreamsForExternalPlayers);
-            final CharSequence[] resolutions = videoStreamsForExternalPlayers.stream()
-                    .map(VideoStream::getResolution).toArray(CharSequence[]::new);
-
-            builder.setSingleChoiceItems(resolutions, selectedVideoStreamIndexForExternalPlayers,
-                    null);
-            builder.setNegativeButton(R.string.cancel, null);
-            builder.setPositiveButton(R.string.ok, (dialog, i) -> {
-                final int index = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
-                // We don't have to manage the index validity because if there is no stream
-                // available for external players, this code will be not executed and if there is
-                // no stream which matches the default resolution, 0 is returned by
-                // ListHelper.getDefaultResolutionIndex.
-                // The index cannot be outside the bounds of the list as its always between 0 and
-                // the list size - 1, .
-                startOnExternalPlayer(activity, currentInfo,
-                        videoStreamsForExternalPlayers.get(index));
-            });
-        }
-        builder.show();
-    }
-
-    private void showExternalAudioPlaybackDialog() {
-        if (currentInfo == null) {
-            return;
-        }
-
-        final List<AudioStream> audioStreams = getUrlAndNonTorrentStreams(
-                currentInfo.getAudioStreams());
-        final List<AudioStream> audioTracks =
-                ListHelper.getFilteredAudioStreams(activity, audioStreams);
-
-        if (audioTracks.isEmpty()) {
-            Toast.makeText(activity, R.string.no_audio_streams_available_for_external_players,
-                    Toast.LENGTH_SHORT).show();
-        } else if (audioTracks.size() == 1) {
-            startOnExternalPlayer(activity, currentInfo, audioTracks.get(0));
-        } else {
-            final int selectedAudioStream =
-                    ListHelper.getDefaultAudioFormat(activity, audioTracks);
-            final CharSequence[] trackNames = audioTracks.stream()
-                    .map(audioStream -> Localization.audioTrackName(activity, audioStream))
-                    .toArray(CharSequence[]::new);
-
-            new AlertDialog.Builder(activity)
-                    .setTitle(R.string.select_audio_track_external_players)
-                    .setNeutralButton(R.string.open_in_browser, (dialog, i) ->
-                            ShareUtils.openUrlInBrowser(requireActivity(), url))
-                    .setSingleChoiceItems(trackNames, selectedAudioStream, null)
-                    .setNegativeButton(R.string.cancel, null)
-                    .setPositiveButton(R.string.ok, (dialog, i) -> {
-                        final int index = ((AlertDialog) dialog).getListView()
-                                .getCheckedItemPosition();
-                        startOnExternalPlayer(activity, currentInfo, audioTracks.get(index));
-                    })
-                    .show();
-        }
     }
 
     /*

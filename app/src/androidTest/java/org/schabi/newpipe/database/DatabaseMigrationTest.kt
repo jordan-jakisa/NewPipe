@@ -4,18 +4,17 @@ import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import androidx.room.Room
 import androidx.room.testing.MigrationTestHelper
+import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.schabi.newpipe.database.playlist.model.PlaylistEntity
 import org.schabi.newpipe.database.playlist.model.PlaylistRemoteEntity
-import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.stream.StreamType
 
 @RunWith(AndroidJUnit4::class)
@@ -121,18 +120,41 @@ class DatabaseMigrationTest {
             Migrations.MIGRATION_7_8
         )
 
-        testHelper.runMigrationsAndValidate(
+        val databaseInV9 = testHelper.runMigrationsAndValidate(
             AppDatabase.DATABASE_NAME,
             Migrations.DB_VER_9,
             true,
             Migrations.MIGRATION_8_9
         )
 
+        // Only expect 2, the one with the null url will be ignored
+        assertEquals(2, queryLongs(databaseInV9, "SELECT uid FROM streams").size)
+        databaseInV9.query(
+            "SELECT title, stream_type, duration, uploader, thumbnail_url FROM streams " +
+                "WHERE service_id = $DEFAULT_SECOND_SERVICE_ID"
+        ).use { cursor ->
+            assertEquals(1, cursor.count)
+            cursor.moveToFirst()
+            assertEquals("", cursor.getString(0))
+            // Should fallback to VIDEO_STREAM
+            assertEquals(StreamType.VIDEO_STREAM.name, cursor.getString(1))
+            assertEquals(0, cursor.getLong(2))
+            assertEquals("", cursor.getString(3))
+            assertEquals("", cursor.getString(4))
+        }
+
+        // The stream of the second service is removed by the migration to version 10
+        testHelper.runMigrationsAndValidate(
+            AppDatabase.DATABASE_NAME,
+            Migrations.DB_VER_10,
+            true,
+            Migrations.MIGRATION_9_10
+        )
+
         val migratedDatabaseV3 = getMigratedDatabase()
         val listFromDB = migratedDatabaseV3.streamDAO().getAll().blockingFirst()
 
-        // Only expect 2, the one with the null url will be ignored
-        assertEquals(2, listFromDB.size)
+        assertEquals(1, listFromDB.size)
 
         val streamFromMigratedDatabase = listFromDB[0]
         assertEquals(DEFAULT_SERVICE_ID, streamFromMigratedDatabase.serviceId)
@@ -146,20 +168,6 @@ class DatabaseMigrationTest {
         assertNull(streamFromMigratedDatabase.textualUploadDate)
         assertNull(streamFromMigratedDatabase.uploadDate)
         assertNull(streamFromMigratedDatabase.isUploadDateApproximation)
-
-        val secondStreamFromMigratedDatabase = listFromDB[1]
-        assertEquals(DEFAULT_SECOND_SERVICE_ID, secondStreamFromMigratedDatabase.serviceId)
-        assertEquals(DEFAULT_SECOND_URL, secondStreamFromMigratedDatabase.url)
-        assertEquals("", secondStreamFromMigratedDatabase.title)
-        // Should fallback to VIDEO_STREAM
-        assertEquals(StreamType.VIDEO_STREAM, secondStreamFromMigratedDatabase.streamType)
-        assertEquals(0, secondStreamFromMigratedDatabase.duration)
-        assertEquals("", secondStreamFromMigratedDatabase.uploader)
-        assertEquals("", secondStreamFromMigratedDatabase.thumbnailUrl)
-        assertNull(secondStreamFromMigratedDatabase.viewCount)
-        assertNull(secondStreamFromMigratedDatabase.textualUploadDate)
-        assertNull(secondStreamFromMigratedDatabase.uploadDate)
-        assertNull(secondStreamFromMigratedDatabase.isUploadDateApproximation)
     }
 
     @Test
@@ -172,7 +180,7 @@ class DatabaseMigrationTest {
         val serviceId = DEFAULT_SERVICE_ID // YouTube
         // Use id different to YouTube because two searches with the same query
         // but different service are considered not equal.
-        val otherServiceId = ServiceList.SoundCloud.serviceId
+        val otherServiceId = 1
 
         databaseInV7.run {
             insert(
@@ -217,20 +225,34 @@ class DatabaseMigrationTest {
             Migrations.MIGRATION_7_8
         )
 
-        testHelper.runMigrationsAndValidate(
+        val databaseInV9 = testHelper.runMigrationsAndValidate(
             AppDatabase.DATABASE_NAME,
             Migrations.DB_VER_9,
             true,
             Migrations.MIGRATION_8_9
         )
 
-        val migratedDatabaseV8 = getMigratedDatabase()
-        val listFromDB = migratedDatabaseV8.searchHistoryDAO().getAll().blockingFirst()
+        // The duplicates were merged, so one search per service is left
+        assertEquals(2, queryLongs(databaseInV9, "SELECT id FROM search_history").size)
+        assertEquals(
+            2,
+            queryLongs(databaseInV9, "SELECT DISTINCT service_id FROM search_history").size
+        )
 
-        assertEquals(2, listFromDB.size)
+        // The search of the other service is removed by the migration to version 10
+        testHelper.runMigrationsAndValidate(
+            AppDatabase.DATABASE_NAME,
+            Migrations.DB_VER_10,
+            true,
+            Migrations.MIGRATION_9_10
+        )
+
+        val migratedDatabaseV10 = getMigratedDatabase()
+        val listFromDB = migratedDatabaseV10.searchHistoryDAO().getAll().blockingFirst()
+
+        assertEquals(1, listFromDB.size)
         assertEquals("abc", listFromDB[0].search)
-        assertEquals("abc", listFromDB[1].search)
-        assertNotEquals(listFromDB[0].serviceId, listFromDB[1].serviceId)
+        assertEquals(serviceId, listFromDB[0].serviceId)
     }
 
     @Test
@@ -296,6 +318,13 @@ class DatabaseMigrationTest {
             Migrations.MIGRATION_8_9
         )
 
+        testHelper.runMigrationsAndValidate(
+            AppDatabase.DATABASE_NAME,
+            Migrations.DB_VER_10,
+            true,
+            Migrations.MIGRATION_9_10
+        )
+
         val migratedDatabaseV9 = getMigratedDatabase()
         var localListFromDB = migratedDatabaseV9.playlistDAO().getAll().blockingFirst()
         var remoteListFromDB = migratedDatabaseV9.playlistRemoteDAO().getAll().blockingFirst()
@@ -335,6 +364,141 @@ class DatabaseMigrationTest {
         assertEquals(2, remoteListFromDB.size)
         assertEquals(remoteUid3, remoteListFromDB[1].uid)
         assertEquals(-1, remoteListFromDB[1].displayIndex)
+    }
+
+    @Test
+    fun migrateDatabaseFrom9to10() {
+        val databaseInV9 = testHelper.createDatabase(AppDatabase.DATABASE_NAME, Migrations.DB_VER_9)
+
+        databaseInV9.run {
+            // Streams 1, 3 and 5 belong to YouTube, 2 and 4 to other services.
+            val streamServices = mapOf(1 to 0, 2 to 1, 3 to 0, 4 to 3, 5 to 0)
+            for ((uid, serviceId) in streamServices) {
+                execSQL(
+                    "INSERT INTO streams (uid, service_id, url, title, stream_type, duration, " +
+                        "uploader) VALUES ($uid, $serviceId, 'https://example.com/$uid', " +
+                        "'title $uid', 'VIDEO_STREAM', 10, 'uploader')"
+                )
+            }
+
+            execSQL("INSERT INTO subscriptions (uid, service_id, url, notification_mode) VALUES (1, 0, 'a', 0)")
+            execSQL("INSERT INTO subscriptions (uid, service_id, url, notification_mode) VALUES (2, 1, 'b', 0)")
+            execSQL("INSERT INTO feed_group (uid, name, icon_id, sort_order) VALUES (1, 'group', 0, 0)")
+            execSQL("INSERT INTO feed_group_subscription_join (group_id, subscription_id) VALUES (1, 1)")
+            execSQL("INSERT INTO feed_group_subscription_join (group_id, subscription_id) VALUES (1, 2)")
+            execSQL("INSERT INTO feed_last_updated (subscription_id, last_updated) VALUES (1, 1)")
+            execSQL("INSERT INTO feed_last_updated (subscription_id, last_updated) VALUES (2, 1)")
+            execSQL("INSERT INTO feed (stream_id, subscription_id) VALUES (1, 1)")
+            execSQL("INSERT INTO feed (stream_id, subscription_id) VALUES (2, 2)")
+            execSQL("INSERT INTO feed (stream_id, subscription_id) VALUES (3, 2)")
+
+            execSQL("INSERT INTO remote_playlists (uid, service_id, url, display_index) VALUES (1, 0, 'a', 0)")
+            execSQL("INSERT INTO remote_playlists (uid, service_id, url, display_index) VALUES (2, 3, 'b', 1)")
+            execSQL("INSERT INTO search_history (service_id, search) VALUES (0, 'youtube')")
+            execSQL("INSERT INTO search_history (service_id, search) VALUES (2, 'other')")
+
+            execSQL("INSERT INTO stream_history (stream_id, access_date, repeat_count) VALUES (1, 1, 1)")
+            execSQL("INSERT INTO stream_history (stream_id, access_date, repeat_count) VALUES (2, 1, 1)")
+            execSQL("INSERT INTO stream_state (stream_id, progress_time) VALUES (1, 5)")
+            execSQL("INSERT INTO stream_state (stream_id, progress_time) VALUES (4, 5)")
+
+            // Playlist 1 has a thumbnail of a stream that gets removed, playlist 2 does not
+            execSQL("INSERT INTO playlists (uid, name, is_thumbnail_permanent, thumbnail_stream_id, display_index) VALUES (1, 'one', 1, 2, 0)")
+            execSQL("INSERT INTO playlists (uid, name, is_thumbnail_permanent, thumbnail_stream_id, display_index) VALUES (2, 'two', 1, 3, 1)")
+            execSQL("INSERT INTO playlists (uid, name, is_thumbnail_permanent, thumbnail_stream_id, display_index) VALUES (3, 'empty', 0, -1, 2)")
+            // Playlist 1: streams 1, 2, 3, 4, 5
+            for (index in 0..4) {
+                execSQL(
+                    "INSERT INTO playlist_stream_join (playlist_id, stream_id, join_index) " +
+                        "VALUES (1, ${index + 1}, $index)"
+                )
+            }
+            // Playlist 2: streams 3, 2, 5 (with a gap in the indices already)
+            execSQL("INSERT INTO playlist_stream_join (playlist_id, stream_id, join_index) VALUES (2, 3, 0)")
+            execSQL("INSERT INTO playlist_stream_join (playlist_id, stream_id, join_index) VALUES (2, 2, 4)")
+            execSQL("INSERT INTO playlist_stream_join (playlist_id, stream_id, join_index) VALUES (2, 5, 7)")
+            close()
+        }
+
+        val db = testHelper.runMigrationsAndValidate(
+            AppDatabase.DATABASE_NAME,
+            Migrations.DB_VER_10,
+            true,
+            Migrations.MIGRATION_9_10
+        )
+
+        // Only service 0 data is left
+        assertEquals(listOf(1L, 3L, 5L), queryLongs(db, "SELECT uid FROM streams ORDER BY uid"))
+        assertEquals(listOf(1L), queryLongs(db, "SELECT uid FROM subscriptions"))
+        assertEquals(listOf(1L), queryLongs(db, "SELECT uid FROM remote_playlists"))
+        assertEquals(1, queryLongs(db, "SELECT id FROM search_history WHERE service_id = 0").size)
+        assertEquals(1, queryLongs(db, "SELECT id FROM search_history").size)
+        assertEquals(listOf(1L), queryLongs(db, "SELECT stream_id FROM stream_history"))
+        assertEquals(listOf(1L), queryLongs(db, "SELECT stream_id FROM stream_state"))
+        assertEquals(listOf(1L), queryLongs(db, "SELECT subscription_id FROM feed_last_updated"))
+        assertEquals(
+            listOf(1L),
+            queryLongs(db, "SELECT subscription_id FROM feed_group_subscription_join")
+        )
+        assertEquals(listOf(1L), queryLongs(db, "SELECT stream_id FROM feed"))
+
+        // Playlists: all are kept, the thumbnail of the removed stream is reset
+        assertEquals(listOf(1L, 2L, 3L), queryLongs(db, "SELECT uid FROM playlists ORDER BY uid"))
+        assertEquals(
+            listOf(-1L, 3L, -1L),
+            queryLongs(db, "SELECT thumbnail_stream_id FROM playlists ORDER BY uid")
+        )
+        assertEquals(
+            listOf(0L, 1L, 0L),
+            queryLongs(db, "SELECT is_thumbnail_permanent FROM playlists ORDER BY uid")
+        )
+
+        // Playlist streams: the removed streams are gone and the indices have no gaps
+        assertEquals(
+            listOf(1L, 3L, 5L),
+            queryLongs(
+                db,
+                "SELECT stream_id FROM playlist_stream_join WHERE playlist_id = 1 " +
+                    "ORDER BY join_index"
+            )
+        )
+        assertEquals(
+            listOf(0L, 1L, 2L),
+            queryLongs(
+                db,
+                "SELECT join_index FROM playlist_stream_join WHERE playlist_id = 1 " +
+                    "ORDER BY join_index"
+            )
+        )
+        assertEquals(
+            listOf(3L, 5L),
+            queryLongs(
+                db,
+                "SELECT stream_id FROM playlist_stream_join WHERE playlist_id = 2 " +
+                    "ORDER BY join_index"
+            )
+        )
+        assertEquals(
+            listOf(0L, 1L),
+            queryLongs(
+                db,
+                "SELECT join_index FROM playlist_stream_join WHERE playlist_id = 2 " +
+                    "ORDER BY join_index"
+            )
+        )
+
+        // No dangling references are left
+        assertEquals(0, db.query("PRAGMA foreign_key_check").use { it.count })
+    }
+
+    private fun queryLongs(db: SupportSQLiteDatabase, sql: String): List<Long> {
+        return db.query(sql).use { cursor ->
+            buildList {
+                while (cursor.moveToNext()) {
+                    add(cursor.getLong(0))
+                }
+            }
+        }
     }
 
     private fun getMigratedDatabase(): AppDatabase {

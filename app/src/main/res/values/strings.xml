@@ -2,8 +2,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="main_bg_subtitle">Tap the magnifying glass to get started.</string>
     <string name="upload_date_text">Published on %1$s</string>
-    <string name="no_player_found">No stream player found. Install VLC?</string>
-    <string name="no_player_found_toast">No stream player found (you can install VLC to play it).</string>
     <string name="install">Install</string>
     <string name="cancel">Cancel</string>
     <string name="ok">OK</string>
@@ -11,7 +9,6 @@
     <string name="no">No</string>
     <string name="open_in_browser">Open in browser</string>
     <string name="mark_as_watched">Mark as watched</string>
-    <string name="open_in_popup_mode">Open in popup mode</string>
     <string name="open_with">Open with</string>
     <string name="share">Share</string>
     <string name="download">Download</string>
@@ -23,9 +20,6 @@
     <string name="did_you_mean">Did you mean \"%1$s\"?</string>
     <string name="search_showing_result_for">Showing results for: %s</string>
     <string name="share_dialog_title">Share with</string>
-    <string name="use_external_video_player_title">Use external video player</string>
-    <string name="use_external_video_player_summary">Removes audio at some resolutions</string>
-    <string name="use_external_audio_player_title">Use external audio player</string>
     <string name="subscribe_button_title">Subscribe</string>
     <string name="subscribed_button_title">Subscribed</string>
     <string name="unsubscribe">Unsubscribe</string>
@@ -38,7 +32,6 @@
     <string name="tab_bookmarks_short">Playlists</string>
     <string name="tab_choose">Choose Tab</string>
     <string name="controls_background_title">Background</string>
-    <string name="controls_popup_title">Popup</string>
     <string name="controls_add_to_playlist_title">Add To</string>
     <string name="download_path_title">Video download folder</string>
     <string name="download_path_summary">Downloaded video files are stored here</string>
@@ -47,13 +40,8 @@
     <string name="download_path_audio_summary">Downloaded audio files are stored here</string>
     <string name="download_path_audio_dialog_title">Choose download folder for audio files</string>
     <string name="default_resolution_title">Default resolution</string>
-    <string name="default_popup_resolution_title">Default popup resolution</string>
     <string name="show_higher_resolutions_title">Show higher resolutions</string>
     <string name="show_higher_resolutions_summary">Only some devices can play 2K/4K videos</string>
-    <string name="play_with_kodi_title">Play with Kodi</string>
-    <string name="kore_not_found">Install missing Kore app\?</string>
-    <string name="show_play_with_kodi_title">Show \"Play with Kodi\" option</string>
-    <string name="show_play_with_kodi_summary">Display an option to play a video via Kodi media center</string>
     <string name="crash_the_player">Crash the player</string>
     <string name="notification_scale_to_square_image_title">Crop thumbnail to 1:1 aspect ratio</string>
     <string name="notification_scale_to_square_image_summary">Crop the video thumbnail shown in the notification from 16:9 to 1:1 aspect ratio</string>
@@ -79,8 +67,6 @@
     <string name="light_theme_title">Light</string>
     <string name="dark_theme_title">Dark</string>
     <string name="black_theme_title">Black</string>
-    <string name="popup_remember_size_pos_title">Remember popup properties</string>
-    <string name="popup_remember_size_pos_summary">Remember last size and position of popup</string>
     <string name="use_inexact_seek_title">Use fast inexact seek</string>
     <string name="use_inexact_seek_summary">Inexact seek allows the player to seek to positions faster with reduced precision. Seeking for 5, 15 or 25 seconds doesn\'t work with this</string>
     <string name="seek_duration_title">Fast-forward/-rewind seek duration</string>
@@ -136,31 +122,21 @@
     <string name="start_main_player_fullscreen_summary">Do not start videos in the mini player, but turn to fullscreen mode directly, if auto rotation is locked. You can still access the mini player by exiting fullscreen</string>
     <string name="autoplay_title">Autoplay</string>
     <string name="show_hold_to_append_title">Show \"Hold to enqueue\" tip</string>
-    <string name="show_hold_to_append_summary">Show tip when pressing the background or the popup button in video \"Details:\"</string>
+    <string name="show_hold_to_append_summary">Show tip when pressing the background button in video \"Details:\"</string>
     <string name="unsupported_url">Unsupported URL</string>
     <string name="unsupported_url_dialog_message">Could not recognize the URL. Open with another app?</string>
     <string name="default_content_country_title">Default content country</string>
     <string name="content_language_title">Default content language</string>
-    <string name="peertube_instance_url_title">PeerTube instances</string>
-    <string name="peertube_instance_url_summary">Select your favorite PeerTube instances</string>
-    <string name="peertube_instance_url_help">Find the instances you like on %s</string>
-    <string name="peertube_instance_add_title">Add instance</string>
-    <string name="peertube_instance_add_help">Enter instance URL</string>
-    <string name="peertube_instance_add_fail">Could not validate instance</string>
-    <string name="peertube_instance_add_https_only">Only HTTPS URLs are supported</string>
-    <string name="peertube_instance_add_exists">Instance already exists</string>
     <string name="settings_category_player_title">Player</string>
     <string name="settings_category_player_behavior_title">Behavior</string>
     <string name="settings_category_video_audio_title">Video and audio</string>
     <string name="settings_category_history_title">History and cache</string>
     <string name="settings_category_appearance_title">Appearance</string>
     <string name="settings_category_debug_title">Debug</string>
-    <string name="settings_category_updates_title">Updates</string>
     <string name="settings_category_player_notification_title">Player notification</string>
     <string name="settings_category_player_notification_summary">Configure current playing stream notification</string>
     <string name="settings_category_backup_restore_title">Backup and restore</string>
     <string name="background_player_playing_toast">Playing in background</string>
-    <string name="popup_playing_toast">Playing in popup mode</string>
     <string name="content">Content</string>
     <string name="show_age_restricted_content_title">Show age restricted content</string>
     <string name="show_age_restricted_content_summary">Show content possibly unsuitable for children because it has an age limit (like 18+)</string>
@@ -178,9 +154,6 @@
     <string name="channels">Channels</string>
     <string name="playlists">Playlists</string>
     <string name="videos_string">Videos</string>
-    <string name="tracks">Tracks</string>
-    <string name="users">Users</string>
-    <string name="events">Events</string>
     <string name="songs">Songs</string>
     <string name="albums">Albums</string>
     <string name="artists">Artists</string>
@@ -196,8 +169,6 @@
     <string name="notifications">Notifications</string>
     <string name="notification_channel_name">NewPipe notification</string>
     <string name="notification_channel_description">Notifications for NewPipe\'s player</string>
-    <string name="app_update_notification_channel_name">App update notification</string>
-    <string name="app_update_notification_channel_description">Notifications for new NewPipe versions</string>
     <string name="hash_channel_name">Video hash notification</string>
     <string name="hash_channel_description">Notifications for video hashing progress</string>
     <string name="streams_notification_channel_name">New streams</string>
@@ -206,7 +177,6 @@
     <string name="error_report_channel_description">Notifications to report errors</string>
     <string name="unknown_content">[Unknown]</string>
     <string name="switch_to_background">Switch to Background</string>
-    <string name="switch_to_popup">Switch to Popup</string>
     <string name="switch_to_main">Switch to Main</string>
     <string name="import_data_title">Import database</string>
     <string name="export_data_title">Export database</string>
@@ -243,9 +213,6 @@
     <string name="player_stream_failure">Could not play this stream</string>
     <string name="player_unrecoverable_failure">Unrecoverable player error occurred</string>
     <string name="player_recoverable_failure">Recovering from player error</string>
-    <string name="external_player_unsupported_link_type">External players don\'t support these types of links</string>
-    <string name="video_streams_empty">No video streams found</string>
-    <string name="audio_streams_empty">No audio streams found</string>
     <string name="missing_file">File moved or deleted</string>
     <string name="invalid_directory">No such folder</string>
     <string name="invalid_source">No such file/content source</string>
@@ -256,17 +223,11 @@
     <string name="saved_tabs_invalid_json">Could not read saved tabs, so using default ones</string>
     <string name="restore_defaults">Restore defaults</string>
     <string name="restore_defaults_confirmation">Do you want to restore defaults?</string>
-    <string name="permission_display_over_apps">Give permission to display over other apps</string>
-    <string name="permission_display_over_apps_message">In order to use the Popup Player, please select %1$s in the following Android settings menu and enable %2$s.</string>
-    <string name="permission_display_over_apps_permission_name">“Allow display over other apps”</string>
     <!-- error activity -->
     <string name="error_report_notification_title">NewPipe encountered an error, tap to report</string>
     <string name="error_report_notification_toast">An error occurred, see the notification</string>
+    <string name="error_copy_details">Copy error details</string>
     <string name="sorry_string">Sorry, that should not have happened.</string>
-    <string name="error_report_button_text">Report via e-mail</string>
-    <string name="copy_for_github">Copy formatted report</string>
-    <string name="error_report_open_issue_button_text">Report on GitHub</string>
-    <string name="error_report_open_github_notice">Please check whether an issue discussing your crash already exists. When creating duplicate tickets, you take time from us which we could spend with fixing the actual bug.</string>
     <string name="error_snackbar_message">Sorry, something went wrong.</string>
     <string name="error_snackbar_action">Report</string>
     <string name="what_device_headline">Info:</string>
@@ -292,7 +253,6 @@
     <string name="short_thousand">%sK</string>
     <string name="short_million">%sM</string>
     <string name="short_billion">%sB</string>
-    <string name="drawer_header_description">Toggle service, currently selected:</string>
     <!--Zero don't get selected (in some languages) as it is not a "special case" for android-->
     <string name="no_subscribers">No subscribers</string>
     <plurals name="subscribers">
@@ -324,8 +284,6 @@
     </plurals>
     <string name="no_comments">No comments</string>
     <string name="comments_are_disabled">Comments are disabled</string>
-    <string name="no_streams">No streams</string>
-    <string name="no_live_streams">No live streams</string>
     <plurals name="new_streams">
         <item quantity="one">%s new stream</item>
         <item quantity="other">%s new streams</item>
@@ -352,7 +310,6 @@
     <string name="msg_failed_to_copy">Failed to copy to clipboard</string>
     <string name="no_available_dir">Please define a download folder later in settings</string>
     <string name="no_dir_yet">No download folder set yet, choose the default download folder now</string>
-    <string name="msg_popup_permission">This permission is needed to\nopen in popup mode</string>
     <string name="one_item_deleted">1 item deleted.</string>
     <!-- reCAPTCHA -->
     <string name="title_activity_recaptcha">reCAPTCHA challenge</string>
@@ -368,29 +325,7 @@
     <string name="charset_letters_and_digits">Letters and digits</string>
     <string name="charset_most_special_characters">Most special characters</string>
     <!-- About -->
-    <string name="title_activity_about">About NewPipe</string>
-    <string name="title_licenses">Third-party Licenses</string>
-    <string name="copyright">© %1$s by %2$s under %3$s</string>
-    <string name="tab_about">About \u0026 FAQ</string>
-    <string name="tab_licenses">Licenses</string>
-    <string name="app_description">Libre lightweight streaming on Android.</string>
-    <string name="contribution_title">Contribute</string>
-    <string name="contribution_encouragement">Whether you have ideas of; translation, design changes, code cleaning, or real heavy code changes—help is always welcome. The more is done the better it gets!</string>
-    <string name="view_on_github">View on GitHub</string>
-    <string name="donation_title">Donate</string>
-    <string name="donation_encouragement">NewPipe is developed by volunteers spending their free time bringing you the best user experience. Give back to help developers make NewPipe even better while they enjoy a cup of coffee.</string>
-    <string name="give_back">Give back</string>
-    <string name="website_title">Website</string>
-    <string name="website_encouragement">Visit the NewPipe Website for more info and news.</string>
-    <string name="privacy_policy_title">NewPipe\'s Privacy Policy</string>
-    <string name="privacy_policy_encouragement">The NewPipe project takes your privacy very seriously. Therefore, the app does not collect any data without your consent.\nNewPipe\'s privacy policy explains in detail what data is sent and stored when you send a crash report.</string>
-    <string name="read_privacy_policy">Read privacy policy</string>
-    <string name="app_license_title">NewPipe\'s License</string>
-    <string name="app_license">NewPipe is copyleft libre software: You can use, study, share, and improve it at will. Specifically you can redistribute and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</string>
-    <string name="read_full_license">Read license</string>
-    <string name="faq_title">Frequently asked questions</string>
-    <string name="faq_description">If you are having trouble using the app, be sure to check out these answers to common questions!</string>
-    <string name="faq">View on website</string>
+    <string name="tab_about">About</string>
     <!-- History -->
     <string name="title_activity_history">History</string>
     <string name="action_history">History</string>
@@ -426,7 +361,6 @@
     <string name="local">Local</string>
     <string name="recently_added">Recently added</string>
     <string name="most_liked">Most liked</string>
-    <string name="conferences">Conferences</string>
     <!-- Play Queue -->
     <string name="title_activity_play_queue">Play queue</string>
     <string name="play_queue_remove">Remove</string>
@@ -441,7 +375,6 @@
     <string name="enqueue_next_stream">Enqueue next</string>
     <string name="enqueued_next">Enqueued next</string>
     <string name="start_here_on_background">Start playing in the background</string>
-    <string name="start_here_on_popup">Start playing in a popup</string>
     <string name="loading_stream_details">Loading stream details…</string>
     <!-- Drawer -->
     <string name="drawer_open">Open Drawer</string>
@@ -451,7 +384,6 @@
     <string name="preferred_open_action_settings_summary">Default action when opening content — %s</string>
     <string name="video_player">Video player</string>
     <string name="background_player">Background player</string>
-    <string name="popup_player">Popup player</string>
     <string name="always_ask_open_action">Always ask</string>
     <string name="preferred_player_fetcher_notification_title">Getting info…</string>
     <string name="preferred_player_fetcher_notification_message">"Loading requested content"</string>
@@ -536,8 +468,6 @@
 \n5. Click on the \"Download\" button after it appears
 \n6. Click on IMPORT FILE below and select the downloaded .zip file
 \n7. [If the .zip import fails] Extract the .csv file (usually under \"YouTube and YouTube Music/subscriptions/subscriptions.csv\"), click on IMPORT FILE below and select the extracted csv file</string>
-    <string name="import_soundcloud_instructions">Import a SoundCloud profile by typing either the URL or your ID:\n\n1. Enable \"desktop mode\" in a web-browser (the site is not available for mobile devices)\n2. Go to this URL: %1$s\n3. Log in when asked\n4. Copy the profile URL you were redirected to.</string>
-    <string name="import_soundcloud_instructions_hint">yourID, soundcloud.com/yourid</string>
     <string name="import_network_expensive_warning">Keep in mind this operation can be network expensive.\n\nDo you want to continue?</string>
     <!-- Playback Parameters -->
     <string name="playback_speed_control">Playback Speed Controls</string>
@@ -550,10 +480,6 @@
     <string name="percent">Percent</string>
     <string name="semitone">Semitone</string>
     <!-- GDPR dialog -->
-    <string name="start_accept_privacy_policy">In order to comply with the European General Data Protection Regulation (GDPR), we hereby draw your attention to NewPipe\'s privacy policy. Please read it carefully.
-\nYou must accept it to send us the bug report.</string>
-    <string name="accept">Accept</string>
-    <string name="decline">Decline</string>
     <!-- Limit mobile data usage  -->
     <string name="limit_data_usage_none_description">No limit</string>
     <string name="limit_mobile_data_usage_title">Limit resolution when using mobile data</string>
@@ -578,20 +504,11 @@
     <string name="streams_notifications_interval_title">Checking frequency</string>
     <string name="streams_notifications_network_title">Required network connection</string>
     <string name="any_network">Any network</string>
-    <!-- Updates Settings -->
-    <string name="updates_setting_title">Updates</string>
-    <string name="updates_setting_description">Show a notification to prompt app update when a new version is available</string>
-    <string name="check_for_updates">Check for updates</string>
-    <string name="auto_update_check_description">NewPipe can automatically check for new versions from time to time and notify you once they are available.\nDo you want to enable this?</string>
-    <string name="manual_update_title" translatable="false">@string/check_for_updates</string>
-    <string name="manual_update_description">Manually check for new versions</string>
-
     <!-- Minimize to exit action -->
     <string name="minimize_on_exit_title">Minimize on app switch</string>
     <string name="minimize_on_exit_summary">Action when switching to other app from main video player — %s</string>
     <string name="minimize_on_exit_none_description">None</string>
     <string name="minimize_on_exit_background_description">Minimize to background player</string>
-    <string name="minimize_on_exit_popup_description">Minimize to popup player</string>
     <!-- Autoplay behavior -->
     <string name="autoplay_summary">Start playback automatically — %s</string>
     <string name="wifi_only">Only on Wi-Fi</string>
@@ -606,10 +523,6 @@
     <string name="high_quality_larger">High quality (larger)</string>
     <string name="low_quality_smaller">Low quality (smaller)</string>
     <string name="dont_show">Don\'t show</string>
-    <!-- App update notification -->
-    <string name="app_update_unavailable_toast">You are running the latest version of NewPipe</string>
-    <string name="app_update_available_notification_title">NewPipe update is available!</string>
-    <string name="app_update_available_notification_text">Tap to download %s</string>
     <string name="missions_header_finished">Finished</string>
     <string name="missions_header_pending">Pending</string>
     <string name="paused">paused</string>
@@ -618,7 +531,6 @@
     <string name="recovering">recovering</string>
     <string name="enqueue">Enqueue</string>
     <string name="permission_denied">Action denied by the system</string>
-    <string name="checking_updates_toast">Checking for updates…</string>
     <!-- download notifications -->
     <string name="download_failed">Download failed</string>
     <plurals name="download_finished_notification">
@@ -768,7 +680,6 @@
     <string name="no_appropriate_file_manager_message_android_10">No appropriate file manager was found for this action.
 \nPlease install a Storage Access Framework compatible file manager</string>
     <string name="georestricted_content">This content is not available in your country.</string>
-    <string name="soundcloud_go_plus_content">This is a SoundCloud Go+ track, at least in your country, so it cannot be streamed or downloaded by NewPipe.</string>
     <string name="private_content">This content is private, so it cannot be streamed or downloaded by NewPipe.</string>
     <string name="youtube_music_premium_content">This video is available only to YouTube Music Premium members, so it cannot be streamed or downloaded by NewPipe.</string>
     <string name="account_terminated">Account terminated</string>
@@ -818,11 +729,6 @@
     <string name="toggle_all">Toggle all</string>
     <string name="streams_not_yet_supported_removed">Streams which are not yet supported by the downloader are not shown</string>
     <string name="audio_track_present_in_video">An audio track should be already present in this stream</string>
-    <string name="selected_stream_external_player_not_supported">The selected stream is not supported by external players</string>
-    <string name="no_audio_streams_available_for_external_players">No audio streams are available for external players</string>
-    <string name="no_video_streams_available_for_external_players">No video streams are available for external players</string>
-    <string name="select_quality_external_players">Select quality for external players</string>
-    <string name="select_audio_track_external_players">Select audio track for external players</string>
     <string name="unknown_format">Unknown format</string>
     <string name="unknown_quality">Unknown quality</string>
     <string name="unknown_audio_track">Unknown</string>
@@ -842,13 +748,11 @@
     <string name="audio_track_type_descriptive">descriptive</string>
     <string name="audio_track_type_secondary">secondary</string>
     <string name="channel_tab_videos">Videos</string>
-    <string name="channel_tab_tracks">Tracks</string>
     <string name="channel_tab_shorts">Shorts</string>
     <string name="channel_tab_livestreams">Live</string>
     <string name="channel_tab_channels">Channels</string>
     <string name="channel_tab_playlists">Playlists</string>
     <string name="channel_tab_albums">Albums</string>
-    <string name="channel_tab_likes">Likes</string>
     <string name="channel_tab_podcasts">Podcasts</string>
     <string name="channel_tab_courses">Courses</string>
     <string name="channel_tab_about">About</string>
@@ -885,8 +789,6 @@
     <string name="show_more">Show more</string>
     <string name="show_less">Show less</string>
     <string name="import_settings_vulnerable_format">The settings in the export being imported use a vulnerable format that was deprecated since NewPipe 0.27.0. Make sure the export being imported is from a trusted source, and prefer using only exports obtained from NewPipe 0.27.0 or newer in the future. Support for importing settings in this vulnerable format will soon be removed completely, and then old versions of NewPipe will not be able to import settings of exports from new versions anymore.</string>
-    <string name="migration_info_6_7_title">SoundCloud Top 50 page removed</string>
-    <string name="migration_info_6_7_message">SoundCloud has discontinued the original Top 50 charts. The corresponding tab has been removed from your main page.</string>
     <string name="migration_info_7_8_title">YouTube combined trending removed</string>
     <string name="migration_info_7_8_message">YouTube has discontinued the combined trending page as of 21st July 2025. NewPipe replaced the default trending page with the trending livestreams.\n\nYou can also select different trending pages in \"Settings > Content > Content of main page\".</string>
     <string name="trending_gaming">Gaming trends</string>
@@ -899,10 +801,4 @@
     <string name="youtube_player_http_403">HTTP error 403 received from server while playing, likely caused by an IP ban or streaming URL deobfuscation issues</string>
     <string name="sign_in_confirm_not_bot_error">%1$s refused to provide data, asking for a login to confirm the requester is not a bot.\n\nYour IP might have been temporarily banned by %1$s, you can wait some time or switch to a different IP (for example by turning on/off a VPN, or by switching from WiFi to mobile data).\n\nPlease see <a href="%2$s">this FAQ entry</a> for more information.</string>
     <string name="unsupported_content_in_country">This content is not available for the currently selected content country.\n\nChange your selection from \"Settings > Content > Default content country\".</string>
-    <string name="kao_dialog_warning">In August 2025, Google announced that as of September 2026, installing apps will require developer verification for all Android apps on certified devices, including those installed outside of the Play Store. Since the developers of NewPipe do not agree to this requirement, NewPipe will no longer work on certified Android devices after that time.</string>
-    <string name="kao_dialog_more_info">Details</string>
-    <string name="kao_solution">Solution</string>
-    <string name="api23_requirement_dialog_title">NewPipe is dropping support for Android 5</string>
-    <string name="api23_requirement_dialog_message">Unfortunately NewPipe depends on a few libraries that dropped support for Android 5.0 and 5.1. The next NewPipe release will therefore only work on devices with Android 6 or higher, sadly. Read more in the blogpost.</string>
-    <string name="api23_requirement_dialog_blogpost">Blogpost</string>
 </resources>

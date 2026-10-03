@@ -8,7 +8,6 @@ import org.schabi.newpipe.database.playlist.model.PlaylistRemoteEntity;
 import org.schabi.newpipe.local.LocalItemBuilder;
 import org.schabi.newpipe.local.history.HistoryRecordManager;
 import org.schabi.newpipe.util.Localization;
-import org.schabi.newpipe.util.ServiceHelper;
 import org.schabi.newpipe.util.image.CoilHelper;
 
 import java.time.format.DateTimeFormatter;
@@ -38,10 +37,9 @@ public class RemotePlaylistItemHolder extends PlaylistItemHolder {
                 itemStreamCountView.getContext(), item.getStreamCount()));
         // Here is where the uploader name is set in the bookmarked playlists library
         if (!TextUtils.isEmpty(item.getUploader())) {
-            itemUploaderView.setText(Localization.concatenateStrings(item.getUploader(),
-                    ServiceHelper.getNameOfServiceById(item.getServiceId())));
+            itemUploaderView.setText(item.getUploader());
         } else {
-            itemUploaderView.setText(ServiceHelper.getNameOfServiceById(item.getServiceId()));
+            itemUploaderView.setText("");
         }
 
         CoilHelper.INSTANCE.loadPlaylistThumbnail(itemThumbnailView, item.getThumbnailUrl());

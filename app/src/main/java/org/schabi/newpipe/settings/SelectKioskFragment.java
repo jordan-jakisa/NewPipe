@@ -21,10 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.schabi.newpipe.R;
 import org.schabi.newpipe.error.ErrorUtil;
-import org.schabi.newpipe.extractor.NewPipe;
+import org.schabi.newpipe.extractor.ServiceList;
 import org.schabi.newpipe.extractor.StreamingService;
 import org.schabi.newpipe.util.KioskTranslator;
-import org.schabi.newpipe.util.ServiceHelper;
 import org.schabi.newpipe.util.ThemeHelper;
 
 import java.util.List;
@@ -89,14 +88,11 @@ public class SelectKioskFragment extends DialogFragment {
         private final List<Entry> kioskList = new Vector<>();
 
         SelectKioskAdapter() throws Exception {
-            for (final StreamingService service : NewPipe.getServices()) {
-                for (final String kioskId : service.getKioskList().getAvailableKiosks()) {
-                    final String name = String.format(getString(R.string.service_kiosk_string),
-                            service.getServiceInfo().getName(),
-                            KioskTranslator.getTranslatedKioskName(kioskId, getContext()));
-                    kioskList.add(new Entry(ServiceHelper.getIcon(service.getServiceId()),
-                            service.getServiceId(), kioskId, name));
-                }
+            final StreamingService service = ServiceList.YouTube;
+            for (final String kioskId : service.getKioskList().getAvailableKiosks()) {
+                final String name = KioskTranslator.getTranslatedKioskName(kioskId, getContext());
+                kioskList.add(new Entry(KioskTranslator.getKioskIcon(kioskId),
+                        service.getServiceId(), kioskId, name));
             }
         }
 

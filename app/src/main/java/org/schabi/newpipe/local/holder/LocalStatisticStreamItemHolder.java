@@ -16,7 +16,6 @@ import org.schabi.newpipe.local.LocalItemBuilder;
 import org.schabi.newpipe.local.history.HistoryRecordManager;
 import org.schabi.newpipe.util.DependentPreferenceHelper;
 import org.schabi.newpipe.util.Localization;
-import org.schabi.newpipe.util.ServiceHelper;
 import org.schabi.newpipe.util.image.CoilHelper;
 import org.schabi.newpipe.views.AnimatedProgressBar;
 
@@ -74,9 +73,7 @@ public class LocalStatisticStreamItemHolder extends LocalItemHolder {
         return Localization.concatenateStrings(
                 // watchCount
                 Localization.shortViewCount(itemBuilder.getContext(), entry.getWatchCount()),
-                dateTimeFormatter.format(entry.getLatestAccessDate()),
-                // serviceName
-                ServiceHelper.getNameOfServiceById(entry.getStreamEntity().getServiceId()));
+                dateTimeFormatter.format(entry.getLatestAccessDate()));
     }
 
     @Override

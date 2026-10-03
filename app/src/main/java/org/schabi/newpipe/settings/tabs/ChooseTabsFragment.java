@@ -1,7 +1,6 @@
 package org.schabi.newpipe.settings.tabs;
 
 import static org.schabi.newpipe.settings.tabs.Tab.typeFrom;
-import static org.schabi.newpipe.util.ServiceHelper.getNameOfServiceById;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -399,17 +398,15 @@ public class ChooseTabsFragment extends Fragment {
                     case DEFAULT_KIOSK:
                         return getString(R.string.default_kiosk_page_summary);
                     case KIOSK:
-                        return getNameOfServiceById(((Tab.KioskTab) tab).getKioskServiceId())
-                                + "/" + tab.getTabName(requireContext());
                     case CHANNEL:
-                        return getNameOfServiceById(((Tab.ChannelTab) tab).getChannelServiceId())
-                                + "/" + tab.getTabName(requireContext());
+                        return tab.getTabName(requireContext());
                     case PLAYLIST:
                         final int serviceId = ((Tab.PlaylistTab) tab).getPlaylistServiceId();
-                        final String serviceName = serviceId == -1
-                                ? getString(R.string.local)
-                                : getNameOfServiceById(serviceId);
-                        return serviceName + "/" + tab.getTabName(requireContext());
+                        if (serviceId == -1) {
+                            return getString(R.string.local)
+                                    + "/" + tab.getTabName(requireContext());
+                        }
+                        return tab.getTabName(requireContext());
                     case FEEDGROUP:
                         return getString(R.string.feed_groups_header_title)
                                 + "/" + ((Tab.FeedGroupTab) tab).getFeedGroupName();

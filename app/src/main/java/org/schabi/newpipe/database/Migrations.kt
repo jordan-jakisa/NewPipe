@@ -29,6 +29,7 @@ object Migrations {
     const val DB_VER_7 = 7
     const val DB_VER_8 = 8
     const val DB_VER_9 = 9
+    const val DB_VER_10 = 10
 
     private val TAG = Migrations::class.java.getName()
     private val isDebug = MainActivity.DEBUG
@@ -341,6 +342,81 @@ object Migrations {
             db.execSQL(
                 "CREATE UNIQUE INDEX `index_remote_playlists_service_id_url` " +
                     "ON `remote_playlists` (`service_id`, `url`)"
+            )
+
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+        }
+    }
+
+    /**
+     * Only YouTube (service id 0) is supported now, so remove all the data that belongs to any
+     * other service. Everything is deleted explicitly (instead of relying on the cascading
+     * foreign keys) so that the result does not depend on the foreign key pragma state.
+     */
+    val MIGRATION_9_10 = Migration(DB_VER_9, DB_VER_10) { db ->
+        try {
+            db.beginTransaction()
+
+            val otherSubscriptions = "SELECT `uid` FROM `subscriptions` WHERE `service_id` != 0"
+            val otherStreams = "SELECT `uid` FROM `streams` WHERE `service_id` != 0"
+
+            // Subscriptions and everything that references them.
+            db.execSQL("DELETE FROM `feed` WHERE `subscription_id` IN ($otherSubscriptions)")
+            db.execSQL(
+                "DELETE FROM `feed_group_subscription_join` " +
+                    "WHERE `subscription_id` IN ($otherSubscriptions)"
+            )
+            db.execSQL(
+                "DELETE FROM `feed_last_updated` WHERE `subscription_id` IN ($otherSubscriptions)"
+            )
+            db.execSQL("DELETE FROM `subscriptions` WHERE `service_id` != 0")
+
+            db.execSQL("DELETE FROM `remote_playlists` WHERE `service_id` != 0")
+            db.execSQL("DELETE FROM `search_history` WHERE `service_id` != 0")
+
+            // Local playlists whose thumbnail is a stream that is about to be deleted.
+            db.execSQL(
+                "UPDATE `playlists` SET `thumbnail_stream_id` = -1, `is_thumbnail_permanent` = 0 " +
+                    "WHERE `thumbnail_stream_id` IN ($otherStreams)"
+            )
+
+            // Streams and everything that references them.
+            db.execSQL("DELETE FROM `feed` WHERE `stream_id` IN ($otherStreams)")
+            db.execSQL("DELETE FROM `stream_history` WHERE `stream_id` IN ($otherStreams)")
+            db.execSQL("DELETE FROM `stream_state` WHERE `stream_id` IN ($otherStreams)")
+            db.execSQL("DELETE FROM `playlist_stream_join` WHERE `stream_id` IN ($otherStreams)")
+            db.execSQL("DELETE FROM `streams` WHERE `service_id` != 0")
+
+            // Removing streams from playlists left gaps in join_index: renumber it per playlist
+            // (starting at 0, keeping the old order) by rebuilding the table.
+            db.execSQL(
+                "CREATE TABLE `playlist_stream_join_tmp` " +
+                    "(`playlist_id` INTEGER NOT NULL, `stream_id` INTEGER NOT NULL, " +
+                    "`join_index` INTEGER NOT NULL, PRIMARY KEY(`playlist_id`, `join_index`), " +
+                    "FOREIGN KEY(`playlist_id`) REFERENCES `playlists`(`uid`) " +
+                    "ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED, " +
+                    "FOREIGN KEY(`stream_id`) REFERENCES `streams`(`uid`) " +
+                    "ON UPDATE CASCADE ON DELETE CASCADE DEFERRABLE INITIALLY DEFERRED)"
+            )
+            db.execSQL(
+                "INSERT INTO `playlist_stream_join_tmp` (`playlist_id`, `stream_id`, `join_index`) " +
+                    "SELECT a.`playlist_id`, a.`stream_id`, " +
+                    "(SELECT COUNT(*) FROM `playlist_stream_join` b " +
+                    "WHERE b.`playlist_id` = a.`playlist_id` AND b.`join_index` < a.`join_index`) " +
+                    "FROM `playlist_stream_join` a"
+            )
+            db.execSQL("DROP TABLE `playlist_stream_join`")
+            db.execSQL("ALTER TABLE `playlist_stream_join_tmp` RENAME TO `playlist_stream_join`")
+            db.execSQL(
+                "CREATE UNIQUE INDEX IF NOT EXISTS " +
+                    "`index_playlist_stream_join_playlist_id_join_index` " +
+                    "ON `playlist_stream_join` (`playlist_id`, `join_index`)"
+            )
+            db.execSQL(
+                "CREATE INDEX IF NOT EXISTS `index_playlist_stream_join_stream_id` " +
+                    "ON `playlist_stream_join` (`stream_id`)"
             )
 
             db.setTransactionSuccessful()

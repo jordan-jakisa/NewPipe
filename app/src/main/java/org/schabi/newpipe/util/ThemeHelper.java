@@ -38,9 +38,6 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import org.schabi.newpipe.R;
-import org.schabi.newpipe.extractor.NewPipe;
-import org.schabi.newpipe.extractor.StreamingService;
-import org.schabi.newpipe.extractor.exceptions.ExtractionException;
 import org.schabi.newpipe.info_list.ItemViewMode;
 
 public final class ThemeHelper {
@@ -48,8 +45,8 @@ public final class ThemeHelper {
     }
 
     /**
-     * Apply the selected theme (on NewPipe settings) in the context
-     * with the default style (see {@link #setTheme(Context, int)}).
+     * Apply the selected theme (on NewPipe settings) in the context,
+     * styled with the YouTube colors (the only supported service).
      *
      * ThemeHelper.setDayNightMode should be called before
      * the applying theme for the first time in session
@@ -57,22 +54,7 @@ public final class ThemeHelper {
      * @param context context that the theme will be applied
      */
     public static void setTheme(final Context context) {
-        setTheme(context, -1);
-    }
-
-    /**
-     * Apply the selected theme (on NewPipe settings) in the context,
-     * themed according with the styles defined for the service .
-     *
-     * ThemeHelper.setDayNightMode should be called before
-     * the applying theme for the first time in session
-     *
-     * @param context   context that the theme will be applied
-     * @param serviceId the theme will be styled to the service with this id,
-     *                  pass -1 to get the default style
-     */
-    public static void setTheme(final Context context, final int serviceId) {
-        context.setTheme(getThemeForService(context, serviceId));
+        context.setTheme(getThemeForService(context));
     }
 
     /**
@@ -114,15 +96,13 @@ public final class ThemeHelper {
     }
 
     /**
-     * Return the selected theme styled according to the serviceId.
+     * Return the selected theme styled with the YouTube colors.
      *
-     * @param context   context to get the selected theme
-     * @param serviceId return a theme styled to this service,
-     *                  -1 to get the default
+     * @param context context to get the selected theme
      * @return the selected style (styled)
      */
     @StyleRes
-    public static int getThemeForService(final Context context, final int serviceId) {
+    public static int getThemeForService(final Context context) {
         final Resources res = context.getResources();
         final String lightThemeKey = res.getString(R.string.light_theme_key);
         final String blackThemeKey = res.getString(R.string.black_theme_key);
@@ -152,31 +132,12 @@ public final class ThemeHelper {
             }
         }
 
-        if (serviceId <= -1) {
-            return baseTheme;
-        }
-
-        final StreamingService service;
-        try {
-            service = NewPipe.getService(serviceId);
-        } catch (final ExtractionException ignored) {
-            return baseTheme;
-        }
-
-        String themeName = "DarkTheme"; // default
         if (baseTheme == R.style.LightTheme) {
-            themeName = "LightTheme";
+            return R.style.LightTheme_YouTube;
         } else if (baseTheme == R.style.BlackTheme) {
-            themeName = "BlackTheme";
+            return R.style.BlackTheme_YouTube;
         }
-
-        themeName += "." + service.getServiceInfo().getName();
-        final int resourceId = getThemeOrDefault(themeName, baseTheme);
-
-        if (resourceId > 0) {
-            return resourceId;
-        }
-        return baseTheme;
+        return R.style.DarkTheme_YouTube;
     }
 
     @StyleRes
@@ -410,27 +371,5 @@ public final class ThemeHelper {
      */
     public static int getGridSpanCount(final Context context, final int minWidth) {
         return Math.max(1, context.getResources().getDisplayMetrics().widthPixels / minWidth);
-    }
-
-    @StyleRes
-    private static int getThemeOrDefault(final String name, @StyleRes final int baseTheme) {
-        return switch (name) {
-            case "LightTheme.YouTube" -> R.style.LightTheme_YouTube;
-            case "DarkTheme.YouTube" -> R.style.DarkTheme_YouTube;
-            case "BlackTheme.YouTube" -> R.style.BlackTheme_YouTube;
-            case "LightTheme.SoundCloud" -> R.style.LightTheme_SoundCloud;
-            case "DarkTheme.SoundCloud" -> R.style.DarkTheme_SoundCloud;
-            case "BlackTheme.SoundCloud" -> R.style.BlackTheme_SoundCloud;
-            case "LightTheme.PeerTube" -> R.style.LightTheme_PeerTube;
-            case "DarkTheme.PeerTube" -> R.style.DarkTheme_PeerTube;
-            case "BlackTheme.PeerTube" -> R.style.BlackTheme_PeerTube;
-            case "LightTheme.media.ccc.de" -> R.style.LightTheme_media_ccc_de;
-            case "DarkTheme.media.ccc.de" -> R.style.DarkTheme_media_ccc_de;
-            case "BlackTheme.media.ccc.de" -> R.style.BlackTheme_media_ccc_de;
-            case "LightTheme.Bandcamp" -> R.style.LightTheme_Bandcamp;
-            case "DarkTheme.Bandcamp" -> R.style.DarkTheme_Bandcamp;
-            case "BlackTheme.Bandcamp" -> R.style.BlackTheme_Bandcamp;
-            default -> baseTheme;
-        };
     }
 }

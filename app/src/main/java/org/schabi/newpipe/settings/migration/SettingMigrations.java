@@ -1,7 +1,6 @@
 package org.schabi.newpipe.settings.migration;
 
 import static org.schabi.newpipe.MainActivity.DEBUG;
-import static org.schabi.newpipe.extractor.ServiceList.SoundCloud;
 import static org.schabi.newpipe.extractor.ServiceList.YouTube;
 
 import android.content.Context;
@@ -163,25 +162,9 @@ public final class SettingMigrations {
     private static final Migration MIGRATION_6_7 = new Migration(6, 7) {
         @Override
         protected void migrate(@NonNull final Context context) {
-            // The SoundCloud Top 50 Kiosk was removed in the extractor,
-            // so we remove the corresponding tab if it exists.
-            final TabsManager tabsManager = TabsManager.getManager(context);
-            final List<Tab> tabs = tabsManager.getTabs();
-            final List<Tab> cleanedTabs = tabs.stream()
-                    .filter(tab -> !(tab instanceof Tab.KioskTab kioskTab
-                            && kioskTab.getKioskServiceId() == SoundCloud.getServiceId()
-                            && kioskTab.getKioskId().equals("Top 50")))
-                    .collect(Collectors.toUnmodifiableList());
-            if (tabs.size() != cleanedTabs.size()) {
-                tabsManager.saveTabs(cleanedTabs);
-                // create an AlertDialog to inform the user about the change
-                MigrationManager.addMigrationInfo(uiContext ->
-                        MigrationManager.createMigrationInfoDialog(
-                                uiContext,
-                                uiContext.getString(R.string.migration_info_6_7_title),
-                                uiContext.getString(R.string.migration_info_6_7_message))
-                                .show());
-            }
+            // Intentionally empty: this migration used to remove the SoundCloud Top 50 tab, which
+            // is gone together with SoundCloud support. The entry is kept so that the version
+            // numbers stay intact.
         }
     };
 
@@ -240,6 +223,62 @@ public final class SettingMigrations {
         }
     };
 
+    private static final Migration MIGRATION_9_10 = new Migration(9, 10) {
+        @Override
+        protected void migrate(@NonNull final Context context) {
+            // Only YouTube is supported now: drop the kiosk, channel and remote playlist tabs
+            // of any other service from the saved tabs.
+            final TabsManager tabsManager = TabsManager.getManager(context);
+            final List<Tab> tabs = tabsManager.getTabs();
+            final int youtubeId = YouTube.getServiceId();
+            final List<Tab> cleanedTabs = tabs.stream()
+                    .filter(tab -> {
+                        if (tab instanceof Tab.KioskTab kioskTab) {
+                            return kioskTab.getKioskServiceId() == youtubeId;
+                        } else if (tab instanceof Tab.ChannelTab channelTab) {
+                            return channelTab.getChannelServiceId() == youtubeId;
+                        } else if (tab instanceof Tab.PlaylistTab playlistTab) {
+                            // -1 is a local playlist
+                            return playlistTab.getPlaylistServiceId() == -1
+                                    || playlistTab.getPlaylistServiceId() == youtubeId;
+                        }
+                        return true;
+                    })
+                    .collect(Collectors.toUnmodifiableList());
+            if (tabs.size() != cleanedTabs.size()) {
+                tabsManager.saveTabs(cleanedTabs);
+            }
+
+            // Remove the keys of features that no longer exist (service selection, PeerTube
+            // instances and the update checker).
+            final SharedPreferences.Editor editor = sp.edit();
+            for (final String staleKey : new String[] {
+                    "service",
+                    "peertube_selected_instance",
+                    "peertube_instance_list",
+                    "update_check_consent_key",
+                    "update_app_key",
+                    "manual_update_key",
+                    "update_pref_screen_key",
+                    "update_expiry_key",
+            }) {
+                editor.remove(staleKey);
+            }
+
+            // Remove the SoundCloud only channel tabs (tracks and likes) from the saved choices
+            for (final String tabsKey : new String[] {"channel_tabs", "feed_fetch_channel_tabs"}) {
+                final Set<String> enabledTabs = sp.getStringSet(tabsKey, null);
+                if (enabledTabs != null) {
+                    final Set<String> cleanedEnabledTabs = new HashSet<>(enabledTabs);
+                    cleanedEnabledTabs.removeIf(value -> value.endsWith("_tracks")
+                            || value.endsWith("_likes"));
+                    editor.putStringSet(tabsKey, cleanedEnabledTabs);
+                }
+            }
+            editor.apply();
+        }
+    };
+
     /**
      * List of all implemented migrations.
      * <p>
@@ -256,12 +295,13 @@ public final class SettingMigrations {
             MIGRATION_6_7,
             MIGRATION_7_8,
             MIGRATION_8_9,
+            MIGRATION_9_10,
     };
 
     /**
      * Version number for preferences. Must be incremented every time a migration is necessary.
      */
-    private static final int VERSION = 9;
+    private static final int VERSION = 10;
 
 
     static void runMigrationsIfNeeded(@NonNull final Context context) {

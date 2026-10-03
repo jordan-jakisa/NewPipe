@@ -16,7 +16,6 @@ import org.schabi.newpipe.local.LocalItemBuilder;
 import org.schabi.newpipe.local.history.HistoryRecordManager;
 import org.schabi.newpipe.util.DependentPreferenceHelper;
 import org.schabi.newpipe.util.Localization;
-import org.schabi.newpipe.util.ServiceHelper;
 import org.schabi.newpipe.util.image.CoilHelper;
 import org.schabi.newpipe.views.AnimatedProgressBar;
 
@@ -58,9 +57,7 @@ public class LocalPlaylistStreamItemHolder extends LocalItemHolder {
         final PlaylistStreamEntry item = (PlaylistStreamEntry) localItem;
 
         itemVideoTitleView.setText(item.getStreamEntity().getTitle());
-        itemAdditionalDetailsView.setText(Localization
-                .concatenateStrings(item.getStreamEntity().getUploader(),
-                        ServiceHelper.getNameOfServiceById(item.getStreamEntity().getServiceId())));
+        itemAdditionalDetailsView.setText(item.getStreamEntity().getUploader());
 
         if (item.getStreamEntity().getDuration() > 0) {
             itemDurationView.setText(Localization

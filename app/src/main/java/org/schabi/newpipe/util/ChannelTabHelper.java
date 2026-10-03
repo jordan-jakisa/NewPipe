@@ -23,8 +23,6 @@ public final class ChannelTabHelper {
     public static boolean isStreamsTab(final String tab) {
         switch (tab) {
             case ChannelTabs.VIDEOS:
-            case ChannelTabs.TRACKS:
-            case ChannelTabs.LIKES:
             case ChannelTabs.SHORTS:
             case ChannelTabs.LIVESTREAMS:
             case ChannelTabs.PODCASTS:
@@ -53,8 +51,6 @@ public final class ChannelTabHelper {
         switch (tab) {
             case ChannelTabs.VIDEOS:
                 return R.string.show_channel_tabs_videos;
-            case ChannelTabs.TRACKS:
-                return R.string.show_channel_tabs_tracks;
             case ChannelTabs.SHORTS:
                 return R.string.show_channel_tabs_shorts;
             case ChannelTabs.LIVESTREAMS:
@@ -65,8 +61,6 @@ public final class ChannelTabHelper {
                 return R.string.show_channel_tabs_playlists;
             case ChannelTabs.ALBUMS:
                 return R.string.show_channel_tabs_albums;
-            case ChannelTabs.LIKES:
-                return R.string.show_channel_tabs_likes;
             case ChannelTabs.PODCASTS:
                 return R.string.show_channel_tabs_podcasts;
             case ChannelTabs.COURSES:
@@ -81,14 +75,10 @@ public final class ChannelTabHelper {
         switch (tab) {
             case ChannelTabs.VIDEOS:
                 return R.string.fetch_channel_tabs_videos;
-            case ChannelTabs.TRACKS:
-                return R.string.fetch_channel_tabs_tracks;
             case ChannelTabs.SHORTS:
                 return R.string.fetch_channel_tabs_shorts;
             case ChannelTabs.LIVESTREAMS:
                 return R.string.fetch_channel_tabs_livestreams;
-            case ChannelTabs.LIKES:
-                return R.string.fetch_channel_tabs_likes;
             case ChannelTabs.PODCASTS:
                 return R.string.fetch_channel_tabs_podcasts;
             case ChannelTabs.COURSES:
@@ -103,8 +93,6 @@ public final class ChannelTabHelper {
         switch (tab) {
             case ChannelTabs.VIDEOS:
                 return R.string.channel_tab_videos;
-            case ChannelTabs.TRACKS:
-                return R.string.channel_tab_tracks;
             case ChannelTabs.SHORTS:
                 return R.string.channel_tab_shorts;
             case ChannelTabs.LIVESTREAMS:
@@ -115,8 +103,6 @@ public final class ChannelTabHelper {
                 return R.string.channel_tab_playlists;
             case ChannelTabs.ALBUMS:
                 return R.string.channel_tab_albums;
-            case ChannelTabs.LIKES:
-                return R.string.channel_tab_likes;
             case ChannelTabs.PODCASTS:
                 return R.string.channel_tab_podcasts;
             case ChannelTabs.COURSES:

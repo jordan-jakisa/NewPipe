@@ -3,24 +3,15 @@
     <!-- App versioning -->
     <string name="last_used_preferences_version">last_used_preferences_version</string>
 
-    <!-- Service -->
-    <string name="current_service_key">service</string>
-    <string name="default_service_value">@string/youtube</string>
-
     <string name="saved_tabs_key">saved_tabs_key</string>
 
     <!-- Key values -->
-    <string name="kao_last_checked_key">kao_last_checked</string>
-    <string name="api23_requirement_dialog_shown_key">api23_requirement_dialog_shown</string>
 
     <string name="download_path_video_key">download_path</string>
     <string name="download_path_audio_key">download_path_audio</string>
 
-    <string name="use_external_video_player_key">use_external_video_player</string>
-    <string name="use_external_audio_player_key">use_external_audio_player</string>
 
     <string name="resume_on_audio_focus_gain_key">resume_on_audio_focus_gain</string>
-    <string name="popup_remember_size_pos_key">popup_remember_size_pos_key</string>
     <string name="use_inexact_seek_key">use_inexact_seek_key</string>
     <string name="auto_queue_key">auto_queue_key</string>
     <string name="screen_brightness_key">screen_brightness_key</string>
@@ -28,9 +19,6 @@
     <string name="clear_queue_confirmation_key">clear_queue_confirmation_key</string>
     <string name="ignore_hardware_media_buttons_key">ignore_hardware_media_buttons_key</string>
 
-    <string name="popup_saved_width_key">popup_saved_width</string>
-    <string name="popup_saved_x_key">popup_saved_x</string>
-    <string name="popup_saved_y_key">popup_saved_y</string>
 
     <string name="seek_duration_key">seek_duration</string>
     <string name="seek_duration_default_value">10000</string>
@@ -75,16 +63,13 @@
     <string name="minimize_on_exit_value">@string/minimize_on_exit_background_key</string>
     <string name="minimize_on_exit_none_key">minimize_on_exit_none_key</string>
     <string name="minimize_on_exit_background_key">minimize_on_exit_background_key</string>
-    <string name="minimize_on_exit_popup_key">minimize_on_exit_popup_key</string>
     <string-array name="minimize_on_exit_action_key">
         <item>@string/minimize_on_exit_none_key</item>
         <item>@string/minimize_on_exit_background_key</item>
-        <item>@string/minimize_on_exit_popup_key</item>
     </string-array>
     <string-array name="minimize_on_exit_action_description">
         <item>@string/minimize_on_exit_none_description</item>
         <item>@string/minimize_on_exit_background_description</item>
-        <item>@string/minimize_on_exit_popup_description</item>
     </string-array>
 
     <string name="start_main_player_fullscreen_key">start_main_player_fullscreen_key</string>
@@ -123,8 +108,6 @@
     <string name="default_resolution_key">default_resolution</string>
     <string name="default_resolution_value">720p60</string>
     <string name="show_higher_resolutions_key">show_higher_resolutions</string>
-    <string name="default_popup_resolution_key">default_popup_resolution</string>
-    <string name="default_popup_resolution_value">480p</string>
     <string name="best_resolution_key">best_resolution</string>
 
     <string-array name="high_resolution_list_values">
@@ -290,38 +273,32 @@
     <!-- Content & History -->
     <string name="show_channel_tabs_key">channel_tabs</string>
     <string name="show_channel_tabs_videos">show_channel_tabs_videos</string>
-    <string name="show_channel_tabs_tracks">show_channel_tabs_tracks</string>
     <string name="show_channel_tabs_shorts">show_channel_tabs_shorts</string>
     <string name="show_channel_tabs_livestreams">show_channel_tabs_livestreams</string>
     <string name="show_channel_tabs_channels">show_channel_tabs_channels</string>
     <string name="show_channel_tabs_playlists">show_channel_tabs_playlists</string>
     <string name="show_channel_tabs_albums">show_channel_tabs_albums</string>
-    <string name="show_channel_tabs_likes">show_channel_tabs_likes</string>
     <string name="show_channel_tabs_podcasts">show_channel_tabs_podcasts</string>
     <string name="show_channel_tabs_courses">show_channel_tabs_courses</string>
     <string name="show_channel_tabs_about">show_channel_tabs_about</string>
     <string-array name="show_channel_tabs_value_list">
         <item>@string/show_channel_tabs_videos</item>
-        <item>@string/show_channel_tabs_tracks</item>
         <item>@string/show_channel_tabs_shorts</item>
         <item>@string/show_channel_tabs_livestreams</item>
         <item>@string/show_channel_tabs_channels</item>
         <item>@string/show_channel_tabs_playlists</item>
         <item>@string/show_channel_tabs_albums</item>
-        <item>@string/show_channel_tabs_likes</item>
         <item>@string/show_channel_tabs_podcasts</item>
         <item>@string/show_channel_tabs_courses</item>
         <item>@string/show_channel_tabs_about</item>
     </string-array>
     <string-array name="show_channel_tabs_description_list">
         <item>@string/channel_tab_videos</item>
-        <item>@string/channel_tab_tracks</item>
         <item>@string/channel_tab_shorts</item>
         <item>@string/channel_tab_livestreams</item>
         <item>@string/channel_tab_channels</item>
         <item>@string/channel_tab_playlists</item>
         <item>@string/channel_tab_albums</item>
-        <item>@string/channel_tab_likes</item>
         <item>@string/channel_tab_podcasts</item>
         <item>@string/channel_tab_courses</item>
         <item>@string/channel_tab_about</item>
@@ -338,7 +315,6 @@
         <item>@string/remote_search_suggestions</item>
     </string-array>
     <string name="playback_adjust_by_semitones_key">playback_adjust_by_semitones_key</string>
-    <string name="show_play_with_kodi_key">show_play_with_kodi</string>
     <string name="show_comments_key">show_comments</string>
     <string name="show_next_video_key">show_next_video</string>
     <string name="show_description_key">show_description</string>
@@ -346,9 +322,6 @@
     <string name="stream_info_selected_tab_key">stream_info_selected_tab</string>
     <string name="show_hold_to_append_key">show_hold_to_append</string>
     <string name="content_language_key">content_language</string>
-    <string name="peertube_instance_setup_key">peertube_instance_setup</string>
-    <string name="peertube_selected_instance_key">peertube_selected_instance</string>
-    <string name="peertube_instance_list_key">peertube_instance_list</string>
     <string name="content_country_key">content_country</string>
     <string name="show_age_restricted_content">show_age_restricted_content</string>
     <string name="youtube_restricted_mode_enabled">youtube_restricted_mode_enabled</string>
@@ -398,27 +371,21 @@
 
     <string name="feed_fetch_channel_tabs_key">feed_fetch_channel_tabs</string>
     <string name="fetch_channel_tabs_videos">fetch_channel_tabs_videos</string>
-    <string name="fetch_channel_tabs_tracks">fetch_channel_tabs_tracks</string>
     <string name="fetch_channel_tabs_shorts">fetch_channel_tabs_shorts</string>
     <string name="fetch_channel_tabs_livestreams">fetch_channel_tabs_livestreams</string>
-    <string name="fetch_channel_tabs_likes">fetch_channel_tabs_likes</string>
     <string name="fetch_channel_tabs_podcasts">fetch_channel_tabs_podcasts</string>
     <string name="fetch_channel_tabs_courses">fetch_channel_tabs_courses</string>
     <string-array name="feed_fetch_channel_tabs_value_list">
         <item>@string/fetch_channel_tabs_videos</item>
-        <item>@string/fetch_channel_tabs_tracks</item>
         <item>@string/fetch_channel_tabs_shorts</item>
         <item>@string/fetch_channel_tabs_livestreams</item>
-        <item>@string/fetch_channel_tabs_likes</item>
         <item>@string/fetch_channel_tabs_podcasts</item>
         <item>@string/fetch_channel_tabs_courses</item>
     </string-array>
     <string-array name="feed_fetch_channel_tabs_description_list">
         <item>@string/channel_tab_videos</item>
-        <item>@string/channel_tab_tracks</item>
         <item>@string/channel_tab_shorts</item>
         <item>@string/channel_tab_livestreams</item>
-        <item>@string/channel_tab_likes</item>
         <item>@string/channel_tab_podcasts</item>
         <item>@string/channel_tab_courses</item>
     </string-array>
@@ -492,7 +459,6 @@
     <string name="show_info_key">show_info</string>
     <string name="video_player_key">video_player</string>
     <string name="background_player_key">background_player</string>
-    <string name="popup_player_key">popup_player</string>
     <string name="download_key">download</string>
     <string name="add_to_playlist_key">add_to_playlist</string>
     <string name="enqueue_key">enqueue</string>
@@ -502,7 +468,6 @@
         <item>@string/show_info</item>
         <item>@string/video_player</item>
         <item>@string/background_player</item>
-        <item>@string/popup_player</item>
         <item>@string/download</item>
         <item>@string/add_to_playlist</item>
         <item>@string/enqueue_stream</item>
@@ -512,7 +477,6 @@
         <item>@string/show_info_key</item>
         <item>@string/video_player_key</item>
         <item>@string/background_player_key</item>
-        <item>@string/popup_player_key</item>
         <item>@string/download_key</item>
         <item>@string/add_to_playlist_key</item>
         <item>@string/always_ask_open_action_key</item>
@@ -520,10 +484,6 @@
     </string-array>
 
     <!-- Updates -->
-    <string name="update_check_consent_key">update_check_consent_key</string>
-    <string name="update_app_key">update_app_key</string>
-    <string name="manual_update_key">manual_update_key</string>
-    <string name="update_pref_screen_key">update_pref_screen_key</string>
     <string name="update_expiry_key">update_expiry_key</string>
 
     <!-- Localizations   -->

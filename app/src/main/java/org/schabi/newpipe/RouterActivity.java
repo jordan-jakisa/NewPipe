@@ -316,32 +316,16 @@ public class RouterActivity extends AppCompatActivity {
         if (choiceChecker.isAvailableAndSelected(
                 R.string.video_player_key,
                 R.string.background_player_key,
-                R.string.popup_player_key,
                 R.string.enqueue_key)) {
 
             final String selectedChoice = choiceChecker.getSelectedChoiceKey();
 
-            final boolean isExtVideoEnabled = preferences.getBoolean(
-                    getString(R.string.use_external_video_player_key), false);
-            final boolean isExtAudioEnabled = preferences.getBoolean(
-                    getString(R.string.use_external_audio_player_key), false);
             final boolean isVideoPlayerSelected =
-                    selectedChoice.equals(getString(R.string.video_player_key))
-                            || selectedChoice.equals(getString(R.string.popup_player_key));
+                    selectedChoice.equals(getString(R.string.video_player_key));
             final boolean isAudioPlayerSelected =
                     selectedChoice.equals(getString(R.string.background_player_key));
             final boolean isEnqueueSelected =
                     selectedChoice.equals(getString(R.string.enqueue_key));
-
-            if (currentLinkType != LinkType.STREAM
-                    && ((isExtAudioEnabled && isAudioPlayerSelected)
-                    || (isExtVideoEnabled && isVideoPlayerSelected))
-            ) {
-                Toast.makeText(this, R.string.external_player_unsupported_link_type,
-                        Toast.LENGTH_LONG).show();
-                handleChoice(getString(R.string.show_info_key));
-                return;
-            }
 
             final var capabilities = currentService.getServiceInfo().getMediaCapabilities();
 
@@ -520,9 +504,6 @@ public class RouterActivity extends AppCompatActivity {
         final AdapterChoiceItem backgroundPlayer = new AdapterChoiceItem(
                 getString(R.string.background_player_key), getString(R.string.background_player),
                 R.drawable.ic_headset);
-        final AdapterChoiceItem popupPlayer = new AdapterChoiceItem(
-                getString(R.string.popup_player_key), getString(R.string.popup_player),
-                R.drawable.ic_picture_in_picture);
 
         final List<AdapterChoiceItem> returnedItems = new ArrayList<>();
         returnedItems.add(showInfo); // Always present
@@ -532,7 +513,6 @@ public class RouterActivity extends AppCompatActivity {
         if (linkType == LinkType.STREAM || linkType == LinkType.PLAYLIST) {
             if (capabilities.contains(VIDEO)) {
                 returnedItems.add(videoPlayer);
-                returnedItems.add(popupPlayer);
             }
             if (capabilities.contains(AUDIO)) {
                 returnedItems.add(backgroundPlayer);
@@ -562,18 +542,10 @@ public class RouterActivity extends AppCompatActivity {
         } else {
             // LinkType.NONE is never present because it's filtered out before
             // channels and playlist can be played as they contain a list of videos
-            final SharedPreferences preferences = PreferenceManager
-                    .getDefaultSharedPreferences(this);
-            final boolean isExtVideoEnabled = preferences.getBoolean(
-                    getString(R.string.use_external_video_player_key), false);
-            final boolean isExtAudioEnabled = preferences.getBoolean(
-                    getString(R.string.use_external_audio_player_key), false);
-
-            if (capabilities.contains(VIDEO) && !isExtVideoEnabled) {
+            if (capabilities.contains(VIDEO)) {
                 returnedItems.add(videoPlayer);
-                returnedItems.add(popupPlayer);
             }
-            if (capabilities.contains(AUDIO) && !isExtAudioEnabled) {
+            if (capabilities.contains(AUDIO)) {
                 returnedItems.add(backgroundPlayer);
             }
         }
@@ -614,12 +586,6 @@ public class RouterActivity extends AppCompatActivity {
                     .putString(getString(
                             R.string.preferred_open_action_last_selected_key), selectedChoiceKey)
                     .apply();
-        }
-
-        if (selectedChoiceKey.equals(getString(R.string.popup_player_key))
-                && !PermissionHelper.isPopupEnabledElseAsk(this)) {
-            finish();
-            return;
         }
 
         if (selectedChoiceKey.equals(getString(R.string.download_key))) {
@@ -673,13 +639,6 @@ public class RouterActivity extends AppCompatActivity {
 
         // ...Autoplay is enabled
         if (!PlayerHelper.isAutoplayAllowedByUser(getThemeWrapperContext())) {
-            return false;
-        }
-
-        final boolean isExtVideoEnabled = PreferenceManager.getDefaultSharedPreferences(this)
-                .getBoolean(getString(R.string.use_external_video_player_key), false);
-        // ...it's not done via an external player
-        if (isExtVideoEnabled) {
             return false;
         }
 
@@ -988,24 +947,9 @@ public class RouterActivity extends AppCompatActivity {
             return info -> {
                 final String videoPlayerKey = getString(R.string.video_player_key);
                 final String backgroundPlayerKey = getString(R.string.background_player_key);
-                final String popupPlayerKey = getString(R.string.popup_player_key);
-
-                final SharedPreferences preferences = PreferenceManager
-                        .getDefaultSharedPreferences(this);
-                final boolean isExtVideoEnabled = preferences.getBoolean(
-                        getString(R.string.use_external_video_player_key), false);
-                final boolean isExtAudioEnabled = preferences.getBoolean(
-                        getString(R.string.use_external_audio_player_key), false);
 
                 final PlayQueue playQueue;
                 if (info instanceof StreamInfo) {
-                    if (choice.playerChoice.equals(backgroundPlayerKey) && isExtAudioEnabled) {
-                        NavigationHelper.playOnExternalAudioPlayer(this, (StreamInfo) info);
-                        return;
-                    } else if (choice.playerChoice.equals(videoPlayerKey) && isExtVideoEnabled) {
-                        NavigationHelper.playOnExternalVideoPlayer(this, (StreamInfo) info);
-                        return;
-                    }
                     playQueue = new SinglePlayQueue((StreamInfo) info);
                 } else if (info instanceof ChannelInfo) {
                     final Optional<ListLinkHandler> playableTab = ((ChannelInfo) info).getTabs()
@@ -1028,8 +972,6 @@ public class RouterActivity extends AppCompatActivity {
                     NavigationHelper.playOnMainPlayer(this, playQueue, false);
                 } else if (choice.playerChoice.equals(backgroundPlayerKey)) {
                     NavigationHelper.playOnBackgroundPlayer(this, playQueue, true);
-                } else if (choice.playerChoice.equals(popupPlayerKey)) {
-                    NavigationHelper.playOnPopupPlayer(this, playQueue, true);
                 } else if (choice.playerChoice.equals(getString(R.string.enqueue_key))) {
                     NavigationHelper.enqueueOnPlayer(this, playQueue);
                 }

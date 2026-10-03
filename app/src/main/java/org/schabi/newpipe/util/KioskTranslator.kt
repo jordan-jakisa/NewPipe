@@ -19,7 +19,6 @@ object KioskTranslator {
             "Local" -> context.getString(R.string.local)
             "Recently added" -> context.getString(R.string.recently_added)
             "Most liked" -> context.getString(R.string.most_liked)
-            "conferences" -> context.getString(R.string.conferences)
             "recent" -> context.getString(R.string.recent)
             "live" -> context.getString(R.string.duration_live)
             "Featured" -> context.getString(R.string.featured)
@@ -35,7 +34,7 @@ object KioskTranslator {
     @JvmStatic
     fun getKioskIcon(kioskId: String): Int {
         return when (kioskId) {
-            "Trending", "Top 50", "New & hot", "conferences" -> R.drawable.ic_whatshot
+            "Trending", "Top 50", "New & hot" -> R.drawable.ic_whatshot
             "Local" -> R.drawable.ic_home
             "Recently added", "recent" -> R.drawable.ic_add_circle_outline
             "Most liked" -> R.drawable.ic_thumb_up
