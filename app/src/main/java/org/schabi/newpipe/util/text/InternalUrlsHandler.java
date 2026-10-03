@@ -26,9 +26,9 @@ public final class InternalUrlsHandler {
      * Handle a YouTube timestamp description URL in NewPipe.
      * <p>
      * This method will check if the provided url is a YouTube timestamp description URL ({@code
-     * https://www.youtube.com/watch?v=}video_id{@code &t=}time_in_seconds). If yes, the popup
-     * player will be opened when the user will click on the timestamp in the video description,
-     * at the time and for the video indicated in the timestamp.
+     * https://www.youtube.com/watch?v=}video_id{@code &t=}time_in_seconds). If yes, the video will
+     * be played when the user will click on the timestamp in the video description, at the time
+     * and for the video indicated in the timestamp.
      *
      * @param context     the context to use
      * @param url         the URL to check if it can be handled
@@ -61,7 +61,7 @@ public final class InternalUrlsHandler {
         }
 
         if (linkType == StreamingService.LinkType.STREAM && seconds != -1) {
-            return playOnPopup(context, matchedUrl, service, seconds);
+            return playAtTimestamp(context, matchedUrl, service, seconds);
         } else {
             NavigationHelper.openRouterActivity(context, matchedUrl);
             return true;
@@ -69,18 +69,18 @@ public final class InternalUrlsHandler {
     }
 
     /**
-     * Play a content in the floating player.
+     * Play a content in the current player, starting at the given timestamp.
      *
      * @param context     the context to be used
      * @param url         the URL of the content
      * @param service     the service of the content
-     * @param seconds     the position in seconds at which the floating player will start
+     * @param seconds     the position in seconds at which the player will start
      * @return true if the playback of the content has successfully started or false if not
      */
-    public static boolean playOnPopup(final Context context,
-                                      final String url,
-                                      @NonNull final StreamingService service,
-                                      final int seconds) {
+    public static boolean playAtTimestamp(final Context context,
+                                          final String url,
+                                          @NonNull final StreamingService service,
+                                          final int seconds) {
         final LinkHandlerFactory factory = service.getStreamLHFactory();
         final String cleanUrl;
 

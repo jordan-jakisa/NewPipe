@@ -6,7 +6,6 @@ import static org.schabi.newpipe.util.SparseItemUtil.fetchStreamInfoAndSaveToDat
 import static org.schabi.newpipe.util.SparseItemUtil.fetchUploaderUrlIfSparse;
 
 import android.content.Context;
-import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -21,7 +20,6 @@ import org.schabi.newpipe.local.dialog.PlaylistAppendDialog;
 import org.schabi.newpipe.local.dialog.PlaylistDialog;
 import org.schabi.newpipe.local.history.HistoryRecordManager;
 import org.schabi.newpipe.util.NavigationHelper;
-import org.schabi.newpipe.util.external_communication.KoreUtils;
 import org.schabi.newpipe.util.external_communication.ShareUtils;
 
 import java.util.List;
@@ -75,12 +73,6 @@ public enum StreamDialogDefaultEntry {
                 NavigationHelper.playOnBackgroundPlayer(ctx, singlePlayQueue, true));
     }),
 
-    START_HERE_ON_POPUP(R.string.start_here_on_popup, (fragment, item) -> {
-            final Context ctx = fragment.requireContext().getApplicationContext();
-            fetchItemInfoIfSparse(ctx, item, singlePlayQueue ->
-                NavigationHelper.playOnPopupPlayer(ctx, singlePlayQueue, true));
-    }),
-
     SET_AS_PLAYLIST_THUMBNAIL(R.string.set_as_playlist_thumbnail, (fragment, item) -> {
         throw new UnsupportedOperationException("This needs to be implemented manually "
                 + "by using InfoItemDialog.Builder.setAction()");
@@ -107,9 +99,6 @@ public enum StreamDialogDefaultEntry {
                 )
         )
     ),
-
-    PLAY_WITH_KODI(R.string.play_with_kodi_title, (fragment, item) ->
-            KoreUtils.playWithKore(fragment.requireContext(), Uri.parse(item.getUrl()))),
 
     SHARE(R.string.share, (fragment, item) ->
             ShareUtils.shareText(fragment.requireContext(), item.getName(), item.getUrl(),

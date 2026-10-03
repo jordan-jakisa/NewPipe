@@ -43,8 +43,6 @@ import org.schabi.newpipe.player.playqueue.PlayQueueItemHolder;
 import org.schabi.newpipe.player.playqueue.PlayQueueItemTouchCallback;
 import org.schabi.newpipe.util.Localization;
 import org.schabi.newpipe.util.NavigationHelper;
-import org.schabi.newpipe.util.PermissionHelper;
-import org.schabi.newpipe.util.ServiceHelper;
 import org.schabi.newpipe.util.ThemeHelper;
 
 import java.util.List;
@@ -84,7 +82,7 @@ public final class PlayQueueActivity extends AppCompatActivity
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ThemeHelper.setTheme(this, ServiceHelper.getSelectedServiceId(this));
+        ThemeHelper.setTheme(this);
 
         queueControlBinding = ActivityPlayerQueueControlBinding.inflate(getLayoutInflater());
         setContentView(queueControlBinding.getRoot());
@@ -117,8 +115,6 @@ public final class PlayQueueActivity extends AppCompatActivity
     @Override
     public boolean onPrepareOptionsMenu(final Menu m) {
         if (player != null) {
-            menu.findItem(R.id.action_switch_popup)
-                    .setVisible(!player.popupPlayerSelected());
             menu.findItem(R.id.action_switch_background)
                     .setVisible(!player.audioPlayerSelected());
         }
@@ -149,12 +145,6 @@ public final class PlayQueueActivity extends AppCompatActivity
         } else if (itemId == R.id.action_switch_main) {
             this.player.setRecovery();
             NavigationHelper.playOnMainPlayer(this, player.getPlayQueue(), true);
-            return true;
-        } else if (itemId == R.id.action_switch_popup) {
-            if (PermissionHelper.isPopupEnabledElseAsk(this)) {
-                this.player.setRecovery();
-                NavigationHelper.playOnPopupPlayer(this, player.getPlayQueue(), true);
-            }
             return true;
         } else if (itemId == R.id.action_switch_background) {
             this.player.setRecovery();

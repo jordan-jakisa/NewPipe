@@ -22,7 +22,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -81,7 +80,6 @@ import org.schabi.newpipe.player.seekbarpreview.SeekbarPreviewThumbnailHolder;
 import org.schabi.newpipe.util.DeviceUtils;
 import org.schabi.newpipe.util.Localization;
 import org.schabi.newpipe.util.NavigationHelper;
-import org.schabi.newpipe.util.external_communication.KoreUtils;
 import org.schabi.newpipe.util.external_communication.ShareUtils;
 import org.schabi.newpipe.views.player.PlayerFastSeekOverlay;
 
@@ -100,7 +98,7 @@ public abstract class VideoPlayerUi extends PlayerUi implements SeekBar.OnSeekBa
     public static final long DPAD_CONTROLS_HIDE_TIME = 7000;  // 7 Seconds
     public static final int SEEK_OVERLAY_DURATION = 450; // 450 millis
 
-    // other constants (TODO remove playback speeds and use normal menu for popup, too)
+    // other constants (TODO remove playback speeds and use normal menu, too)
     private static final float[] PLAYBACK_SPEEDS = {0.5f, 0.75f, 1.0f, 1.25f, 1.5f, 1.75f, 2.0f};
 
     private enum PlayButtonAction {
@@ -237,7 +235,6 @@ public abstract class VideoPlayerUi extends PlayerUi implements SeekBar.OnSeekBa
             NavigationHelper.playOnMainPlayer(context,
                     Objects.requireNonNull(player.getPlayQueue()), true);
         }));
-        binding.playWithKodi.setOnClickListener(makeOnClickListener(this::onPlayWithKodiClicked));
         binding.openInBrowser.setOnClickListener(makeOnClickListener(this::onOpenInBrowserClicked));
         binding.playerCloseButton.setOnClickListener(makeOnClickListener(() ->
                 // set package to this app's package to prevent the intent from being seen outside
@@ -301,7 +298,6 @@ public abstract class VideoPlayerUi extends PlayerUi implements SeekBar.OnSeekBa
         binding.share.setOnLongClickListener(null);
         binding.fullScreenButton.setOnClickListener(null);
         binding.screenRotationButton.setOnClickListener(null);
-        binding.playWithKodi.setOnClickListener(null);
         binding.openInBrowser.setOnClickListener(null);
         binding.playerCloseButton.setOnClickListener(null);
         binding.switchMute.setOnClickListener(null);
@@ -1536,13 +1532,6 @@ public abstract class VideoPlayerUi extends PlayerUi implements SeekBar.OnSeekBa
                     }
                 });
         showControls(DEFAULT_CONTROLS_DURATION);
-    }
-
-    private void onPlayWithKodiClicked() {
-        if (player.getCurrentMetadata() != null) {
-            player.pause();
-            KoreUtils.playWithKore(context, Uri.parse(player.getVideoUrl()));
-        }
     }
 
     private void onOpenInBrowserClicked() {

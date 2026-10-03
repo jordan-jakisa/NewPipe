@@ -9,7 +9,6 @@ import static org.schabi.newpipe.player.Player.STATE_COMPLETED;
 import static org.schabi.newpipe.player.Player.STATE_PAUSED;
 import static org.schabi.newpipe.player.helper.PlayerHelper.MinimizeMode.MINIMIZE_ON_EXIT_MODE_BACKGROUND;
 import static org.schabi.newpipe.player.helper.PlayerHelper.MinimizeMode.MINIMIZE_ON_EXIT_MODE_NONE;
-import static org.schabi.newpipe.player.helper.PlayerHelper.MinimizeMode.MINIMIZE_ON_EXIT_MODE_POPUP;
 import static org.schabi.newpipe.player.helper.PlayerHelper.getMinimizeOnExitAction;
 import static org.schabi.newpipe.player.helper.PlayerHelper.getTimeString;
 import static org.schabi.newpipe.player.helper.PlayerHelper.globalScreenOrientationLocked;
@@ -69,8 +68,6 @@ import org.schabi.newpipe.player.playqueue.PlayQueueItemBuilder;
 import org.schabi.newpipe.player.playqueue.PlayQueueItemHolder;
 import org.schabi.newpipe.player.playqueue.PlayQueueItemTouchCallback;
 import org.schabi.newpipe.util.DeviceUtils;
-import org.schabi.newpipe.util.NavigationHelper;
-import org.schabi.newpipe.util.external_communication.KoreUtils;
 import org.schabi.newpipe.util.external_communication.ShareUtils;
 
 import java.util.Collections;
@@ -274,7 +271,6 @@ public final class MainPlayerUi extends VideoPlayerUi implements View.OnLayoutCh
         super.setupElementsVisibility();
 
         closeItemsList();
-        showHideKodiButton();
         binding.fullScreenButton.setVisibility(View.GONE);
         setupScreenRotationButton();
         binding.resizeTextView.setVisibility(View.VISIBLE);
@@ -296,7 +292,6 @@ public final class MainPlayerUi extends VideoPlayerUi implements View.OnLayoutCh
 
         binding.metadataView.setVisibility(isFullscreen ? View.VISIBLE : View.GONE);
 
-        // Reset workaround changes from popup player
         binding.audioTrackTextView.setMaxWidth(Integer.MAX_VALUE);
     }
 
@@ -376,12 +371,6 @@ public final class MainPlayerUi extends VideoPlayerUi implements View.OnLayoutCh
             switch (getMinimizeOnExitAction(context)) {
                 case MINIMIZE_ON_EXIT_MODE_BACKGROUND:
                     player.useVideoAndSubtitles(false);
-                    break;
-                case MINIMIZE_ON_EXIT_MODE_POPUP:
-                    getParentActivity().ifPresent(activity -> {
-                        player.setRecovery();
-                        NavigationHelper.playOnPopupPlayer(activity, player.getPlayQueue(), true);
-                    });
                     break;
                 case MINIMIZE_ON_EXIT_MODE_NONE: default:
                     player.pause();
@@ -510,14 +499,6 @@ public final class MainPlayerUi extends VideoPlayerUi implements View.OnLayoutCh
             return Math.min(bitmap.getHeight(), screenHeight);
         }
     }
-
-    private void showHideKodiButton() {
-        // show kodi button if it supports the current service and it is enabled in settings
-        @Nullable final PlayQueue playQueue = player.getPlayQueue();
-        binding.playWithKodi.setVisibility(playQueue != null && playQueue.getItem() != null
-                && KoreUtils.shouldShowPlayWithKodi(context, playQueue.getItem().getServiceId())
-                ? View.VISIBLE : View.GONE);
-    }
     //endregion
 
 
@@ -584,7 +565,6 @@ public final class MainPlayerUi extends VideoPlayerUi implements View.OnLayoutCh
     @Override
     public void onMetadataChanged(@NonNull final StreamInfo info) {
         super.onMetadataChanged(info);
-        showHideKodiButton();
         if (areSegmentsVisible) {
             if (segmentAdapter.setItems(info)) {
                 final int adapterPosition = getNearestStreamSegmentPosition(

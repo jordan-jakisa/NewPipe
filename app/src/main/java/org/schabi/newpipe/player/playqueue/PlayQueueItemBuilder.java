@@ -6,7 +6,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import org.schabi.newpipe.util.Localization;
-import org.schabi.newpipe.util.ServiceHelper;
 import org.schabi.newpipe.util.image.CoilHelper;
 
 public class PlayQueueItemBuilder {
@@ -24,8 +23,7 @@ public class PlayQueueItemBuilder {
         if (!TextUtils.isEmpty(item.getTitle())) {
             holder.itemVideoTitleView.setText(item.getTitle());
         }
-        holder.itemAdditionalDetailsView.setText(Localization.concatenateStrings(item.getUploader(),
-                ServiceHelper.getNameOfServiceById(item.getServiceId())));
+        holder.itemAdditionalDetailsView.setText(item.getUploader());
 
         if (item.getDuration() > 0) {
             holder.itemDurationView.setText(Localization.getDurationString(item.getDuration()));

@@ -25,7 +25,6 @@ import org.schabi.newpipe.extractor.stream.StreamInfoItem;
 import org.schabi.newpipe.extractor.stream.StreamType;
 import org.schabi.newpipe.player.helper.PlayerHolder;
 import org.schabi.newpipe.util.StreamTypeUtil;
-import org.schabi.newpipe.util.external_communication.KoreUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +111,6 @@ public final class InfoItemDialog {
          *     | ENQUEUE                                    |
          *     | ENQUEUE_NEXT                               |
          *     | START_ON_BACKGROUND                        |
-         *     | START_ON_POPUP                             |
          *     + - - - - - - - - - - - - - - - - - - - - - -+
          *     | entries added manually with                |
          *     | addEntry() and addAllEntries()             |
@@ -120,7 +118,6 @@ public final class InfoItemDialog {
          *     | APPEND_PLAYLIST                            |
          *     | SHARE                                      |
          *     | OPEN_IN_BROWSER                            |
-         *     | PLAY_WITH_KODI                             |
          *     | MARK_AS_WATCHED                            |
          *     | SHOW_CHANNEL_DETAILS                       |
          *     + - - - - - - - - - - - - - - - - - - - - - -+
@@ -153,7 +150,6 @@ public final class InfoItemDialog {
          *     | ENQUEUE                                    |
          *     | ENQUEUE_NEXT                               |
          *     | START_ON_BACKGROUND                        |
-         *     | START_ON_POPUP                             |
          *     + - - - - - - - - - - - - - - - - - - - - - -+
          *     | entries added manually with                |
          *     | addEntry() and addAllEntries()             |
@@ -161,7 +157,6 @@ public final class InfoItemDialog {
          *     | APPEND_PLAYLIST                            |
          *     | SHARE                                      |
          *     | OPEN_IN_BROWSER                            |
-         *     | PLAY_WITH_KODI                             |
          *     | MARK_AS_WATCHED                            |
          *     | SHOW_CHANNEL_DETAILS                       |
          *     + - - - - - - - - - - - - - - - - - - - - - -+
@@ -265,15 +260,10 @@ public final class InfoItemDialog {
 
         /**
          * Adds the {@link StreamDialogDefaultEntry#START_HERE_ON_BACKGROUND}.
-         * If the {@link #infoItem} is not a pure audio (live) stream,
-         * {@link StreamDialogDefaultEntry#START_HERE_ON_POPUP} is added, too.
          * @return the current {@link Builder} instance
          */
         public Builder addStartHereEntries() {
             addEntry(StreamDialogDefaultEntry.START_HERE_ON_BACKGROUND);
-            if (!StreamTypeUtil.isAudio(infoItem.getStreamType())) {
-                addEntry(StreamDialogDefaultEntry.START_HERE_ON_POPUP);
-            }
             return this;
         }
 
@@ -288,17 +278,6 @@ public final class InfoItemDialog {
                     .getBoolean(context.getString(R.string.enable_watch_history_key), false);
             if (isWatchHistoryEnabled && !StreamTypeUtil.isLiveStream(infoItem.getStreamType())) {
                 addEntry(StreamDialogDefaultEntry.MARK_AS_WATCHED);
-            }
-            return this;
-        }
-
-        /**
-         * Adds the {@link StreamDialogDefaultEntry#PLAY_WITH_KODI} entry if it is needed.
-         * @return the current {@link Builder} instance
-         */
-        public Builder addPlayWithKodiEntryIfNeeded() {
-            if (KoreUtils.shouldShowPlayWithKodi(context, infoItem.getServiceId())) {
-                addEntry(StreamDialogDefaultEntry.PLAY_WITH_KODI);
             }
             return this;
         }
@@ -327,7 +306,6 @@ public final class InfoItemDialog {
                     StreamDialogDefaultEntry.SHARE,
                     StreamDialogDefaultEntry.OPEN_IN_BROWSER
             );
-            addPlayWithKodiEntryIfNeeded();
             addMarkAsWatchedEntryIfNeeded();
             addEntry(StreamDialogDefaultEntry.SHOW_CHANNEL_DETAILS);
             return this;

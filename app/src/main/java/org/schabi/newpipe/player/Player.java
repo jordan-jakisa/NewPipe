@@ -42,7 +42,6 @@ import static org.schabi.newpipe.player.notification.NotificationConstants.ACTIO
 import static org.schabi.newpipe.player.notification.NotificationConstants.ACTION_RECREATE_NOTIFICATION;
 import static org.schabi.newpipe.player.notification.NotificationConstants.ACTION_REPEAT;
 import static org.schabi.newpipe.player.notification.NotificationConstants.ACTION_SHUFFLE;
-import static org.schabi.newpipe.util.ListHelper.getPopupResolutionIndex;
 import static org.schabi.newpipe.util.ListHelper.getResolutionIndex;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -117,7 +116,6 @@ import org.schabi.newpipe.player.ui.BackgroundPlayerUi;
 import org.schabi.newpipe.player.ui.MainPlayerUi;
 import org.schabi.newpipe.player.ui.PlayerUi;
 import org.schabi.newpipe.player.ui.PlayerUiList;
-import org.schabi.newpipe.player.ui.PopupPlayerUi;
 import org.schabi.newpipe.player.ui.VideoPlayerUi;
 import org.schabi.newpipe.util.DependentPreferenceHelper;
 import org.schabi.newpipe.util.ExtractorHelper;
@@ -323,17 +321,13 @@ public final class Player implements PlaybackListener, Listener {
         return new VideoPlaybackResolver.QualityResolver() {
             @Override
             public int getDefaultResolutionIndex(final List<VideoStream> sortedVideos) {
-                return videoPlayerSelected()
-                        ? ListHelper.getDefaultResolutionIndex(context, sortedVideos)
-                        : ListHelper.getPopupDefaultResolutionIndex(context, sortedVideos);
+                return ListHelper.getDefaultResolutionIndex(context, sortedVideos);
             }
 
             @Override
             public int getOverrideResolutionIndex(final List<VideoStream> sortedVideos,
                                                   final String playbackQuality) {
-                return videoPlayerSelected()
-                        ? getResolutionIndex(context, sortedVideos, playbackQuality)
-                        : getPopupResolutionIndex(context, sortedVideos, playbackQuality);
+                return getResolutionIndex(context, sortedVideos, playbackQuality);
             }
         };
     }
@@ -445,7 +439,7 @@ public final class Player implements PlaybackListener, Listener {
                             // This will only show a snackbar if the passed context has a root view:
                             // otherwise it will resort to showing a notification, so we are safe
                             // here.
-                            final var info = new ErrorInfo(throwable, UserAction.PLAY_ON_POPUP,
+                            final var info = new ErrorInfo(throwable, UserAction.PLAY_STREAM,
                                     data.getUrl(), null, data.getUrl());
                             ErrorUtil.createNotification(context, info);
                         }));
@@ -468,7 +462,7 @@ public final class Player implements PlaybackListener, Listener {
          * TODO As seen in #7427 this does not work:
          * There are 3 situations when playback shouldn't be started from scratch (zero timestamp):
          * 1. User pressed on a timestamp link and the same video should be rewound to the timestamp
-         * 2. User changed a player from, for example. main to popup, or from audio to main, etc
+         * 2. User changed a player from, for example, main to audio, or from audio to main, etc
          * 3. User chose to resume a video based on a saved timestamp from history of played videos
          * In those cases time will be saved because re-init of the play queue is a not an instant
          *  task and requires network calls
@@ -565,8 +559,8 @@ public final class Player implements PlaybackListener, Listener {
 
     private void initUIsForCurrentPlayerType() {
         if ((UIs.get(MainPlayerUi.class).isPresent() && playerType == PlayerType.MAIN)
-                || (UIs.get(BackgroundPlayerUi.class).isPresent() && playerType == PlayerType.AUDIO)
-                || (UIs.get(PopupPlayerUi.class).isPresent() && playerType == PlayerType.POPUP)) {
+                || (UIs.get(BackgroundPlayerUi.class).isPresent()
+                && playerType == PlayerType.AUDIO)) {
             // correct UI already in place
             return;
         }
@@ -583,17 +577,11 @@ public final class Player implements PlaybackListener, Listener {
 
         switch (playerType) {
             case MAIN:
-                UIs.destroyAll(PopupPlayerUi.class);
                 UIs.destroyAll(BackgroundPlayerUi.class);
                 UIs.addAndPrepare(new MainPlayerUi(this, binding));
                 break;
-            case POPUP:
-                UIs.destroyAll(MainPlayerUi.class);
-                UIs.destroyAll(BackgroundPlayerUi.class);
-                UIs.addAndPrepare(new PopupPlayerUi(this, binding));
-                break;
             case AUDIO:
-                UIs.destroyAll(VideoPlayerUi.class); // destroys both MainPlayerUi and PopupPlayerUi
+                UIs.destroyAll(VideoPlayerUi.class); // destroys MainPlayerUi
                 UIs.addAndPrepare(new BackgroundPlayerUi(this));
                 break;
         }
@@ -2399,10 +2387,6 @@ public final class Player implements PlaybackListener, Listener {
 
     public boolean videoPlayerSelected() {
         return playerType == PlayerType.MAIN;
-    }
-
-    public boolean popupPlayerSelected() {
-        return playerType == PlayerType.POPUP;
     }
 
 

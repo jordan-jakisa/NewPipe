@@ -3,17 +3,14 @@ package org.schabi.newpipe.settings;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.format.DateUtils;
 import android.widget.Toast;
 
 import androidx.preference.ListPreference;
 
-import com.google.android.material.snackbar.Snackbar;
 
 import org.schabi.newpipe.R;
 import org.schabi.newpipe.util.ListHelper;
-import org.schabi.newpipe.util.PermissionHelper;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,23 +26,7 @@ public class VideoAudioSettingsFragment extends BasePreferenceFragment {
         updateResolutionOptions();
         listener = (sharedPreferences, key) -> {
 
-            // on M and above, if user chooses to minimise to popup player on exit
-            // and the app doesn't have display over other apps permission,
-            // show a snackbar to let the user give permission
-            if (getString(R.string.minimize_on_exit_key).equals(key)) {
-                final String newSetting = sharedPreferences.getString(key, null);
-                if (newSetting != null
-                        && newSetting.equals(getString(R.string.minimize_on_exit_popup_key))
-                        && !Settings.canDrawOverlays(getContext())) {
-
-                    Snackbar.make(getListView(), R.string.permission_display_over_apps,
-                            Snackbar.LENGTH_INDEFINITE)
-                            .setAction(R.string.settings, view ->
-                                    PermissionHelper.checkSystemAlertWindowPermission(getContext()))
-                            .show();
-
-                }
-            } else if (getString(R.string.use_inexact_seek_key).equals(key)) {
+            if (getString(R.string.use_inexact_seek_key).equals(key)) {
                 updateSeekOptions();
             } else if (getString(R.string.show_higher_resolutions_key).equals(key)) {
                 updateResolutionOptions();
@@ -54,7 +35,7 @@ public class VideoAudioSettingsFragment extends BasePreferenceFragment {
     }
 
     /**
-     * Update default resolution, default popup resolution & mobile data resolution options.
+     * Update default resolution & mobile data resolution options.
      * <br />
      * Show high resolutions when "Show higher resolution" option is enabled.
      * Set default resolution to "best resolution" when "Show higher resolution" option
@@ -90,16 +71,12 @@ public class VideoAudioSettingsFragment extends BasePreferenceFragment {
         // get resolution preferences
         final ListPreference defaultResolution = requirePreference(
                 R.string.default_resolution_key);
-        final ListPreference defaultPopupResolution = requirePreference(
-                R.string.default_popup_resolution_key);
         final ListPreference mobileDataResolution = requirePreference(
                 R.string.limit_mobile_data_usage_key);
 
         // update resolution preferences with new resolutions, entries & values for each
         defaultResolution.setEntries(resolutionListDescriptions.toArray(new String[0]));
         defaultResolution.setEntryValues(resolutionListValues.toArray(new String[0]));
-        defaultPopupResolution.setEntries(resolutionListDescriptions.toArray(new String[0]));
-        defaultPopupResolution.setEntryValues(resolutionListValues.toArray(new String[0]));
         mobileDataResolution.setEntries(
                 limitDataUsageResolutionDescriptions.toArray(new String[0]));
         mobileDataResolution.setEntryValues(limitDataUsageResolutionValues.toArray(new String[0]));
@@ -111,11 +88,6 @@ public class VideoAudioSettingsFragment extends BasePreferenceFragment {
                     R.array.high_resolution_list_values,
                     resources)) {
                 defaultResolution.setValueIndex(0);
-            }
-            if (ListHelper.isHighResolutionSelected(defaultPopupResolution.getValue(),
-                    R.array.high_resolution_list_values,
-                    resources)) {
-                defaultPopupResolution.setValueIndex(0);
             }
             if (ListHelper.isHighResolutionSelected(mobileDataResolution.getValue(),
                     R.array.high_resolution_limit_data_usage_values_list,

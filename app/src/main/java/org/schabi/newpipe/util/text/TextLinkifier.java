@@ -53,7 +53,7 @@ public final class TextLinkifier {
      * @param relatedInfoService if given, handle hashtags to search for the term in the correct
      *                           service
      * @param relatedStreamUrl   if given, used alongside {@code relatedInfoService} to handle
-     *                           timestamps to open the stream in the popup player at the specific
+     *                           timestamps to open the stream in the player at the specific
      *                           time
      * @param disposables        disposables created by the method are added here and their
      *                           lifecycle should be handled by the calling class
@@ -100,7 +100,7 @@ public final class TextLinkifier {
      * @param relatedInfoService if given, handle hashtags to search for the term in the correct
      *                           service
      * @param relatedStreamUrl   if given, used alongside {@code relatedInfoService} to handle
-     *                           timestamps to open the stream in the popup player at the specific
+     *                           timestamps to open the stream in the player at the specific
      *                           time
      * @param disposables        disposables created by the method are added here and their
      *                           lifecycle should be handled by the calling class
@@ -134,7 +134,7 @@ public final class TextLinkifier {
      * @param relatedInfoService if given, handle hashtags to search for the term in the correct
      *                           service
      * @param relatedStreamUrl   if given, used alongside {@code relatedInfoService} to handle
-     *                           timestamps to open the stream in the popup player at the specific
+     *                           timestamps to open the stream in the player at the specific
      *                           time
      * @param disposables        disposables created by the method are added here and their
      *                           lifecycle should be handled by the calling class
@@ -167,7 +167,7 @@ public final class TextLinkifier {
      * @param relatedInfoService if given, handle hashtags to search for the term in the correct
      *                           service
      * @param relatedStreamUrl   if given, used alongside {@code relatedInfoService} to handle
-     *                           timestamps to open the stream in the popup player at the specific
+     *                           timestamps to open the stream in the player at the specific
      *                           time
      * @param disposables        disposables created by the method are added here and their
      *                           lifecycle should be handled by the calling class
@@ -198,7 +198,7 @@ public final class TextLinkifier {
      *
      * <p>
      * This method will also add click listeners on timestamps in this description, which will play
-     * the content in the popup player at the time indicated in the timestamp, by using
+     * the content in the player at the time indicated in the timestamp, by using
      * {@link TextLinkifier#addClickListenersOnTimestamps(Context, SpannableStringBuilder,
      * StreamingService, String, CompositeDisposable)} method and click listeners on hashtags, by
      * using {@link TextLinkifier#addClickListenersOnHashtags(Context, SpannableStringBuilder,
@@ -216,7 +216,7 @@ public final class TextLinkifier {
      * @param relatedInfoService if given, handle hashtags to search for the term in the correct
      *                           service
      * @param relatedStreamUrl   if given, used alongside {@code relatedInfoService} to handle
-     *                           timestamps to open the stream in the popup player at the specific
+     *                           timestamps to open the stream in the player at the specific
      *                           time
      * @param disposables        disposables created by the method are added here and their
      *                           lifecycle should be handled by the calling class
@@ -314,12 +314,12 @@ public final class TextLinkifier {
     }
 
     /**
-     * Add click listeners which opens the popup player on timestamps in a plain text.
+     * Add click listeners which opens the player on timestamps in a plain text.
      *
      * <p>
      * This method finds all timestamps in the {@link SpannableStringBuilder} of the description
-     * using a regular expression, adds for each a {@link LongPressClickableSpan} which opens the
-     * popup player at the time indicated in the timestamps and copy the timestamp in clipboard
+     * using a regular expression, adds for each a {@link LongPressClickableSpan} which plays the
+     * stream at the time indicated in the timestamps and copy the timestamp in clipboard
      * when long-pressed.
      * </p>
      *
@@ -327,7 +327,7 @@ public final class TextLinkifier {
      * @param spannableDescription the {@link SpannableStringBuilder} with the text of the
      *                             content description
      * @param relatedInfoService   the service of the {@code relatedStreamUrl}
-     * @param relatedStreamUrl     what to open in the popup player when timestamps are clicked
+     * @param relatedStreamUrl     what to open in the player when timestamps are clicked
      * @param disposables          disposables created by the method are added here and their
      *                             lifecycle should be handled by the calling class
      */

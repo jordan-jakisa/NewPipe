@@ -41,10 +41,6 @@ object PlayButtonHelper {
             NavigationHelper.playOnMainPlayer(activity, fragment.getPlayQueue())
             showHoldToAppendToastIfNeeded(activity)
         }
-        playlistControlBinding.playlistCtrlPlayPopupButton.setOnClickListener {
-            NavigationHelper.playOnPopupPlayer(activity, fragment.getPlayQueue(), false)
-            showHoldToAppendToastIfNeeded(activity)
-        }
         playlistControlBinding.playlistCtrlPlayBgButton.setOnClickListener {
             NavigationHelper.playOnBackgroundPlayer(activity, fragment.getPlayQueue(), false)
             showHoldToAppendToastIfNeeded(activity)
@@ -53,10 +49,6 @@ object PlayButtonHelper {
         // long click listener
         playlistControlBinding.playlistCtrlPlayAllButton.setOnLongClickListener {
             NavigationHelper.enqueueOnPlayer(activity, fragment.getPlayQueue(), PlayerType.MAIN)
-            true
-        }
-        playlistControlBinding.playlistCtrlPlayPopupButton.setOnLongClickListener {
-            NavigationHelper.enqueueOnPlayer(activity, fragment.getPlayQueue(), PlayerType.POPUP)
             true
         }
         playlistControlBinding.playlistCtrlPlayBgButton.setOnLongClickListener {

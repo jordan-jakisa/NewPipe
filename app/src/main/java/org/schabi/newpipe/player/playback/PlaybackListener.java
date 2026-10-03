@@ -58,7 +58,7 @@ public interface PlaybackListener {
 
     /**
      * Requests the listener to resolve a stream info into a media source
-     * according to the listener's implementation (background, popup or main video player).
+     * according to the listener's implementation (background or main video player).
      * <p>
      * May be called at any time.
      * </p>

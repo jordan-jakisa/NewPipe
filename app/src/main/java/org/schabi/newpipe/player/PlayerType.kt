@@ -7,6 +7,5 @@ package org.schabi.newpipe.player
 
 enum class PlayerType {
     MAIN,
-    AUDIO,
-    POPUP
+    AUDIO
 }

@@ -98,32 +98,6 @@ public final class ListHelper {
         return getDefaultResolutionWithDefaultFormat(context, defaultResolution, videoStreams);
     }
 
-    /**
-     * @param context      Android app context
-     * @param videoStreams list of the video streams to check
-     * @return index of the video stream with the default index
-     * @see #getDefaultResolutionIndex(String, String, MediaFormat, List)
-     */
-    public static int getPopupDefaultResolutionIndex(final Context context,
-                                                     final List<VideoStream> videoStreams) {
-        final String defaultResolution = computeDefaultResolution(context,
-                R.string.default_popup_resolution_key, R.string.default_popup_resolution_value);
-        return getDefaultResolutionWithDefaultFormat(context, defaultResolution, videoStreams);
-    }
-
-    /**
-     * @param context           Android app context
-     * @param videoStreams      list of the video streams to check
-     * @param defaultResolution the default resolution to look for
-     * @return index of the video stream with the default index
-     * @see #getDefaultResolutionIndex(String, String, MediaFormat, List)
-     */
-    public static int getPopupResolutionIndex(final Context context,
-                                              final List<VideoStream> videoStreams,
-                                              final String defaultResolution) {
-        return getDefaultResolutionWithDefaultFormat(context, defaultResolution, videoStreams);
-    }
-
     public static int getDefaultAudioFormat(final Context context,
                                             final List<AudioStream> audioStreams) {
         return getAudioIndexByHighestRank(audioStreams,

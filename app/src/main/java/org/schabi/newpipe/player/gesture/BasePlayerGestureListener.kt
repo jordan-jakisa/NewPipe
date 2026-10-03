@@ -108,7 +108,7 @@ abstract class BasePlayerGestureListener(
      * @return true if `super.onDown(e)` should be called, false otherwise
      */
     open fun onDownNotDoubleTapping(e: MotionEvent): Boolean {
-        return false // do not call super.onDown(e) by default, overridden for popup player
+        return false // do not call super.onDown(e) by default
     }
 
     override fun onDoubleTap(e: MotionEvent): Boolean {

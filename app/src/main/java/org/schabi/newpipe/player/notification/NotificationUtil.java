@@ -272,8 +272,8 @@ public final class NotificationUtil {
     }
 
     private Intent getIntentForNotification() {
-        if (player.audioPlayerSelected() || player.popupPlayerSelected()) {
-            // Means we play in popup or audio only. Let's show the play queue
+        if (player.audioPlayerSelected()) {
+            // Means we play audio only. Let's show the play queue
             return NavigationHelper.getPlayQueueActivityIntent(player.getContext());
         } else {
             // We are playing in fragment. Don't open another activity just show fragment. That's it
