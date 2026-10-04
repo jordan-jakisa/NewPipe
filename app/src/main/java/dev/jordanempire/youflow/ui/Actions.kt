@@ -12,6 +12,8 @@ data class AppActions(
     /** Local playlist by id. */
     val openLocalPlaylist: (id: Long) -> Unit,
     val openHistory: () -> Unit,
+    val playNext: (video: VideoItem) -> Unit,
+    val enqueue: (video: VideoItem) -> Unit,
     /** Opens the "Save to" sheet. */
     val saveVideo: (video: VideoItem) -> Unit,
     /** Plays [videos] as a queue starting at [index]. */

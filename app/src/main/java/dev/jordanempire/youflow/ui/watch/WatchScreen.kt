@@ -28,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Headphones
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.PlaylistAdd
+import androidx.compose.material.icons.outlined.QueueMusic
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.AssistChip
@@ -123,6 +124,8 @@ fun WatchScreen(
     var showSettings by remember { mutableStateOf(false) }
     var showComments by remember { mutableStateOf(false) }
     var showChapters by remember { mutableStateOf(false) }
+    var showQueue by remember { mutableStateOf(false) }
+    if (showQueue) QueueSheet(engine, state) { showQueue = false }
     val chapterPosition by engine.position.collectAsState()
     if (showChapters && info != null) {
         ChaptersSheet(info.streamSegments, currentChapter(info.streamSegments, chapterPosition), onSeek = engine::seekTo) { showChapters = false }
@@ -156,7 +159,7 @@ fun WatchScreen(
             }
             if (info != null) {
                 item(key = "channel") { ChannelRow(info, subscribed, actions, onSubscribe = { vm.toggleSubscribe(info) }) }
-                item(key = "actions") { ActionRow(info, engine, onSave = { actions.saveVideo(info.toVideoItemForSave()) }) }
+                item(key = "actions") { ActionRow(info, engine, queueSize = state.queue.size, onQueue = { showQueue = true }, onSave = { actions.saveVideo(info.toVideoItemForSave()) }) }
                 item(key = "description") { DescriptionCard(info) }
                 item(key = "comments") { CommentsTeaser(info.url, onClick = { showComments = true }) }
                 val related = info.relatedItems.filterIsInstance<StreamInfoItem>()
@@ -166,6 +169,8 @@ fun WatchScreen(
                         onClick = { engine.play(listOf(QueueEntry(item.url, item.name, item.uploaderName.orEmpty(), null))) },
                         onChannelClick = { item.uploaderUrl?.let(actions.openChannel) },
                         onSave = { actions.saveVideo(item.toVideoItem()) },
+                        onPlayNext = { actions.playNext(item.toVideoItem()) },
+                        onEnqueue = { actions.enqueue(item.toVideoItem()) },
                         modifier = Modifier.padding(top = 12.dp)
                     )
                 }
@@ -224,7 +229,7 @@ private fun ChannelRow(info: StreamInfo, subscribed: Boolean, actions: AppAction
 }
 
 @Composable
-private fun ActionRow(info: StreamInfo, engine: PlaybackEngine, onSave: () -> Unit) {
+private fun ActionRow(info: StreamInfo, engine: PlaybackEngine, queueSize: Int, onQueue: () -> Unit, onSave: () -> Unit) {
     val context = LocalContext.current
     Row(
         Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 4.dp),
@@ -245,6 +250,13 @@ private fun ActionRow(info: StreamInfo, engine: PlaybackEngine, onSave: () -> Un
             label = { Text("Share") },
             leadingIcon = { Icon(Icons.Outlined.Share, null, Modifier.size(18.dp)) }
         )
+        if (queueSize > 1) {
+            AssistChip(
+                onClick = onQueue,
+                label = { Text("Queue $queueSize") },
+                leadingIcon = { Icon(Icons.Outlined.QueueMusic, null, Modifier.size(18.dp)) }
+            )
+        }
         AssistChip(
             onClick = onSave,
             label = { Text("Save") },

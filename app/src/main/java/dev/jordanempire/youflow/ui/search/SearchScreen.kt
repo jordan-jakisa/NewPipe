@@ -255,7 +255,7 @@ fun SearchScreen(actions: AppActions, onClose: () -> Unit, initialQuery: String?
                     }
                     items(r.data, key = { it.url }) { item ->
                         when (item) {
-                            is VideoItem -> VideoCard(item, { actions.openVideo(item) }, { item.channelUrl?.let(actions.openChannel) }, onSave = { actions.saveVideo(item) })
+                            is VideoItem -> VideoCard(item, { actions.openVideo(item) }, { item.channelUrl?.let(actions.openChannel) }, onSave = { actions.saveVideo(item) }, onPlayNext = { actions.playNext(item) }, onEnqueue = { actions.enqueue(item) })
                             is ChannelItem -> ChannelRow(item, item.url in subscribed, { actions.openChannel(item.url) }, { vm.toggleSubscribe(item) })
                             is PlaylistItem -> PlaylistRow(item, { actions.openPlaylist(item.url) })
                         }

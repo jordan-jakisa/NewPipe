@@ -231,6 +231,8 @@ fun ChannelScreen(url: String, actions: AppActions, onBack: () -> Unit) {
                                         onClick = { actions.openVideo(item) },
                                         onChannelClick = {},
                                         onSave = { actions.saveVideo(item) },
+                                        onPlayNext = { actions.playNext(item) },
+                                        onEnqueue = { actions.enqueue(item) },
                                         modifier = Modifier.padding(top = 12.dp)
                                     )
                                     is PlaylistItem -> PlaylistRow(item, onClick = { actions.openPlaylist(item.url) })

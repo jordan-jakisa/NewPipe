@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -22,6 +24,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,8 +51,10 @@ fun VideoCard(
     onClick: () -> Unit,
     onChannelClick: () -> Unit,
     modifier: Modifier = Modifier,
-    /** When set, a three dot button offers "Save to playlist". */
-    onSave: (() -> Unit)? = null
+    /** When set, a three dot menu offers Save, Play next and Add to queue. */
+    onSave: (() -> Unit)? = null,
+    onPlayNext: (() -> Unit)? = null,
+    onEnqueue: (() -> Unit)? = null
 ) {
     Column(modifier.fillMaxWidth().clickable(onClick = onClick).padding(bottom = 16.dp)) {
         Box(Modifier.padding(horizontal = 12.dp)) {
@@ -80,8 +88,16 @@ fun VideoCard(
                 )
             }
             if (onSave != null) {
-                IconButton(onClick = onSave, modifier = Modifier.size(32.dp)) {
-                    Icon(Icons.Filled.MoreVert, contentDescription = "Save to playlist", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                var menu by remember { mutableStateOf(false) }
+                Box {
+                    IconButton(onClick = { menu = true }, modifier = Modifier.size(32.dp)) {
+                        Icon(Icons.Filled.MoreVert, contentDescription = "More", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+                        DropdownMenuItem(text = { Text("Save to playlist") }, onClick = { menu = false; onSave() })
+                        if (onPlayNext != null) DropdownMenuItem(text = { Text("Play next") }, onClick = { menu = false; onPlayNext() })
+                        if (onEnqueue != null) DropdownMenuItem(text = { Text("Add to queue") }, onClick = { menu = false; onEnqueue() })
+                    }
                 }
             }
         }

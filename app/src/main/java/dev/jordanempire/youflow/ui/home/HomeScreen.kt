@@ -120,7 +120,9 @@ fun HomeScreen(actions: AppActions, contentPadding: PaddingValues, vm: HomeViewM
                         video,
                         onClick = { actions.openVideo(video) },
                         onChannelClick = { video.channelUrl?.let(actions.openChannel) },
-                        onSave = { actions.saveVideo(video) }
+                        onSave = { actions.saveVideo(video) },
+                        onPlayNext = { actions.playNext(video) },
+                        onEnqueue = { actions.enqueue(video) }
                     )
                 }
             }

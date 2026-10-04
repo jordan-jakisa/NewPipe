@@ -256,6 +256,43 @@ class PlaybackEngine private constructor(private val app: Application) {
         loadCurrent()
     }
 
+    /** Appends to the queue, or starts playing when nothing is queued. */
+    fun enqueue(entry: QueueEntry) {
+        if (_state.value.queue.isEmpty()) {
+            play(listOf(entry))
+        } else {
+            _state.update { it.copy(queue = it.queue + entry) }
+        }
+    }
+
+    fun playNext(entry: QueueEntry) {
+        if (_state.value.queue.isEmpty()) {
+            play(listOf(entry))
+        } else {
+            _state.update {
+                val at = (it.index + 1).coerceAtMost(it.queue.size)
+                it.copy(queue = it.queue.toMutableList().apply { add(at, entry) })
+            }
+        }
+    }
+
+    fun removeFromQueue(index: Int) {
+        val s = _state.value
+        if (index !in s.queue.indices) return
+        if (index == s.index) {
+            // Removing the playing item moves on to what follows it, or stops.
+            if (s.queue.size == 1) { stop(); return }
+            val newQueue = s.queue.toMutableList().apply { removeAt(index) }
+            val newIndex = index.coerceAtMost(newQueue.lastIndex)
+            _state.update { it.copy(queue = newQueue, index = newIndex, info = null, error = null) }
+            loadCurrent()
+        } else {
+            _state.update {
+                it.copy(queue = it.queue.toMutableList().apply { removeAt(index) }, index = if (index < it.index) it.index - 1 else it.index)
+            }
+        }
+    }
+
     fun togglePlayPause() {
         if (exo.playbackState == Player.STATE_ENDED) exo.seekTo(0)
         exo.playWhenReady = !exo.playWhenReady

@@ -122,6 +122,8 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
         openPlaylist = { push("p|$it"); searching = false; window.expanded = false },
         openLocalPlaylist = { push("l|$it"); searching = false; window.expanded = false },
         openHistory = { push("h|"); window.expanded = false },
+        playNext = { engine.playNext(it.toEntry()); android.widget.Toast.makeText(context, "Playing next", android.widget.Toast.LENGTH_SHORT).show() },
+        enqueue = { engine.enqueue(it.toEntry()); android.widget.Toast.makeText(context, "Added to queue", android.widget.Toast.LENGTH_SHORT).show() },
         saveVideo = { saving = it },
         playVideos = { videos, index ->
             engine.play(videos.map { it.toEntry() }, index)
