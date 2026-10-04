@@ -25,6 +25,7 @@ import dev.jordanempire.youflow.util.KioskTranslator
 import dev.jordanempire.youflow.util.image.ImageStrategy
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.rx3.asFlow
 import kotlinx.coroutines.rx3.await
 import kotlinx.coroutines.rx3.awaitSingleOrNull
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import org.schabi.newpipe.extractor.InfoItem
 import org.schabi.newpipe.extractor.Page
@@ -376,13 +378,22 @@ class YouTubeRepository(private val context: Context) {
      */
     suspend fun shorts(): List<VideoItem> {
         val channels = subscriptions().first().take(8)
-        val fromChannels = channels.flatMap { channel ->
-            runCatching {
-                val loaded = channel(channel.url)
-                val tab = loaded.details.tabs.firstOrNull { it.key == "shorts" } ?: return@runCatching emptyList()
-                channelTab(loaded.handlers[tab.index], null).items.filterIsInstance<VideoItem>()
-                    .map { it.copy(channel = it.channel.ifBlank { channel.name }, avatar = it.avatar ?: channel.avatar) }
-            }.getOrDefault(emptyList())
+        // Fetch a few channels at a time instead of one after the other.
+        val limiter = kotlinx.coroutines.sync.Semaphore(4)
+        val fromChannels = kotlinx.coroutines.coroutineScope {
+            channels.map { channel ->
+                kotlinx.coroutines.async {
+                    limiter.withPermit {
+                        runCatching {
+                            val loaded = channel(channel.url)
+                            val tab = loaded.details.tabs.firstOrNull { it.key == "shorts" }
+                                ?: return@runCatching emptyList()
+                            channelTab(loaded.handlers[tab.index], null).items.filterIsInstance<VideoItem>()
+                                .map { it.copy(channel = it.channel.ifBlank { channel.name }, avatar = it.avatar ?: channel.avatar) }
+                        }.getOrDefault(emptyList())
+                    }
+                }
+            }.awaitAll().flatten()
         }
         if (fromChannels.size >= 6) return fromChannels.shuffled()
         val searched = runCatching { search("#shorts").items }.getOrDefault(emptyList())
