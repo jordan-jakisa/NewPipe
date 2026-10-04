@@ -36,6 +36,9 @@ class YouFlowActivity : ComponentActivity() {
         enableEdgeToEdge()
         engine = PlaybackEngine.get(application)
         setUpNotifications()
+        androidx.core.content.ContextCompat.registerReceiver(
+            this, pipReceiver, android.content.IntentFilter(ACTION_PIP_TOGGLE), androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+        )
 
         setContent {
             val settings = androidx.compose.runtime.remember { AppSettings.get(application) }
@@ -104,11 +107,32 @@ class YouFlowActivity : ComponentActivity() {
         setIntent(Intent(this, YouFlowActivity::class.java))
     }
 
+    private val pipReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context?, intent: Intent?) {
+            if (intent?.action == ACTION_PIP_TOGGLE) engine.togglePlayPause()
+        }
+    }
+
+    private fun pipActions(): List<android.app.RemoteAction> {
+        val paused = !engine.state.value.playWhenReady
+        val pending = android.app.PendingIntent.getBroadcast(
+            this, 0, Intent(ACTION_PIP_TOGGLE).setPackage(packageName), android.app.PendingIntent.FLAG_IMMUTABLE
+        )
+        val title = if (paused) "Play" else "Pause"
+        return listOf(
+            android.app.RemoteAction(
+                android.graphics.drawable.Icon.createWithResource(this, if (paused) dev.jordanempire.youflow.R.drawable.ic_play_arrow else dev.jordanempire.youflow.R.drawable.ic_pause),
+                title, title, pending
+            )
+        )
+    }
+
     private fun updatePipParams() {
         val playing = engine.state.value.isPlaying && window2.expanded
         val aspect = engine.state.value.videoAspect.coerceIn(0.5f, 2.0f)
         setPictureInPictureParams(
             PictureInPictureParams.Builder()
+                .setActions(pipActions())
                 .setAspectRatio(Rational((aspect * 1000).toInt(), 1000))
                 .setAutoEnterEnabled(playing)
                 .setSeamlessResizeEnabled(true)
@@ -131,6 +155,15 @@ class YouFlowActivity : ComponentActivity() {
     override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: Configuration) {
         super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
         window2.inPip = isInPictureInPictureMode
+    }
+
+    override fun onDestroy() {
+        unregisterReceiver(pipReceiver)
+        super.onDestroy()
+    }
+
+    private companion object {
+        const val ACTION_PIP_TOGGLE = "dev.jordanempire.youflow.PIP_TOGGLE"
     }
 
     // Leave only audio running while the app is not visible.

@@ -9,6 +9,23 @@
 
 ---
 
+## Implementation status (2026-10-04)
+
+Built on branch `youtube-only`, compiles, JVM tests pass; on-device checks done for Home, watch page,
+controls, quality/speed, comments, mini player. **Not yet device-tested:** fullscreen gestures, PiP,
+Shorts, playlists UI, subscription import/export, settings, link routing, notifications.
+
+| Area | State |
+|---|---|
+| Strip to YouTube, rename to YouFlow, minSdk 31 | done (Phase 0) |
+| Home (kiosk chips, continue watching), Subscriptions, Search (filters, paging), You, Settings | done |
+| Channel, Playlist (remote and local), History, Save to playlist, Watch later | done |
+| Media3 engine + media session service, mini player, fullscreen, PiP, sleep timer, chapters, captions | done |
+| Comments with replies, queue sheet, link and share routing | done |
+| Shorts tab (shared player, channel shorts + #shorts fallback) | done, untested on device |
+| Downloads UI, backup/restore UI, feed groups | still the classic screens (reachable from You) |
+| Cutover (delete legacy views, ExoPlayer 2, RxJava), ambient mode, shared-element transitions | not started |
+
 ## 0. Summary
 
 NewPipe is about 78k lines of Android code (80% Java), built on Views, Fragments, RxJava and

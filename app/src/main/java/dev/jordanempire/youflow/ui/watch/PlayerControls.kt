@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -78,6 +79,8 @@ fun PlayerControls(
     var visible by remember { mutableStateOf(true) }
     var interaction by remember { mutableLongStateOf(0L) }
     var seekFlash by remember { mutableStateOf<String?>(null) }
+    var gestureLabel by remember { mutableStateOf<String?>(null) }
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     // Hide 3s after the last interaction while playing.
     LaunchedEffect(visible, state.isPlaying, interaction) {
@@ -96,6 +99,44 @@ fun PlayerControls(
     BoxWithConstraints(
         modifier
             .fillMaxSize()
+            .pointerInput(fullscreen) {
+                if (!fullscreen) return@pointerInput
+                // Swipe the left half for brightness, the right half for volume.
+                var startX = 0f
+                var brightnessStart = 0f
+                var volumeStart = 0f
+                var accumulated = 0f
+                detectVerticalDragGestures(
+                    onDragStart = { offset ->
+                        startX = offset.x
+                        accumulated = 0f
+                        val window = (context as? android.app.Activity)?.window
+                        val current = window?.attributes?.screenBrightness ?: -1f
+                        brightnessStart = if (current < 0) 0.5f else current
+                        val audio = context.getSystemService(android.content.Context.AUDIO_SERVICE) as android.media.AudioManager
+                        volumeStart = audio.getStreamVolume(android.media.AudioManager.STREAM_MUSIC).toFloat() /
+                            audio.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC)
+                    },
+                    onDragEnd = { gestureLabel = null },
+                    onDragCancel = { gestureLabel = null },
+                    onVerticalDrag = { _, dy ->
+                        accumulated += -dy / size.height
+                        if (startX < size.width / 2f) {
+                            val value = (brightnessStart + accumulated).coerceIn(0.02f, 1f)
+                            (context as? android.app.Activity)?.window?.let { w ->
+                                w.attributes = w.attributes.also { it.screenBrightness = value }
+                            }
+                            gestureLabel = "Brightness ${(value * 100).toInt()}%"
+                        } else {
+                            val audio = context.getSystemService(android.content.Context.AUDIO_SERVICE) as android.media.AudioManager
+                            val max = audio.getStreamMaxVolume(android.media.AudioManager.STREAM_MUSIC)
+                            val value = (volumeStart + accumulated).coerceIn(0f, 1f)
+                            audio.setStreamVolume(android.media.AudioManager.STREAM_MUSIC, (value * max).toInt(), 0)
+                            gestureLabel = "Volume ${(value * 100).toInt()}%"
+                        }
+                    }
+                )
+            }
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = { visible = !visible; interaction++ },
@@ -154,6 +195,14 @@ fun PlayerControls(
 
         if (state.phase == Phase.Loading || state.phase == Phase.Buffering) {
             LoadingIndicator(Modifier.align(Alignment.Center).size(56.dp), color = Color.White)
+        }
+        gestureLabel?.let {
+            Surface(
+                modifier = Modifier.align(Alignment.TopCenter).padding(top = 24.dp),
+                shape = RoundedCornerShape(50),
+                color = Color.Black.copy(alpha = 0.6f),
+                contentColor = Color.White
+            ) { Text(it, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) }
         }
         seekFlash?.let {
             Surface(
