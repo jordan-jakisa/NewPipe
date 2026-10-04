@@ -39,7 +39,7 @@ import androidx.core.content.IntentCompat;
 import androidx.preference.PreferenceManager;
 
 import dev.jordanempire.youflow.R;
-import dev.jordanempire.youflow.download.DownloadActivity;
+import dev.jordanempire.youflow.ui.YouFlowActivity;
 import org.schabi.newpipe.extractor.stream.StreamInfo;
 import dev.jordanempire.youflow.util.LockManager;
 import dev.jordanempire.youflow.streams.io.StoredDirectoryHelper;
@@ -143,8 +143,8 @@ public class DownloadManagerService extends Service {
 
         mManager = new DownloadManager(this, mHandler, loadMainVideoStorage(), loadMainAudioStorage());
 
-        Intent openDownloadListIntent = new Intent(this, DownloadActivity.class)
-                .setAction(Intent.ACTION_MAIN);
+        Intent openDownloadListIntent = new Intent(this, YouFlowActivity.class)
+                .setAction("dev.jordanempire.youflow.OPEN_DOWNLOADS");
 
         mOpenDownloadList = PendingIntentCompat.getActivity(this, 0,
                 openDownloadListIntent,
@@ -207,8 +207,8 @@ public class DownloadManagerService extends Service {
                     downloadDoneList.setLength(0);
                 }
                 if (action.equals(ACTION_OPEN_DOWNLOADS_FINISHED)) {
-                    startActivity(new Intent(this, DownloadActivity.class)
-                            .setAction(Intent.ACTION_MAIN)
+                    startActivity(new Intent(this, YouFlowActivity.class)
+                            .setAction("dev.jordanempire.youflow.OPEN_DOWNLOADS")
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     );
                 }

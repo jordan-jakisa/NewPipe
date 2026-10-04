@@ -100,6 +100,17 @@ fun PlayerControls(
         modifier
             .fillMaxSize()
             .pointerInput(fullscreen) {
+                if (fullscreen) return@pointerInput
+                // Swipe down on the inline player to minimize it to the mini player.
+                var total = 0f
+                detectVerticalDragGestures(
+                    onDragStart = { total = 0f },
+                    onDragEnd = { if (total > 90.dp.toPx()) onCollapse() },
+                    onDragCancel = { total = 0f },
+                    onVerticalDrag = { _, dy -> total += dy }
+                )
+            }
+            .pointerInput(fullscreen) {
                 if (!fullscreen) return@pointerInput
                 // Swipe the left half for brightness, the right half for volume.
                 var startX = 0f

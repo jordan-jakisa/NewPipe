@@ -56,6 +56,7 @@ import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.media.engine.PlaybackEngine
 import dev.jordanempire.youflow.media.engine.QueueEntry
 import dev.jordanempire.youflow.ui.channel.ChannelScreen
+import dev.jordanempire.youflow.ui.downloads.DownloadsScreen
 import dev.jordanempire.youflow.ui.home.HomeScreen
 import dev.jordanempire.youflow.ui.library.HistoryScreen
 import dev.jordanempire.youflow.ui.library.LocalPlaylistScreen
@@ -84,6 +85,8 @@ sealed interface IncomingLink {
     data class Channel(val url: String) : IncomingLink
     data class Playlist(val url: String) : IncomingLink
     data class Search(val text: String) : IncomingLink
+
+    data object Downloads : IncomingLink
 }
 
 /** Classifies shared text: a YouTube link opens the matching screen, anything else becomes a search. */
@@ -115,6 +118,7 @@ fun YouFlowApp(window: WatchWindowState, onOpenPreferences: (screen: String) -> 
     val context = LocalContext.current
     val engine = remember { PlaybackEngine.get(context.applicationContext as Application) }
     val playerState by engine.state.collectAsState()
+    val repo = remember { dev.jordanempire.youflow.ui.data.YouTubeRepository(context.applicationContext) }
 
     var tab by rememberSaveable { mutableStateOf(Tab.Home) }
     var searching by rememberSaveable { mutableStateOf(false) }
@@ -153,6 +157,10 @@ fun YouFlowApp(window: WatchWindowState, onOpenPreferences: (screen: String) -> 
             push("m|")
             window.expanded = false
         },
+        hideChannel = { url ->
+            repo.hideChannel(url)
+            android.widget.Toast.makeText(context, "You'll see less from this channel", android.widget.Toast.LENGTH_SHORT).show()
+        },
         openHistory = {
             push("h|")
             window.expanded = false
@@ -160,7 +168,10 @@ fun YouFlowApp(window: WatchWindowState, onOpenPreferences: (screen: String) -> 
         download = { url ->
             context.startActivity(Intent(context, DownloadHostActivity::class.java).putExtra(DownloadHostActivity.EXTRA_URL, url))
         },
-        openDownloads = { context.startActivity(Intent(context, dev.jordanempire.youflow.download.DownloadActivity::class.java)) },
+        openDownloads = {
+            push("d|")
+            window.expanded = false
+        },
         playNext = {
             engine.playNext(it.toEntry())
             android.widget.Toast.makeText(context, "Playing next", android.widget.Toast.LENGTH_SHORT).show()
@@ -187,6 +198,8 @@ fun YouFlowApp(window: WatchWindowState, onOpenPreferences: (screen: String) -> 
             is IncomingLink.Channel -> actions.openChannel(link.url)
 
             is IncomingLink.Playlist -> actions.openPlaylist(link.url)
+
+            IncomingLink.Downloads -> actions.openDownloads()
 
             is IncomingLink.Search -> {
                 searchText = link.text
@@ -283,6 +296,7 @@ fun YouFlowApp(window: WatchWindowState, onOpenPreferences: (screen: String) -> 
                     "c" -> ChannelScreen(target, actions, ::pop)
                     "l" -> LocalPlaylistScreen(target.toLong(), actions, ::pop)
                     "h" -> HistoryScreen(actions, ::pop)
+                    "d" -> DownloadsScreen(::pop)
                     "m" -> ManageSubscriptionsScreen(actions, ::pop)
                     "s" -> SettingsScreen(onBack = ::pop, onOpenPreferences = onOpenPreferences)
                     else -> PlaylistScreen(target, actions, ::pop)

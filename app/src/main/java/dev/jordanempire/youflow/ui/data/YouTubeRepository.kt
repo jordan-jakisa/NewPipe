@@ -30,6 +30,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.rx3.asFlow
 import kotlinx.coroutines.rx3.await
@@ -53,6 +54,7 @@ import org.schabi.newpipe.extractor.stream.StreamType
 class YouTubeRepository(private val context: Context) {
     companion object {
         const val WATCH_LATER = "Watch later"
+        const val LIKED = "Liked videos"
     }
 
     private val serviceId = ServiceList.YouTube.serviceId
@@ -118,6 +120,154 @@ class YouTubeRepository(private val context: Context) {
         val more = ExtractorHelper.getMoreSearchItems(serviceId, query, listOfNotNull(filter), "", page).await()
         Paged(more.items.mapNotNull { it.toContent() }, more.nextPage)
     }
+
+    // region Likes, hidden channels and the local recommender
+
+    private val hiddenPrefs by lazy { context.getSharedPreferences("youflow_recommender", Context.MODE_PRIVATE) }
+
+    fun hiddenChannels(): Set<String> = hiddenPrefs.getStringSet("hidden_channels", emptySet()).orEmpty()
+
+    fun hideChannel(channelUrl: String) {
+        hiddenPrefs.edit().putStringSet("hidden_channels", hiddenChannels() + channelUrl).apply()
+    }
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    fun likedVideos(): Flow<List<VideoItem>> = playlistManager.playlists.toObservable().asFlow().flatMapLatest { lists ->
+        val liked = lists.firstOrNull { it.orderingName == LIKED }
+        if (liked == null) kotlinx.coroutines.flow.flowOf(emptyList()) else playlistVideos(liked.uid).map { rows -> rows.map { it.second } }
+    }
+
+    suspend fun setLiked(video: VideoItem, liked: Boolean) = withContext(Dispatchers.IO) {
+        val existing = playlistManager.playlists.firstOrError().await().firstOrNull { it.orderingName == LIKED }
+        if (liked) {
+            if (existing == null) {
+                playlistManager.createPlaylist(LIKED, listOf(video.toStreamEntity())).awaitSingleOrNull()
+            } else if (playlistManager.getPlaylistStreams(existing.uid).firstOrError().await().none { it.streamEntity.url == video.url }) {
+                playlistManager.appendToPlaylist(existing.uid, listOf(video.toStreamEntity())).awaitSingleOrNull()
+            }
+        } else if (existing != null) {
+            val keep = playlistManager.getPlaylistStreams(existing.uid).firstOrError().await()
+                .filter { it.streamEntity.url != video.url }.map { it.streamId }
+            playlistManager.updateJoin(existing.uid, keep).await()
+        }
+    }
+
+    /**
+     * "For you": videos related to what you watched and liked recently, plus unseen uploads of
+     * channels you follow. Everything is computed on the device from local data, nothing is sent
+     * anywhere except the normal requests for related videos.
+     */
+    suspend fun recommendations(): List<VideoItem> = withContext(Dispatchers.IO) {
+        val history = database.streamHistoryDAO().history.firstOrError().await()
+        val states = database.streamStateDAO().getAll().firstOrError().await().associateBy { it.streamUid }
+        val liked = likedVideos().first()
+        val subscribed = subscriptions().first()
+        val hidden = hiddenChannels()
+        val watched = history.map { it.streamEntity.url }.toSet() + liked.map { it.url }
+
+        val seeds = LinkedHashMap<String, Double>() // url -> weight
+        liked.forEach { seeds[it.url] = 3.0 }
+        history.sortedByDescending { it.accessDate }.take(12).forEachIndexed { rank, entry ->
+            val duration = entry.streamEntity.duration.coerceAtLeast(1)
+            val progress = ((states[entry.streamId]?.progressMillis ?: 0L) / 1000.0 / duration).coerceIn(0.0, 1.0)
+            val weight = Math.pow(0.9, rank.toDouble()) * (0.6 + progress) * (1 + 0.2 * (entry.repeatCount - 1).coerceIn(0, 3))
+            seeds.merge(entry.streamEntity.url, weight) { a, b -> a + b }
+        }
+        val topSeeds = seeds.entries.sortedByDescending { it.value }.take(8)
+
+        val taste = TasteProfile.from(
+            liked.map { it.title to 3.0 } + history.sortedByDescending { it.accessDate }.take(30).mapIndexed { rank, entry ->
+                val duration = entry.streamEntity.duration.coerceAtLeast(1)
+                val progress = ((states[entry.streamId]?.progressMillis ?: 0L) / 1000.0 / duration).coerceIn(0.0, 1.0)
+                entry.streamEntity.title to Math.pow(0.95, rank.toDouble()) * (0.7 + progress)
+            }
+        )
+        val channelWatches = history.groupingBy { it.streamEntity.uploaderUrl }.eachCount()
+        val likedChannels = liked.mapNotNull { it.channelUrl }.toSet()
+        val subscribedUrls = subscribed.map { it.url }.toSet()
+
+        val scores = HashMap<String, Double>()
+        val items = HashMap<String, VideoItem>()
+        val limiter = kotlinx.coroutines.sync.Semaphore(3)
+        kotlinx.coroutines.coroutineScope {
+            topSeeds.map { (url, weight) ->
+                async {
+                    limiter.withPermit {
+                        val related = runCatching {
+                            ExtractorHelper.getStreamInfo(serviceId, url, false).await().relatedItems
+                                .filterIsInstance<StreamInfoItem>()
+                        }.getOrDefault(emptyList())
+                        synchronized(scores) {
+                            related.forEachIndexed { rank, item ->
+                                scores.merge(item.url, weight / (1 + rank * 0.15)) { a, b -> a + b }
+                                items.putIfAbsent(item.url, item.toVideo())
+                            }
+                        }
+                    }
+                }
+            }.awaitAll()
+        }
+        // Similar videos by taste: search for the words you favour most.
+        if (!taste.isEmpty) {
+            val terms = taste.topTerms(4)
+            val queries = listOfNotNull(
+                terms.take(2).joinToString(" ").takeIf { terms.size >= 2 },
+                terms.drop(2).take(2).joinToString(" ").takeIf { terms.size >= 4 },
+                terms.firstOrNull().takeIf { terms.size == 1 }
+            )
+            kotlinx.coroutines.coroutineScope {
+                queries.map { q ->
+                    async {
+                        limiter.withPermit {
+                            val found = runCatching { search(q, "videos").items.filterIsInstance<VideoItem>().take(12) }
+                                .getOrDefault(emptyList())
+                            synchronized(scores) {
+                                found.forEachIndexed { rank, item ->
+                                    scores.merge(item.url, 0.9 / (1 + rank * 0.1)) { a, b -> a + b }
+                                    items.putIfAbsent(item.url, item)
+                                }
+                            }
+                        }
+                    }
+                }.awaitAll()
+            }
+        }
+        // Unseen uploads from followed channels are always candidates.
+        feed().take(30).forEach { video ->
+            scores.merge(video.url, 1.2) { a, b -> a + b }
+            items.putIfAbsent(video.url, video)
+        }
+
+        val ranked = items.values
+            .filter { it.url !in watched && !it.isShort && (it.durationSeconds == 0L || it.durationSeconds > 60) }
+            .filter { it.channelUrl == null || it.channelUrl !in hidden }
+            .map { video ->
+                val channel = video.channelUrl
+                val affinity = 1 + 0.3 * (channelWatches[channel] ?: 0).coerceAtMost(3) +
+                    (if (channel in subscribedUrls) 0.5 else 0.0) +
+                    (if (channel in likedChannels) 0.5 else 0.0)
+                video to (scores[video.url] ?: 0.0) * affinity * (1 + 0.8 * taste.overlap(video.title))
+            }
+            .sortedByDescending { it.second }
+            .map { it.first }
+
+        // Keep the list varied: at most two per channel in the first 20.
+        val perChannel = HashMap<String?, Int>()
+        val top = ArrayList<VideoItem>()
+        val rest = ArrayList<VideoItem>()
+        ranked.forEach { video ->
+            val used = perChannel.getOrDefault(video.channelUrl, 0)
+            if (top.size < 20 && used < 2) {
+                top += video
+                perChannel[video.channelUrl] = used + 1
+            } else {
+                rest += video
+            }
+        }
+        (top + rest).take(40)
+    }
+
+    // endregion
 
     /** Videos from subscribed channels, newest first, with resume progress. [groupId] -1 means all. */
     suspend fun feed(groupId: Long = FeedGroupEntity.GROUP_ALL_ID): List<VideoItem> = withContext(Dispatchers.IO) {

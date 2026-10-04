@@ -42,14 +42,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 private const val FEED_ID = "feed"
+private const val FOR_YOU_ID = "foryou"
 
 class HomeViewModel(app: Application) : AndroidViewModel(app) {
     private val repo = YouTubeRepository(app)
 
     /** "Following" shows your subscription feed, the rest are YouTube's own lists. */
-    val kiosks = listOf(KioskRef(FEED_ID, "", "Following")) + repo.kiosks
+    val kiosks = listOf(KioskRef(FOR_YOU_ID, "", "For you"), KioskRef(FEED_ID, "", "Following")) + repo.kiosks
 
-    private val _selected = MutableStateFlow(1.coerceAtMost(kiosks.lastIndex))
+    private val _selected = MutableStateFlow(2.coerceAtMost(kiosks.lastIndex))
     val selected = _selected.asStateFlow()
     private val _state = MutableStateFlow<UiState<List<VideoItem>>>(UiState.Loading)
     val state = _state.asStateFlow()
@@ -63,7 +64,10 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
     init {
         // Start on the subscription feed when there is one, otherwise on the first YouTube list.
         viewModelScope.launch {
-            if (repo.subscriptions().first().isNotEmpty()) _selected.value = 0
+            // Start on "For you" once there is something to base it on, otherwise on a YouTube list.
+            val hasSignals = repo.subscriptions().first().isNotEmpty() ||
+                repo.continueWatching().first().isNotEmpty() || repo.likedVideos().first().isNotEmpty()
+            if (hasSignals) _selected.value = 0
             load(pullToRefresh = false)
         }
     }
@@ -96,7 +100,9 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
                 _state.value = UiState.Loading
             }
             try {
-                val videos = if (kiosk.id == FEED_ID) {
+                val videos = if (kiosk.id == FOR_YOU_ID) {
+                    repo.recommendations()
+                } else if (kiosk.id == FEED_ID) {
                     if (pullToRefresh) runCatching { repo.refreshFeed() }
                     repo.feed()
                 } else {
@@ -130,8 +136,16 @@ fun HomeScreen(actions: AppActions, contentPadding: PaddingValues, vm: HomeViewM
             isEmpty = { it.isEmpty() },
             emptyContent = {
                 MessageBox(
-                    if (vm.kiosks.getOrNull(selected)?.id == FEED_ID) "Nothing new yet" else "No videos",
-                    if (vm.kiosks.getOrNull(selected)?.id == FEED_ID) "Subscribe to channels, then pull down to fetch their latest uploads." else null
+                    when (vm.kiosks.getOrNull(selected)?.id) {
+                        FEED_ID -> "Nothing new yet"
+                        FOR_YOU_ID -> "Nothing to recommend yet"
+                        else -> "No videos"
+                    },
+                    when (vm.kiosks.getOrNull(selected)?.id) {
+                        FEED_ID -> "Subscribe to channels, then pull down to fetch their latest uploads."
+                        FOR_YOU_ID -> "Watch and like a few videos and subscribe to channels, then recommendations show up here."
+                        else -> null
+                    }
                 )
             }
         ) { videos ->
@@ -163,7 +177,8 @@ fun HomeScreen(actions: AppActions, contentPadding: PaddingValues, vm: HomeViewM
                         onChannelClick = { video.channelUrl?.let(actions.openChannel) },
                         onSave = { actions.saveVideo(video) },
                         onPlayNext = { actions.playNext(video) },
-                        onEnqueue = { actions.enqueue(video) }
+                        onEnqueue = { actions.enqueue(video) },
+                        onHideChannel = video.channelUrl?.let { url -> { actions.hideChannel(url) } }
                     )
                 }
             }

@@ -97,6 +97,11 @@ class YouFlowActivity : ComponentActivity() {
     /** Opens links shared from other apps or tapped in a browser. */
     private fun handleIntent(intent: Intent?) {
         intent ?: return
+        if (intent.action == ACTION_OPEN_DOWNLOADS) {
+            window2.incoming = IncomingLink.Downloads
+            setIntent(Intent(this, YouFlowActivity::class.java))
+            return
+        }
         val text = when (intent.action) {
             Intent.ACTION_VIEW -> intent.dataString
             Intent.ACTION_SEND -> intent.getStringExtra(Intent.EXTRA_TEXT)
@@ -169,6 +174,7 @@ class YouFlowActivity : ComponentActivity() {
     }
 
     private companion object {
+        const val ACTION_OPEN_DOWNLOADS = "dev.jordanempire.youflow.OPEN_DOWNLOADS"
         const val ACTION_PIP_TOGGLE = "dev.jordanempire.youflow.PIP_TOGGLE"
     }
 
@@ -180,6 +186,6 @@ class YouFlowActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        engine.setVideoEnabled(true)
+        engine.setVideoEnabled(!engine.audioOnly.value)
     }
 }

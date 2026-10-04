@@ -203,12 +203,6 @@
             android:theme="@style/RouterActivityThemeDark" />
 
         <!-- giga get related -->
-        <activity
-            android:name=".download.DownloadActivity"
-            android:exported="false"
-            android:label="@string/app_name"
-            android:launchMode="singleTask" />
-
         <service android:name="us.shandian.giga.service.DownloadManagerService"
             android:foregroundServiceType="dataSync" />
 

@@ -191,20 +191,6 @@ public class Utility {
         }
     }
 
-    public static String checksum(final StoredFileHelper source, final int algorithmId)
-            throws IOException {
-        ByteString byteString;
-        try (var inputStream = new SharpInputStream(source.getStream())) {
-            byteString = ByteString.of(Util.toByteArray(inputStream));
-        }
-        if (algorithmId == R.id.md5) {
-            byteString = byteString.md5();
-        } else if (algorithmId == R.id.sha1) {
-            byteString = byteString.sha1();
-        }
-        return byteString.hex();
-    }
-
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static boolean mkdir(File p, boolean allDirs) {
         if (p.exists()) return true;

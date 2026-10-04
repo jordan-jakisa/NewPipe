@@ -25,6 +25,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Headphones
 import androidx.compose.material.icons.outlined.OpenInBrowser
@@ -34,6 +35,7 @@ import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -92,6 +94,14 @@ class WatchViewModel(app: Application) : AndroidViewModel(app) {
         .flatMapLatest { url -> if (url == null) flowOf(false) else repo.isSubscribed(url) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
 
+    val likedUrls: StateFlow<Set<String>> = repo.likedVideos()
+        .map { list -> list.map { it.url }.toSet() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptySet())
+
+    fun toggleLike(info: StreamInfo) {
+        viewModelScope.launch { repo.setLiked(info.toVideoItemForSave(), info.url !in likedUrls.value) }
+    }
+
     fun toggleSubscribe(info: StreamInfo) {
         val url = info.uploaderUrl ?: return
         viewModelScope.launch {
@@ -124,6 +134,7 @@ fun WatchScreen(
     val engine = vm.engine
     val state by engine.state.collectAsState()
     val subscribed by vm.subscribed.collectAsState()
+    val likedUrls by vm.likedUrls.collectAsState()
     val info = state.info
     var showSettings by remember { mutableStateOf(false) }
     var showComments by remember { mutableStateOf(false) }
@@ -169,7 +180,7 @@ fun WatchScreen(
             }
             if (info != null) {
                 item(key = "channel") { ChannelRow(info, subscribed, actions, onSubscribe = { vm.toggleSubscribe(info) }) }
-                item(key = "actions") { ActionRow(info, engine, queueSize = state.queue.size, onQueue = { showQueue = true }, onSave = { actions.saveVideo(info.toVideoItemForSave()) }, onDownload = { actions.download(info.url) }) }
+                item(key = "actions") { ActionRow(info, engine, liked = info.url in likedUrls, onLike = { vm.toggleLike(info) }, queueSize = state.queue.size, onQueue = { showQueue = true }, onSave = { actions.saveVideo(info.toVideoItemForSave()) }, onDownload = { actions.download(info.url) }) }
                 item(key = "description") { DescriptionCard(info, engine) }
                 item(key = "comments") { CommentsTeaser(info.url, onClick = { showComments = true }) }
                 val related = info.relatedItems.filterIsInstance<StreamInfoItem>()
@@ -207,6 +218,21 @@ private fun PlayerBox(
             contentScale = androidx.compose.ui.layout.ContentScale.Fit,
             modifier = Modifier.fillMaxSize()
         )
+        val audioOnly by engine.audioOnly.collectAsState()
+        if (audioOnly) {
+            Column(
+                Modifier.fillMaxSize().background(Color.Black),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(Icons.Outlined.Headphones, null, tint = Color.White, modifier = Modifier.size(40.dp))
+                Text("Audio only", color = Color.White, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
+                androidx.compose.material3.FilledTonalButton(
+                    onClick = { engine.setAudioOnly(false) },
+                    modifier = Modifier.padding(top = 12.dp)
+                ) { Text("Show video") }
+            }
+        }
         PlayerControls(engine, state, fullscreen, onToggleFullscreen, onCollapse, onSettings, onChapters)
     }
 }
@@ -239,15 +265,18 @@ private fun ChannelRow(info: StreamInfo, subscribed: Boolean, actions: AppAction
 }
 
 @Composable
-private fun ActionRow(info: StreamInfo, engine: PlaybackEngine, queueSize: Int, onQueue: () -> Unit, onSave: () -> Unit, onDownload: () -> Unit) {
+private fun ActionRow(info: StreamInfo, engine: PlaybackEngine, liked: Boolean, onLike: () -> Unit, queueSize: Int, onQueue: () -> Unit, onSave: () -> Unit, onDownload: () -> Unit) {
     val context = LocalContext.current
     Row(
         Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        if (info.likeCount >= 0) {
-            AssistChip(onClick = {}, label = { Text(formatCount(info.likeCount, "").trim()) }, leadingIcon = { Icon(Icons.Outlined.ThumbUp, null, Modifier.size(18.dp)) })
-        }
+        FilterChip(
+            selected = liked,
+            onClick = onLike,
+            label = { Text(if (info.likeCount >= 0) formatCount(info.likeCount + if (liked) 1 else 0, "").trim() else "Like") },
+            leadingIcon = { Icon(if (liked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp, null, Modifier.size(18.dp)) }
+        )
         AssistChip(
             onClick = {
                 context.startActivity(
@@ -277,8 +306,10 @@ private fun ActionRow(info: StreamInfo, engine: PlaybackEngine, queueSize: Int, 
             label = { Text("Download") },
             leadingIcon = { Icon(Icons.Outlined.Download, null, Modifier.size(18.dp)) }
         )
-        AssistChip(
-            onClick = { engine.setVideoEnabled(false) },
+        val audioOnly by engine.audioOnly.collectAsState()
+        FilterChip(
+            selected = audioOnly,
+            onClick = { engine.setAudioOnly(!audioOnly) },
             label = { Text("Audio only") },
             leadingIcon = { Icon(Icons.Outlined.Headphones, null, Modifier.size(18.dp)) }
         )

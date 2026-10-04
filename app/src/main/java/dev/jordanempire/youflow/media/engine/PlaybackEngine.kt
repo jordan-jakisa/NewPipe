@@ -326,6 +326,16 @@ class PlaybackEngine private constructor(private val app: Application) {
 
     fun setSpeed(speed: Float) = exo.setPlaybackSpeed(speed)
 
+    private val _audioOnly = MutableStateFlow(false)
+
+    /** True when the user chose audio only; the app leaving the screen does not change this. */
+    val audioOnly: StateFlow<Boolean> = _audioOnly.asStateFlow()
+
+    fun setAudioOnly(enabled: Boolean) {
+        _audioOnly.value = enabled
+        setVideoEnabled(!enabled)
+    }
+
     fun setVideoEnabled(enabled: Boolean) {
         exo.trackSelectionParameters = exo.trackSelectionParameters.buildUpon()
             .setTrackTypeDisabled(C.TRACK_TYPE_VIDEO, !enabled)

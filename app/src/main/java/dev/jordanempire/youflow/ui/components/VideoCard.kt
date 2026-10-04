@@ -54,7 +54,8 @@ fun VideoCard(
     /** When set, a three dot menu offers Save, Play next and Add to queue. */
     onSave: (() -> Unit)? = null,
     onPlayNext: (() -> Unit)? = null,
-    onEnqueue: (() -> Unit)? = null
+    onEnqueue: (() -> Unit)? = null,
+    onHideChannel: (() -> Unit)? = null
 ) {
     Column(modifier.fillMaxWidth().clickable(onClick = onClick).padding(bottom = 16.dp)) {
         Box(Modifier.padding(horizontal = 12.dp)) {
