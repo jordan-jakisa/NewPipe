@@ -44,20 +44,6 @@
     <string name="progressive_load_interval_key">progressive_load_interval</string>
     <string name="progressive_load_interval_default_value">64</string>
     <string name="progressive_load_interval_exoplayer_default_value">exoplayer_default</string>
-    <string-array name="progressive_load_interval_descriptions">
-        <item>1 KiB</item>
-        <item>16 KiB</item>
-        <item>64 KiB</item>
-        <item>256 KiB</item>
-        <item>@string/progressive_load_interval_exoplayer_default</item>
-    </string-array>
-    <string-array name="progressive_load_interval_values">
-        <item>1</item>
-        <item>16</item>
-        <item>@string/progressive_load_interval_default_value</item>
-        <item>256</item>
-        <item>@string/progressive_load_interval_exoplayer_default_value</item>
-    </string-array>
 
     <string name="minimize_on_exit_key">minimize_on_exit_key</string>
     <string name="minimize_on_exit_value">@string/minimize_on_exit_background_key</string>
@@ -110,15 +96,7 @@
     <string name="show_higher_resolutions_key">show_higher_resolutions</string>
     <string name="best_resolution_key">best_resolution</string>
 
-    <string-array name="high_resolution_list_values">
-        <item>2160p</item>
-        <item>1440p</item>
-    </string-array>
 
-    <string-array name="high_resolution_list_descriptions">
-        <item>2160p</item>
-        <item>1440p</item>
-    </string-array>
 
     <string-array name="resolution_list_values">
         <item>@string/best_resolution_key</item>
@@ -217,7 +195,6 @@
 
     <string name="prefer_original_audio_key">prefer_original_audio</string>
     <string name="prefer_descriptive_audio_key">prefer_descriptive_audio</string>
-    <string name="last_resize_mode">last_resize_mode</string>
 
     <string name="reset_settings">reset_settings</string>
 
@@ -390,7 +367,6 @@
         <item>@string/channel_tab_courses</item>
     </string-array>
 
-    <string name="import_export_data_path">import_export_data_path</string>
     <string name="import_data">import_data</string>
     <string name="export_data">export_data</string>
     <string name="import_subscriptions_key">import_subscriptions_key</string>
@@ -1375,10 +1351,6 @@
         <item>144p</item>
     </string-array>
 
-    <string-array name="high_resolution_limit_data_usage_values_list">
-        <item>2160p</item>
-        <item>1440p</item>
-    </string-array>
 
     <string name="list_view_mode_key">list_view_mode</string>
     <string name="list_view_mode_value">@string/list_view_mode_auto_key</string>
