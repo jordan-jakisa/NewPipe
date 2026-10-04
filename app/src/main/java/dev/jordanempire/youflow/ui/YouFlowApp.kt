@@ -274,7 +274,7 @@ fun YouFlowApp(window: WatchWindowState, onOpenPreferences: (screen: String) -> 
     ) { padding ->
         when (tab) {
             Tab.Home -> HomeScreen(actions, padding)
-            Tab.Shorts -> ShortsScreen(actions)
+            Tab.Shorts -> ShortsScreen(actions, padding)
             Tab.Subscriptions -> SubscriptionsScreen(actions, padding)
             Tab.You -> YouScreen(actions, padding)
         }

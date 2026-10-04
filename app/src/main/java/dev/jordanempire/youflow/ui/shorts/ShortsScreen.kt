@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -88,7 +89,7 @@ class ShortsViewModel(app: Application) : AndroidViewModel(app) {
 
 /** Full screen vertical pager. One shared player moves to whichever short is on screen. */
 @Composable
-fun ShortsScreen(actions: AppActions, vm: ShortsViewModel = viewModel()) {
+fun ShortsScreen(actions: AppActions, contentPadding: PaddingValues, vm: ShortsViewModel = viewModel()) {
     val context = LocalContext.current
     val player = remember { ShortsPlayer.get(context.applicationContext as Application) }
     val engine = remember { PlaybackEngine.get(context.applicationContext as Application) }
@@ -100,7 +101,8 @@ fun ShortsScreen(actions: AppActions, vm: ShortsViewModel = viewModel()) {
         onDispose { player.stop() }
     }
 
-    Box(Modifier.fillMaxSize().background(Color.Black)) {
+    // Keep the whole short above the bottom navigation bar (and the mini player when it shows).
+    Box(Modifier.fillMaxSize().background(Color.Black).padding(bottom = contentPadding.calculateBottomPadding())) {
         when (val s = state) {
             UiState.Loading -> LoadingBox()
 
@@ -153,7 +155,7 @@ private fun ShortsPager(items: List<VideoItem>, player: ShortsPlayer, actions: A
                 Thumbnail(item.thumbnail, Modifier.fillMaxSize(), contentDescription = null)
             }
             Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.55f to Color.Transparent, 1f to Color.Black.copy(alpha = 0.75f))))
-            Column(Modifier.align(Alignment.BottomStart).padding(start = 16.dp, end = 80.dp, bottom = 24.dp)) {
+            Column(Modifier.align(Alignment.BottomStart).padding(start = 16.dp, end = 80.dp, bottom = 20.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Thumbnail(item.avatar, Modifier.size(32.dp).clip(CircleShape).background(MaterialTheme.colorScheme.secondaryContainer))
                     Text(
