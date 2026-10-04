@@ -160,7 +160,7 @@ fun WatchScreen(
             if (info != null) {
                 item(key = "channel") { ChannelRow(info, subscribed, actions, onSubscribe = { vm.toggleSubscribe(info) }) }
                 item(key = "actions") { ActionRow(info, engine, queueSize = state.queue.size, onQueue = { showQueue = true }, onSave = { actions.saveVideo(info.toVideoItemForSave()) }) }
-                item(key = "description") { DescriptionCard(info) }
+                item(key = "description") { DescriptionCard(info, engine) }
                 item(key = "comments") { CommentsTeaser(info.url, onClick = { showComments = true }) }
                 val related = info.relatedItems.filterIsInstance<StreamInfoItem>()
                 items(related, key = { it.url }) { item ->
@@ -276,25 +276,58 @@ private fun ActionRow(info: StreamInfo, engine: PlaybackEngine, queueSize: Int, 
 }
 
 @Composable
-private fun DescriptionCard(info: StreamInfo) {
-    val text = info.description?.content.orEmpty()
-    if (text.isBlank()) return
+private fun DescriptionCard(info: StreamInfo, engine: PlaybackEngine) {
+    val raw = info.description?.content.orEmpty()
+    if (raw.isBlank()) return
+    val context = LocalContext.current
+    val linkColor = MaterialTheme.colorScheme.primary
     var expanded by remember { mutableStateOf(false) }
+    val text = remember(raw, linkColor) {
+        linkify(androidx.core.text.HtmlCompat.fromHtml(raw, androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT).toString(), linkColor)
+    }
     Surface(
         modifier = Modifier.fillMaxWidth().padding(16.dp).animateContentSize(),
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         onClick = { expanded = !expanded }
     ) {
-        Text(
-            androidx.core.text.HtmlCompat.fromHtml(text, androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT).toString(),
-            style = MaterialTheme.typography.bodyMedium,
+        androidx.compose.foundation.text.ClickableText(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurface),
             maxLines = if (expanded) Int.MAX_VALUE else 3,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(16.dp),
+            onClick = { offset ->
+                val link = text.getStringAnnotations(offset, offset).firstOrNull()
+                when (link?.tag) {
+                    "seek" -> engine.seekTo(link.item.toLong())
+                    "url" -> runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(link.item))) }
+                    else -> expanded = !expanded
+                }
+            }
         )
     }
 }
+
+private val TimestampRegex = Regex("""(?<![\d:])(?:(\d{1,2}):)?([0-5]?\d):([0-5]\d)(?![\d:])""")
+private val UrlRegex = Regex("""https?://[^\s)\]>"']+""")
+
+/** Turns "12:34" timestamps into seek links and URLs into browser links. */
+internal fun linkify(text: String, color: Color): androidx.compose.ui.text.AnnotatedString =
+    androidx.compose.ui.text.buildAnnotatedString {
+        append(text)
+        val style = androidx.compose.ui.text.SpanStyle(color = color, textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline)
+        TimestampRegex.findAll(text).forEach { m ->
+            val hours = m.groupValues[1].toLongOrNull() ?: 0
+            val seconds = hours * 3600 + m.groupValues[2].toLong() * 60 + m.groupValues[3].toLong()
+            addStyle(style, m.range.first, m.range.last + 1)
+            addStringAnnotation("seek", (seconds * 1000).toString(), m.range.first, m.range.last + 1)
+        }
+        UrlRegex.findAll(text).forEach { m ->
+            addStyle(style, m.range.first, m.range.last + 1)
+            addStringAnnotation("url", m.value, m.range.first, m.range.last + 1)
+        }
+    }
 
 internal fun StreamInfoItem.toVideoItem() = VideoItem(
     url = url,

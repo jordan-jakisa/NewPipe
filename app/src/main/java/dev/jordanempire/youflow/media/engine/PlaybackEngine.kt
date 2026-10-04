@@ -146,6 +146,11 @@ class PlaybackEngine private constructor(private val app: Application) {
     private val prefs = PreferenceManager.getDefaultSharedPreferences(app)
     private var textGroups: List<Tracks.Group> = emptyList()
     private var lastSavedAt = 0L
+    /** Selected sleep timer: 0 = off, -1 = stop at the end of the video, otherwise minutes. */
+    private val _sleepMinutes = MutableStateFlow(0)
+    val sleepMinutes: StateFlow<Int> = _sleepMinutes.asStateFlow()
+    private var sleepJob: Job? = null
+
     private var loadJob: Job? = null
     private var controller: Any? = null
     private var errorRetries = 0
@@ -293,6 +298,18 @@ class PlaybackEngine private constructor(private val app: Application) {
         }
     }
 
+    fun setSleepTimer(minutes: Int) {
+        sleepJob?.cancel()
+        _sleepMinutes.value = minutes
+        if (minutes > 0) {
+            sleepJob = scope.launch {
+                delay(minutes * 60_000L)
+                exo.playWhenReady = false
+                _sleepMinutes.value = 0
+            }
+        }
+    }
+
     fun togglePlayPause() {
         if (exo.playbackState == Player.STATE_ENDED) exo.seekTo(0)
         exo.playWhenReady = !exo.playWhenReady
@@ -342,6 +359,10 @@ class PlaybackEngine private constructor(private val app: Application) {
     }
 
     private fun onEnded() {
+        if (_sleepMinutes.value == -1) {
+            _sleepMinutes.value = 0
+            return
+        }
         if (!dev.jordanempire.youflow.ui.settings.AppSettings.get(app).autoplay.value) return
         if (!next()) {
             val type = _state.value.info?.streamType

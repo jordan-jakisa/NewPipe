@@ -11,6 +11,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.jordanempire.youflow.media.engine.PlaybackEngine
@@ -40,6 +42,12 @@ fun PlayerSettingsSheet(engine: PlaybackEngine, state: PlayerState, onDismiss: (
                         onClick = { engine.setSpeed(speed) },
                         label = { Text(if (speed == 1f) "Normal" else "${speed}x") }
                     )
+                }
+            }
+            val sleep by engine.sleepMinutes.collectAsState()
+            Section("Sleep timer") {
+                listOf(0 to "Off", 10 to "10 min", 15 to "15 min", 30 to "30 min", 45 to "45 min", 60 to "1 hour", -1 to "End of video").forEach { (minutes, label) ->
+                    FilterChip(selected = sleep == minutes, onClick = { engine.setSleepTimer(minutes) }, label = { Text(label) })
                 }
             }
             Section("Captions") {
