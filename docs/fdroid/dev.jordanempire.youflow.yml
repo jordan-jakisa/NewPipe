@@ -19,12 +19,15 @@ Repo: https://github.com/jordan-jakisa/NewPipe
 Builds:
   - versionName: 0.1.0
     versionCode: 1
+    # F-Droid wants the full commit hash here (a tag name works for the first build only if it is a
+    # tag); replace with `git rev-parse v0.1.0` once the release is tagged.
     commit: v0.1.0
+    subdir: app
     submodules: true
     gradle:
       - yes
 
 AutoUpdateMode: Version
-UpdateCheckMode: Tags
+UpdateCheckMode: Tags .*[0-9]$
 CurrentVersion: 0.1.0
 CurrentVersionCode: 1
