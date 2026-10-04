@@ -147,7 +147,9 @@ fun CommentsTeaser(url: String, onClick: () -> Unit, vm: CommentsViewModel = vie
             val first = ui.items.firstOrNull()
             when {
                 ui.loading -> Text("Loading…", color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
+
                 ui.error != null -> Text("Couldn't load comments", color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
+
                 first != null -> Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     Thumbnail(first.avatar, Modifier.size(28.dp).clip(CircleShape).background(MaterialTheme.colorScheme.secondaryContainer))
                     Text(first.text, maxLines = 2, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.bodySmall)
@@ -173,7 +175,9 @@ fun CommentsSheet(onDismiss: () -> Unit, vm: CommentsViewModel = viewModel()) {
         )
         when {
             ui.loading -> LoadingBox(Modifier.height(240.dp))
+
             ui.items.isEmpty() -> Text("No comments yet.", modifier = Modifier.padding(20.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+
             else -> LazyColumn(state = listState, modifier = Modifier.navigationBarsPadding()) {
                 items(ui.items, key = { it.id.ifEmpty { it.text + it.author } }) { comment ->
                     CommentRow(comment, onToggleReplies = { vm.toggleReplies(comment) }, expandedReplies = ui.replies[comment.id])

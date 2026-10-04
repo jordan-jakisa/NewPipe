@@ -9,11 +9,11 @@ package dev.jordanempire.youflow.database.history.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
-import io.reactivex.rxjava3.core.Flowable
 import dev.jordanempire.youflow.database.BasicDAO
 import dev.jordanempire.youflow.database.history.model.StreamHistoryEntity
 import dev.jordanempire.youflow.database.history.model.StreamHistoryEntry
 import dev.jordanempire.youflow.database.stream.StreamStatisticsEntry
+import io.reactivex.rxjava3.core.Flowable
 
 @Dao
 abstract class StreamHistoryDAO : BasicDAO<StreamHistoryEntity> {

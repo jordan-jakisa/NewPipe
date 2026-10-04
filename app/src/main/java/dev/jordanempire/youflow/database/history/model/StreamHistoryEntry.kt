@@ -2,10 +2,10 @@ package dev.jordanempire.youflow.database.history.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
-import java.time.OffsetDateTime
 import dev.jordanempire.youflow.database.stream.model.StreamEntity
-import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import dev.jordanempire.youflow.util.image.ImageStrategy
+import java.time.OffsetDateTime
+import org.schabi.newpipe.extractor.stream.StreamInfoItem
 
 data class StreamHistoryEntry(
     @Embedded

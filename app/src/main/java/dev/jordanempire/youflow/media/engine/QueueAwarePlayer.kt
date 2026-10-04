@@ -12,8 +12,11 @@ internal class QueueAwarePlayer(player: Player, private val engine: PlaybackEngi
     override fun getAvailableCommands(): Player.Commands {
         val builder = super.getAvailableCommands().buildUpon()
         val s = engine.state.value
-        if (s.hasNext) builder.addAll(Player.COMMAND_SEEK_TO_NEXT, Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
-        else builder.removeAll(Player.COMMAND_SEEK_TO_NEXT, Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
+        if (s.hasNext) {
+            builder.addAll(Player.COMMAND_SEEK_TO_NEXT, Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
+        } else {
+            builder.removeAll(Player.COMMAND_SEEK_TO_NEXT, Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM)
+        }
         builder.addAll(Player.COMMAND_SEEK_TO_PREVIOUS, Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM)
         return builder.build()
     }
@@ -21,8 +24,16 @@ internal class QueueAwarePlayer(player: Player, private val engine: PlaybackEngi
     override fun isCommandAvailable(command: Int) = availableCommands.contains(command)
     override fun hasNextMediaItem() = engine.state.value.hasNext
     override fun hasPreviousMediaItem() = true
-    override fun seekToNext() { engine.next() }
-    override fun seekToNextMediaItem() { engine.next() }
-    override fun seekToPrevious() { engine.previous() }
-    override fun seekToPreviousMediaItem() { engine.previous() }
+    override fun seekToNext() {
+        engine.next()
+    }
+    override fun seekToNextMediaItem() {
+        engine.next()
+    }
+    override fun seekToPrevious() {
+        engine.previous()
+    }
+    override fun seekToPreviousMediaItem() {
+        engine.previous()
+    }
 }

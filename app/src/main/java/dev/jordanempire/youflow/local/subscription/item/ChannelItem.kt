@@ -6,10 +6,10 @@ import android.widget.TextView
 import com.xwray.groupie.GroupieViewHolder
 import com.xwray.groupie.Item
 import dev.jordanempire.youflow.R
-import org.schabi.newpipe.extractor.channel.ChannelInfoItem
 import dev.jordanempire.youflow.util.Localization
 import dev.jordanempire.youflow.util.OnClickGesture
 import dev.jordanempire.youflow.util.image.CoilHelper
+import org.schabi.newpipe.extractor.channel.ChannelInfoItem
 
 class ChannelItem(
     private val infoItem: ChannelInfoItem,

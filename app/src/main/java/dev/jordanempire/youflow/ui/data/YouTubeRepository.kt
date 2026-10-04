@@ -2,24 +2,28 @@ package dev.jordanempire.youflow.ui.data
 
 import android.content.Context
 import dev.jordanempire.youflow.NewPipeDatabase
+import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
 import dev.jordanempire.youflow.database.stream.model.StreamEntity
 import dev.jordanempire.youflow.database.subscription.SubscriptionEntity
 import dev.jordanempire.youflow.local.feed.FeedDatabaseManager
 import dev.jordanempire.youflow.local.feed.service.FeedLoadManager
+import dev.jordanempire.youflow.local.history.HistoryRecordManager
+import dev.jordanempire.youflow.local.playlist.LocalPlaylistManager
 import dev.jordanempire.youflow.local.subscription.SubscriptionManager
+import dev.jordanempire.youflow.ui.model.ChannelDetails
 import dev.jordanempire.youflow.ui.model.ChannelItem
+import dev.jordanempire.youflow.ui.model.ChannelTab
+import dev.jordanempire.youflow.ui.model.CommentItem
 import dev.jordanempire.youflow.ui.model.ContentItem
 import dev.jordanempire.youflow.ui.model.KioskRef
+import dev.jordanempire.youflow.ui.model.PlaylistDetails
 import dev.jordanempire.youflow.ui.model.PlaylistItem
 import dev.jordanempire.youflow.ui.model.VideoItem
 import dev.jordanempire.youflow.util.ExtractorHelper
 import dev.jordanempire.youflow.util.KioskTranslator
 import dev.jordanempire.youflow.util.image.ImageStrategy
-import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import kotlinx.coroutines.Dispatchers
-import dev.jordanempire.youflow.local.playlist.LocalPlaylistManager
-import dev.jordanempire.youflow.local.history.HistoryRecordManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
@@ -29,18 +33,14 @@ import kotlinx.coroutines.rx3.await
 import kotlinx.coroutines.rx3.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import org.schabi.newpipe.extractor.InfoItem
+import org.schabi.newpipe.extractor.Page
+import org.schabi.newpipe.extractor.ServiceList
+import org.schabi.newpipe.extractor.channel.ChannelInfo
+import org.schabi.newpipe.extractor.channel.ChannelInfoItem
 import org.schabi.newpipe.extractor.comments.CommentsInfo
 import org.schabi.newpipe.extractor.comments.CommentsInfoItem
-import dev.jordanempire.youflow.ui.model.CommentItem
-import org.schabi.newpipe.extractor.Page
-import org.schabi.newpipe.extractor.channel.ChannelInfo
 import org.schabi.newpipe.extractor.linkhandler.ListLinkHandler
 import org.schabi.newpipe.extractor.playlist.PlaylistInfo
-import dev.jordanempire.youflow.ui.model.ChannelDetails
-import dev.jordanempire.youflow.ui.model.ChannelTab
-import dev.jordanempire.youflow.ui.model.PlaylistDetails
-import org.schabi.newpipe.extractor.ServiceList
-import org.schabi.newpipe.extractor.channel.ChannelInfoItem
 import org.schabi.newpipe.extractor.playlist.PlaylistInfoItem
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import org.schabi.newpipe.extractor.stream.StreamType
@@ -50,7 +50,6 @@ class YouTubeRepository(private val context: Context) {
     companion object {
         const val WATCH_LATER = "Watch later"
     }
-
 
     private val serviceId = ServiceList.YouTube.serviceId
     private val database get() = NewPipeDatabase.getInstance(context)
@@ -71,11 +70,10 @@ class YouTubeRepository(private val context: Context) {
     }
 
     // The extractor helpers run their Single on the subscribing thread, so keep them off Main.
-    suspend fun kioskVideos(kiosk: KioskRef, forceLoad: Boolean = false): List<VideoItem> =
-        withContext(Dispatchers.IO) {
-            val info = ExtractorHelper.getKioskInfo(serviceId, kiosk.url, forceLoad).await()
-            info.relatedItems.filterIsInstance<StreamInfoItem>().map { it.toVideo() }
-        }
+    suspend fun kioskVideos(kiosk: KioskRef, forceLoad: Boolean = false): List<VideoItem> = withContext(Dispatchers.IO) {
+        val info = ExtractorHelper.getKioskInfo(serviceId, kiosk.url, forceLoad).await()
+        info.relatedItems.filterIsInstance<StreamInfoItem>().map { it.toVideo() }
+    }
 
     /**
      * YouTube sometimes answers with a burst of 3xx/4xx/5xx responses ("Too many follow-up
@@ -126,10 +124,9 @@ class YouTubeRepository(private val context: Context) {
         FeedLoadManager(context).startLoading(ignoreOutdatedThreshold = true).await()
     }
 
-    fun subscriptions(): Flow<List<ChannelItem>> =
-        SubscriptionManager(context).subscriptions().toObservable().asFlow().map { list ->
-            list.map { it.toChannel() }
-        }
+    fun subscriptions(): Flow<List<ChannelItem>> = SubscriptionManager(context).subscriptions().toObservable().asFlow().map { list ->
+        list.map { it.toChannel() }
+    }
 
     suspend fun subscribe(channel: ChannelItem) = withContext(Dispatchers.IO) {
         SubscriptionManager(context).insertSubscription(
@@ -148,10 +145,9 @@ class YouTubeRepository(private val context: Context) {
         SubscriptionManager(context).deleteSubscription(serviceId, channelUrl).await()
     }
 
-    fun history(): Flow<List<VideoItem>> =
-        database.streamHistoryDAO().history.toObservable().asFlow().map { list ->
-            list.map { it.streamEntity.toVideo() }
-        }
+    fun history(): Flow<List<VideoItem>> = database.streamHistoryDAO().history.toObservable().asFlow().map { list ->
+        list.map { it.streamEntity.toVideo() }
+    }
 
     /** Started but unfinished videos, most recently watched first. */
     fun continueWatching(): Flow<List<VideoItem>> = combine(
@@ -161,8 +157,11 @@ class YouTubeRepository(private val context: Context) {
         val byStream = states.associateBy { it.streamUid }
         history.mapNotNull { h ->
             val state = byStream[h.streamId] ?: return@mapNotNull null
-            if (state.progressMillis <= 0 || state.isFinished(h.streamEntity.duration)) null
-            else h.streamEntity.toVideo(state.progressMillis)
+            if (state.progressMillis <= 0 || state.isFinished(h.streamEntity.duration)) {
+                null
+            } else {
+                h.streamEntity.toVideo(state.progressMillis)
+            }
         }.distinctBy { it.url }.take(12)
     }
 
@@ -174,18 +173,17 @@ class YouTubeRepository(private val context: Context) {
 
     private val playlistManager get() = LocalPlaylistManager(database)
 
-    fun playlists(): Flow<List<PlaylistItem>> =
-        playlistManager.playlists.toObservable().asFlow().map { list ->
-            list.map {
-                PlaylistItem(
-                    url = "local:${it.uid}",
-                    name = it.orderingName.orEmpty(),
-                    thumbnail = it.thumbnailUrl,
-                    uploader = null,
-                    streamCount = it.streamCount
-                )
-            }
+    fun playlists(): Flow<List<PlaylistItem>> = playlistManager.playlists.toObservable().asFlow().map { list ->
+        list.map {
+            PlaylistItem(
+                url = "local:${it.uid}",
+                name = it.orderingName.orEmpty(),
+                thumbnail = it.thumbnailUrl,
+                uploader = null,
+                streamCount = it.streamCount
+            )
         }
+    }
 
     private fun VideoItem.toStreamEntity() = StreamEntity(
         serviceId = serviceId,
@@ -222,13 +220,11 @@ class YouTubeRepository(private val context: Context) {
         Unit
     }
 
-    fun playlistVideos(playlistId: Long): Flow<List<Pair<Long, VideoItem>>> =
-        playlistManager.getPlaylistStreams(playlistId).toObservable().asFlow().map { list ->
-            list.map { it.streamId to it.streamEntity.toVideo(it.progressMillis) }
-        }
+    fun playlistVideos(playlistId: Long): Flow<List<Pair<Long, VideoItem>>> = playlistManager.getPlaylistStreams(playlistId).toObservable().asFlow().map { list ->
+        list.map { it.streamId to it.streamEntity.toVideo(it.progressMillis) }
+    }
 
-    fun playlistName(playlistId: Long): Flow<String> =
-        playlists().map { list -> list.firstOrNull { it.url == "local:$playlistId" }?.name.orEmpty() }
+    fun playlistName(playlistId: Long): Flow<String> = playlists().map { list -> list.firstOrNull { it.url == "local:$playlistId" }?.name.orEmpty() }
 
     suspend fun removeFromPlaylist(playlistId: Long, streamId: Long) = withContext(Dispatchers.IO) {
         val remaining = playlistManager.getPlaylistStreams(playlistId).firstOrError().await()
@@ -254,8 +250,12 @@ class YouTubeRepository(private val context: Context) {
     suspend fun channel(url: String): LoadedChannel = withContext(Dispatchers.IO) {
         val info: ChannelInfo = ExtractorHelper.getChannelInfo(serviceId, url, false).await()
         val labels = mapOf(
-            "videos" to "Videos", "shorts" to "Shorts", "livestreams" to "Live",
-            "playlists" to "Playlists", "albums" to "Releases", "podcasts" to "Podcasts",
+            "videos" to "Videos",
+            "shorts" to "Shorts",
+            "livestreams" to "Live",
+            "playlists" to "Playlists",
+            "albums" to "Releases",
+            "podcasts" to "Podcasts",
             "courses" to "Courses"
         )
         val handlers = mutableListOf<ListLinkHandler>()
@@ -280,16 +280,15 @@ class YouTubeRepository(private val context: Context) {
         )
     }
 
-    suspend fun channelTab(handler: ListLinkHandler, page: Page?): Paged<ContentItem> =
-        withContext(Dispatchers.IO) {
-            if (page == null) {
-                val tab = ExtractorHelper.getChannelTab(serviceId, handler, false).await()
-                Paged(tab.relatedItems.mapNotNull { it.toContent() }, tab.nextPage)
-            } else {
-                val more = ExtractorHelper.getMoreChannelTabItems(serviceId, handler, page).await()
-                Paged(more.items.mapNotNull { it.toContent() }, more.nextPage)
-            }
+    suspend fun channelTab(handler: ListLinkHandler, page: Page?): Paged<ContentItem> = withContext(Dispatchers.IO) {
+        if (page == null) {
+            val tab = ExtractorHelper.getChannelTab(serviceId, handler, false).await()
+            Paged(tab.relatedItems.mapNotNull { it.toContent() }, tab.nextPage)
+        } else {
+            val more = ExtractorHelper.getMoreChannelTabItems(serviceId, handler, page).await()
+            Paged(more.items.mapNotNull { it.toContent() }, more.nextPage)
         }
+    }
 
     class LoadedPlaylist(val details: PlaylistDetails, val info: PlaylistInfo, val videos: List<VideoItem>, val next: Page?)
 
@@ -381,11 +380,11 @@ class YouTubeRepository(private val context: Context) {
         SubscriptionManager(context).updateNotificationMode(serviceId, channelUrl, if (enabled) 1 else 0).await()
     }
 
-    fun isNotifying(channelUrl: String): Flow<Boolean> =
-        subscriptions().map { list -> list.firstOrNull { it.url == channelUrl }?.notify == true }
+    fun isNotifying(channelUrl: String): Flow<Boolean> = subscriptions().map { list -> list.firstOrNull { it.url == channelUrl }?.notify == true }
 
     private fun InfoItem.toContent(): ContentItem? = when (this) {
         is StreamInfoItem -> toVideo()
+
         is ChannelInfoItem -> ChannelItem(
             url = url,
             name = name,
@@ -393,6 +392,7 @@ class YouTubeRepository(private val context: Context) {
             subscribers = subscriberCount.takeIf { it >= 0 },
             description = description
         )
+
         is PlaylistInfoItem -> PlaylistItem(
             url = url,
             name = name,
@@ -400,6 +400,7 @@ class YouTubeRepository(private val context: Context) {
             uploader = uploaderName,
             streamCount = streamCount
         )
+
         else -> null
     }
 

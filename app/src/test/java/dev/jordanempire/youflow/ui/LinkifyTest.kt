@@ -7,8 +7,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class LinkifyTest {
-    private fun seeks(text: String) =
-        linkify(text, Color.Red).getStringAnnotations("seek", 0, text.length).map { it.item.toLong() }
+    private fun seeks(text: String) = linkify(text, Color.Red).getStringAnnotations("seek", 0, text.length).map { it.item.toLong() }
 
     @Test
     fun minutesAndSeconds() = assertEquals(listOf(90_000L), seeks("jump to 1:30 now"))

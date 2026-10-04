@@ -9,9 +9,9 @@ package dev.jordanempire.youflow.database.playlist.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
-import io.reactivex.rxjava3.core.Flowable
 import dev.jordanempire.youflow.database.BasicDAO
 import dev.jordanempire.youflow.database.playlist.model.PlaylistRemoteEntity
+import io.reactivex.rxjava3.core.Flowable
 
 @Dao
 interface PlaylistRemoteDAO : BasicDAO<PlaylistRemoteEntity> {

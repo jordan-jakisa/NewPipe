@@ -1,11 +1,11 @@
 package dev.jordanempire.youflow.database
 
 import androidx.room.TypeConverter
+import dev.jordanempire.youflow.local.subscription.FeedGroupIcon
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import org.schabi.newpipe.extractor.stream.StreamType
-import dev.jordanempire.youflow.local.subscription.FeedGroupIcon
 
 class Converters {
     /**

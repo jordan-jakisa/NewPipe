@@ -7,9 +7,9 @@ package dev.jordanempire.youflow.util
 
 import android.content.Context
 import androidx.preference.PreferenceManager
-import java.util.regex.Matcher
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.ktx.getStringSafe
+import java.util.regex.Matcher
 
 object FilenameUtils {
     private const val CHARSET_MOST_SPECIAL = "[\\n\\r|?*<\":\\\\>/']+"

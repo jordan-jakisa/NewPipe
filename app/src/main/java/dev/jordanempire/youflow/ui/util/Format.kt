@@ -7,8 +7,11 @@ fun formatDuration(totalSeconds: Long): String {
     val h = totalSeconds / 3600
     val m = (totalSeconds % 3600) / 60
     val s = totalSeconds % 60
-    return if (h > 0) String.format(Locale.US, "%d:%02d:%02d", h, m, s)
-    else String.format(Locale.US, "%d:%02d", m, s)
+    return if (h > 0) {
+        String.format(Locale.US, "%d:%02d:%02d", h, m, s)
+    } else {
+        String.format(Locale.US, "%d:%02d", m, s)
+    }
 }
 
 fun formatCount(count: Long, unit: String): String {
@@ -22,7 +25,10 @@ fun formatCount(count: Long, unit: String): String {
 }
 
 private fun compact(value: Double, suffix: String): String {
-    val rounded = if (value >= 100) String.format(Locale.US, "%.0f", value)
-    else String.format(Locale.US, "%.1f", value).removeSuffix(".0")
+    val rounded = if (value >= 100) {
+        String.format(Locale.US, "%.0f", value)
+    } else {
+        String.format(Locale.US, "%.1f", value).removeSuffix(".0")
+    }
     return rounded + suffix
 }

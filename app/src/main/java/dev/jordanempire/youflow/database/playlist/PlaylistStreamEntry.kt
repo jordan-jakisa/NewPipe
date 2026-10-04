@@ -12,8 +12,8 @@ import dev.jordanempire.youflow.database.LocalItem
 import dev.jordanempire.youflow.database.playlist.model.PlaylistStreamEntity
 import dev.jordanempire.youflow.database.stream.model.StreamEntity
 import dev.jordanempire.youflow.database.stream.model.StreamStateEntity
-import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import dev.jordanempire.youflow.util.image.ImageStrategy
+import org.schabi.newpipe.extractor.stream.StreamInfoItem
 
 data class PlaylistStreamEntry(
     @Embedded

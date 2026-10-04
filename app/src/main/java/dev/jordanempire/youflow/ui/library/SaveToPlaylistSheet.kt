@@ -128,7 +128,12 @@ fun NamePlaylistDialog(title: String, initial: String, onDismiss: () -> Unit, on
         text = {
             OutlinedTextField(value = name, onValueChange = { name = it }, singleLine = true, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
         },
-        confirmButton = { TextButton(enabled = name.isNotBlank(), onClick = { onConfirm(name); onDismiss() }) { Text("Save") } },
+        confirmButton = {
+            TextButton(enabled = name.isNotBlank(), onClick = {
+                onConfirm(name)
+                onDismiss()
+            }) { Text("Save") }
+        },
         dismissButton = { TextButton(onClick = onDismiss) { Text("Cancel") } }
     )
 }

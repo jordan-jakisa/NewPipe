@@ -2,10 +2,10 @@ package dev.jordanempire.youflow.local.feed.service
 
 import dev.jordanempire.youflow.database.subscription.NotificationMode
 import dev.jordanempire.youflow.database.subscription.SubscriptionEntity
+import dev.jordanempire.youflow.util.image.ImageStrategy
 import org.schabi.newpipe.extractor.Info
 import org.schabi.newpipe.extractor.channel.ChannelInfo
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
-import dev.jordanempire.youflow.util.image.ImageStrategy
 
 /**
  * Instances of this class might stay around in memory for some time while fetching the feed,

@@ -11,10 +11,10 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import org.schabi.newpipe.extractor.channel.ChannelInfo
-import org.schabi.newpipe.extractor.channel.ChannelInfoItem
 import dev.jordanempire.youflow.util.NO_SERVICE_ID
 import dev.jordanempire.youflow.util.image.ImageStrategy
+import org.schabi.newpipe.extractor.channel.ChannelInfo
+import org.schabi.newpipe.extractor.channel.ChannelInfoItem
 
 @Entity(
     tableName = SubscriptionEntity.Companion.SUBSCRIPTION_TABLE,

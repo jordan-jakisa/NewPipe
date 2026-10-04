@@ -6,16 +6,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.processors.BehaviorProcessor
-import io.reactivex.rxjava3.schedulers.Schedulers
 import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
 import dev.jordanempire.youflow.local.feed.FeedDatabaseManager
 import dev.jordanempire.youflow.local.subscription.FeedGroupIcon
 import dev.jordanempire.youflow.local.subscription.SubscriptionManager
 import dev.jordanempire.youflow.local.subscription.item.PickerSubscriptionItem
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.processors.BehaviorProcessor
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 class FeedGroupDialogViewModel(
     applicationContext: Context,

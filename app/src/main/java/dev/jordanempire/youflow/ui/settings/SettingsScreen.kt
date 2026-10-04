@@ -127,7 +127,10 @@ fun SettingsScreen(onBack: () -> Unit, onOpenClassicSettings: () -> Unit) {
                         confirm = "Clear watch history and resume positions?" to {
                             scope.launch(Dispatchers.IO) {
                                 val m = HistoryRecordManager(app)
-                                runCatching { m.deleteWholeStreamHistory().await(); m.deleteCompleteStreamStateHistory().await() }
+                                runCatching {
+                                    m.deleteWholeStreamHistory().await()
+                                    m.deleteCompleteStreamStateHistory().await()
+                                }
                             }
                             toast(context, "Watch history cleared")
                         }
@@ -170,10 +173,16 @@ fun SettingsScreen(onBack: () -> Unit, onOpenClassicSettings: () -> Unit) {
                 Column {
                     ThemeChoices.forEach { (value, label) ->
                         androidx.compose.foundation.layout.Row(
-                            Modifier.fillMaxWidth().clickable { settings.setTheme(value); pickTheme = false }.padding(vertical = 4.dp),
+                            Modifier.fillMaxWidth().clickable {
+                                settings.setTheme(value)
+                                pickTheme = false
+                            }.padding(vertical = 4.dp),
                             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
                         ) {
-                            RadioButton(selected = theme == value, onClick = { settings.setTheme(value); pickTheme = false })
+                            RadioButton(selected = theme == value, onClick = {
+                                settings.setTheme(value)
+                                pickTheme = false
+                            })
                             Text(label, modifier = Modifier.padding(start = 8.dp))
                         }
                     }
@@ -186,7 +195,12 @@ fun SettingsScreen(onBack: () -> Unit, onOpenClassicSettings: () -> Unit) {
         AlertDialog(
             onDismissRequest = { confirm = null },
             title = { Text(message) },
-            confirmButton = { TextButton(onClick = { action(); confirm = null }) { Text("Clear") } },
+            confirmButton = {
+                TextButton(onClick = {
+                    action()
+                    confirm = null
+                }) { Text("Clear") }
+            },
             dismissButton = { TextButton(onClick = { confirm = null }) { Text("Cancel") } }
         )
     }

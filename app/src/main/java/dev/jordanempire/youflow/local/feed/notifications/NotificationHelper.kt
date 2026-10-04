@@ -17,10 +17,10 @@ import androidx.core.content.getSystemService
 import androidx.core.net.toUri
 import androidx.preference.PreferenceManager
 import dev.jordanempire.youflow.R
-import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import dev.jordanempire.youflow.local.feed.service.FeedUpdateInfo
 import dev.jordanempire.youflow.util.NavigationHelper
 import dev.jordanempire.youflow.util.image.CoilHelper
+import org.schabi.newpipe.extractor.stream.StreamInfoItem
 
 /**
  * Helper for everything related to show notifications about new streams to the user.
@@ -189,7 +189,6 @@ class NotificationHelper(val context: Context) {
 }
 
 /** A link intent the new UI understands, so notifications open YouFlow rather than the classic screens. */
-private fun openInYouFlow(context: Context, url: String): Intent =
-    Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url))
-        .setClass(context, dev.jordanempire.youflow.ui.YouFlowActivity::class.java)
-        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+private fun openInYouFlow(context: Context, url: String): Intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url))
+    .setClass(context, dev.jordanempire.youflow.ui.YouFlowActivity::class.java)
+    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)

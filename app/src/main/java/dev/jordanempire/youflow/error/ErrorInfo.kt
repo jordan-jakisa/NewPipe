@@ -7,9 +7,13 @@ import androidx.core.content.ContextCompat
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.upstream.HttpDataSource
 import com.google.android.exoplayer2.upstream.Loader
+import dev.jordanempire.youflow.R
+import dev.jordanempire.youflow.ktx.isNetworkRelated
+import dev.jordanempire.youflow.player.mediasource.FailedMediaSource
+import dev.jordanempire.youflow.player.resolver.PlaybackResolver
+import dev.jordanempire.youflow.util.text.getText
 import java.net.UnknownHostException
 import kotlinx.parcelize.Parcelize
-import dev.jordanempire.youflow.R
 import org.schabi.newpipe.extractor.Info
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.ServiceList.YouTube
@@ -25,10 +29,6 @@ import org.schabi.newpipe.extractor.exceptions.ReCaptchaException
 import org.schabi.newpipe.extractor.exceptions.SignInConfirmNotBotException
 import org.schabi.newpipe.extractor.exceptions.UnsupportedContentInCountryException
 import org.schabi.newpipe.extractor.exceptions.YoutubeMusicPremiumContentException
-import dev.jordanempire.youflow.ktx.isNetworkRelated
-import dev.jordanempire.youflow.player.mediasource.FailedMediaSource
-import dev.jordanempire.youflow.player.resolver.PlaybackResolver
-import dev.jordanempire.youflow.util.text.getText
 
 /**
  * An error has occurred in the app. This class contains plain old parcelable data that can be used

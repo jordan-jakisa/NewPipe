@@ -6,11 +6,11 @@
 
 package dev.jordanempire.youflow.database.playlist
 
+import dev.jordanempire.youflow.database.playlist.model.PlaylistRemoteEntity
+import dev.jordanempire.youflow.local.bookmark.MergedPlaylistManager
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import dev.jordanempire.youflow.database.playlist.model.PlaylistRemoteEntity
-import dev.jordanempire.youflow.local.bookmark.MergedPlaylistManager
 
 class PlaylistLocalItemTest {
 

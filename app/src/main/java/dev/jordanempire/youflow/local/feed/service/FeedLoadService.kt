@@ -32,17 +32,17 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.PendingIntentCompat
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.functions.Function
-import java.util.concurrent.TimeUnit
 import dev.jordanempire.youflow.App
 import dev.jordanempire.youflow.MainActivity.DEBUG
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
 import dev.jordanempire.youflow.local.feed.service.FeedEventManager.Event.ErrorResultEvent
 import dev.jordanempire.youflow.local.feed.service.FeedEventManager.postEvent
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.functions.Function
+import java.util.concurrent.TimeUnit
 
 class FeedLoadService : Service() {
     companion object {

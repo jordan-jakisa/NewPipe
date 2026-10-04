@@ -6,14 +6,14 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
-import java.time.OffsetDateTime
 import dev.jordanempire.youflow.database.BasicDAO
 import dev.jordanempire.youflow.database.stream.model.StreamEntity
 import dev.jordanempire.youflow.database.stream.model.StreamEntity.Companion.STREAM_ID
-import org.schabi.newpipe.extractor.stream.StreamType
 import dev.jordanempire.youflow.util.StreamTypeUtil
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Flowable
+import java.time.OffsetDateTime
+import org.schabi.newpipe.extractor.stream.StreamType
 
 @Dao
 abstract class StreamDAO : BasicDAO<StreamEntity> {

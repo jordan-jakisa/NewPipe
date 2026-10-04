@@ -13,8 +13,6 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.IntentCompat
 import com.grack.nanojson.JsonWriter
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
 import dev.jordanempire.youflow.BuildConfig
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.databinding.ActivityErrorBinding
@@ -22,6 +20,8 @@ import dev.jordanempire.youflow.util.Localization
 import dev.jordanempire.youflow.util.ThemeHelper
 import dev.jordanempire.youflow.util.external_communication.ShareUtils
 import dev.jordanempire.youflow.util.text.setTextWithLinks
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 /**
  * This activity is used to show error details and let the user copy or share them locally.

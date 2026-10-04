@@ -1,8 +1,8 @@
 package dev.jordanempire.youflow.local.subscription.workers
 
+import dev.jordanempire.youflow.BuildConfig
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import dev.jordanempire.youflow.BuildConfig
 
 @Serializable
 class SubscriptionData(

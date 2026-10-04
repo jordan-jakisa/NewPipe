@@ -2,9 +2,9 @@ package dev.jordanempire.youflow.local.feed.notifications
 
 import android.content.Context
 import androidx.preference.PreferenceManager
-import java.util.concurrent.TimeUnit
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.ktx.getStringSafe
+import java.util.concurrent.TimeUnit
 
 /**
  * Information for the Scheduler which checks for new streams.

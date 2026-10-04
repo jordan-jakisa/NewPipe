@@ -45,7 +45,6 @@ class AppSettings private constructor(app: Application) {
         @Volatile
         private var instance: AppSettings? = null
 
-        fun get(app: Application): AppSettings =
-            instance ?: synchronized(this) { instance ?: AppSettings(app).also { instance = it } }
+        fun get(app: Application): AppSettings = instance ?: synchronized(this) { instance ?: AppSettings(app).also { instance = it } }
     }
 }

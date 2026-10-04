@@ -11,6 +11,8 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.internal.runner.junit4.statement.UiThreadStatement
+import dev.jordanempire.youflow.R
+import dev.jordanempire.youflow.util.StreamItemAdapter.StreamInfoWrapper
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -19,14 +21,12 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import dev.jordanempire.youflow.R
 import org.schabi.newpipe.extractor.MediaFormat
 import org.schabi.newpipe.extractor.downloader.Response
 import org.schabi.newpipe.extractor.stream.AudioStream
 import org.schabi.newpipe.extractor.stream.Stream
 import org.schabi.newpipe.extractor.stream.SubtitlesStream
 import org.schabi.newpipe.extractor.stream.VideoStream
-import dev.jordanempire.youflow.util.StreamItemAdapter.StreamInfoWrapper
 
 @MediumTest
 @RunWith(AndroidJUnit4::class)

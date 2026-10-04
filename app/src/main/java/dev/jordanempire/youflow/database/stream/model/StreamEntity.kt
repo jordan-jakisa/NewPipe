@@ -5,17 +5,17 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import java.io.Serializable
-import java.time.OffsetDateTime
 import dev.jordanempire.youflow.database.stream.model.StreamEntity.Companion.STREAM_SERVICE_ID
 import dev.jordanempire.youflow.database.stream.model.StreamEntity.Companion.STREAM_TABLE
 import dev.jordanempire.youflow.database.stream.model.StreamEntity.Companion.STREAM_URL
+import dev.jordanempire.youflow.player.playqueue.PlayQueueItem
+import dev.jordanempire.youflow.util.image.ImageStrategy
+import java.io.Serializable
+import java.time.OffsetDateTime
 import org.schabi.newpipe.extractor.localization.DateWrapper
 import org.schabi.newpipe.extractor.stream.StreamInfo
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import org.schabi.newpipe.extractor.stream.StreamType
-import dev.jordanempire.youflow.player.playqueue.PlayQueueItem
-import dev.jordanempire.youflow.util.image.ImageStrategy
 
 @Entity(
     tableName = STREAM_TABLE,

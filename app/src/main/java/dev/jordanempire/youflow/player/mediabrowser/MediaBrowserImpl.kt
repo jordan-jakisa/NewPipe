@@ -13,11 +13,6 @@ import androidx.media.MediaBrowserServiceCompat
 import androidx.media.MediaBrowserServiceCompat.BrowserRoot.EXTRA_RECENT
 import androidx.media.MediaBrowserServiceCompat.Result
 import androidx.media.utils.MediaConstants
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.function.Consumer
 import dev.jordanempire.youflow.MainActivity.DEBUG
 import dev.jordanempire.youflow.NewPipeDatabase
 import dev.jordanempire.youflow.R
@@ -25,6 +20,17 @@ import dev.jordanempire.youflow.database.history.model.StreamHistoryEntry
 import dev.jordanempire.youflow.database.playlist.PlaylistLocalItem
 import dev.jordanempire.youflow.database.playlist.PlaylistStreamEntry
 import dev.jordanempire.youflow.database.playlist.model.PlaylistRemoteEntity
+import dev.jordanempire.youflow.local.bookmark.MergedPlaylistManager
+import dev.jordanempire.youflow.local.playlist.LocalPlaylistManager
+import dev.jordanempire.youflow.local.playlist.RemotePlaylistManager
+import dev.jordanempire.youflow.util.ExtractorHelper
+import dev.jordanempire.youflow.util.ServiceHelper
+import dev.jordanempire.youflow.util.image.ImageStrategy
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.function.Consumer
 import org.schabi.newpipe.extractor.InfoItem
 import org.schabi.newpipe.extractor.InfoItem.InfoType
 import org.schabi.newpipe.extractor.channel.ChannelInfoItem
@@ -32,12 +38,6 @@ import org.schabi.newpipe.extractor.exceptions.ContentNotAvailableException
 import org.schabi.newpipe.extractor.playlist.PlaylistInfoItem
 import org.schabi.newpipe.extractor.search.SearchInfo
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
-import dev.jordanempire.youflow.local.bookmark.MergedPlaylistManager
-import dev.jordanempire.youflow.local.playlist.LocalPlaylistManager
-import dev.jordanempire.youflow.local.playlist.RemotePlaylistManager
-import dev.jordanempire.youflow.util.ExtractorHelper
-import dev.jordanempire.youflow.util.ServiceHelper
-import dev.jordanempire.youflow.util.image.ImageStrategy
 
 /**
  * This class is used to cleanly separate the Service implementation (in

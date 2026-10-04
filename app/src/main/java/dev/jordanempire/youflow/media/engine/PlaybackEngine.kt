@@ -5,22 +5,21 @@ import android.content.ComponentName
 import android.net.Uri
 import android.util.Log
 import android.view.accessibility.CaptioningManager
-import androidx.preference.PreferenceManager
-import dev.jordanempire.youflow.R
-import dev.jordanempire.youflow.local.history.HistoryRecordManager
-import androidx.media3.common.TrackSelectionOverride
-import androidx.media3.common.Tracks
-import kotlinx.coroutines.rx3.awaitSingleOrNull
-import androidx.media3.common.C
 import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.TrackSelectionOverride
+import androidx.media3.common.Tracks
 import androidx.media3.common.VideoSize
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import androidx.preference.PreferenceManager
+import dev.jordanempire.youflow.R
+import dev.jordanempire.youflow.local.history.HistoryRecordManager
 import dev.jordanempire.youflow.media.PlayerDataSource
 import dev.jordanempire.youflow.media.YouFlowPlayerService
 import dev.jordanempire.youflow.media.mediaitem.MediaItemTag
@@ -40,6 +39,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx3.await
+import kotlinx.coroutines.rx3.awaitSingleOrNull
 import kotlinx.coroutines.withContext
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.stream.StreamInfo
@@ -125,11 +125,9 @@ class PlaybackEngine private constructor(private val app: Application) {
         app,
         dataSource,
         object : VideoPlaybackResolver.QualityResolver {
-            override fun getDefaultResolutionIndex(sortedVideos: List<VideoStream>) =
-                ListHelper.getDefaultResolutionIndex(app, sortedVideos)
+            override fun getDefaultResolutionIndex(sortedVideos: List<VideoStream>) = ListHelper.getDefaultResolutionIndex(app, sortedVideos)
 
-            override fun getOverrideResolutionIndex(sortedVideos: List<VideoStream>, playbackQuality: String) =
-                ListHelper.getResolutionIndex(app, sortedVideos, playbackQuality)
+            override fun getOverrideResolutionIndex(sortedVideos: List<VideoStream>, playbackQuality: String) = ListHelper.getResolutionIndex(app, sortedVideos, playbackQuality)
         }
     )
 
@@ -146,6 +144,7 @@ class PlaybackEngine private constructor(private val app: Application) {
     private val prefs = PreferenceManager.getDefaultSharedPreferences(app)
     private var textGroups: List<Tracks.Group> = emptyList()
     private var lastSavedAt = 0L
+
     /** Selected sleep timer: 0 = off, -1 = stop at the end of the video, otherwise minutes. */
     private val _sleepMinutes = MutableStateFlow(0)
     val sleepMinutes: StateFlow<Int> = _sleepMinutes.asStateFlow()
@@ -286,7 +285,10 @@ class PlaybackEngine private constructor(private val app: Application) {
         if (index !in s.queue.indices) return
         if (index == s.index) {
             // Removing the playing item moves on to what follows it, or stops.
-            if (s.queue.size == 1) { stop(); return }
+            if (s.queue.size == 1) {
+                stop()
+                return
+            }
             val newQueue = s.queue.toMutableList().apply { removeAt(index) }
             val newIndex = index.coerceAtMost(newQueue.lastIndex)
             _state.update { it.copy(queue = newQueue, index = newIndex, info = null, error = null) }
@@ -368,7 +370,9 @@ class PlaybackEngine private constructor(private val app: Application) {
             val type = _state.value.info?.streamType
             if (type == org.schabi.newpipe.extractor.stream.StreamType.LIVE_STREAM ||
                 type == org.schabi.newpipe.extractor.stream.StreamType.AUDIO_LIVE_STREAM
-            ) return
+            ) {
+                return
+            }
             // Autoplay the first related video once the queue is done.
             val related = _state.value.info?.relatedItems?.filterIsInstance<StreamInfoItem>()?.firstOrNull() ?: return
             val entry = QueueEntry(related.url, related.name, related.uploaderName.orEmpty(), null)
@@ -438,8 +442,11 @@ class PlaybackEngine private constructor(private val app: Application) {
             val f = g.getTrackFormat(0)
             f.label ?: f.language?.let { java.util.Locale.forLanguageTag(it).displayLanguage } ?: "Captions"
         }
-        val selectedCaption = if (exo.trackSelectionParameters.disabledTrackTypes.contains(C.TRACK_TYPE_TEXT)) -1
-        else textGroups.indexOfFirst { it.isSelected }
+        val selectedCaption = if (exo.trackSelectionParameters.disabledTrackTypes.contains(C.TRACK_TYPE_TEXT)) {
+            -1
+        } else {
+            textGroups.indexOfFirst { it.isSelected }
+        }
         val size = exo.videoSize
         val aspect = if (size.width > 0 && size.height > 0) size.width * size.pixelWidthHeightRatio / size.height else null
         _state.update { s ->
@@ -471,7 +478,6 @@ class PlaybackEngine private constructor(private val app: Application) {
         @Volatile
         private var instance: PlaybackEngine? = null
 
-        fun get(app: Application): PlaybackEngine =
-            instance ?: synchronized(this) { instance ?: PlaybackEngine(app).also { instance = it } }
+        fun get(app: Application): PlaybackEngine = instance ?: synchronized(this) { instance ?: PlaybackEngine(app).also { instance = it } }
     }
 }

@@ -6,22 +6,22 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import com.xwray.groupie.viewbinding.BindableItem
-import java.util.concurrent.TimeUnit
-import java.util.function.Consumer
 import dev.jordanempire.youflow.MainActivity
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.database.stream.StreamWithState
 import dev.jordanempire.youflow.database.stream.model.StreamEntity
 import dev.jordanempire.youflow.databinding.ListStreamItemBinding
+import dev.jordanempire.youflow.util.Localization
+import dev.jordanempire.youflow.util.StreamTypeUtil
+import dev.jordanempire.youflow.util.image.CoilHelper
+import java.util.concurrent.TimeUnit
+import java.util.function.Consumer
 import org.schabi.newpipe.extractor.stream.StreamType.AUDIO_LIVE_STREAM
 import org.schabi.newpipe.extractor.stream.StreamType.AUDIO_STREAM
 import org.schabi.newpipe.extractor.stream.StreamType.LIVE_STREAM
 import org.schabi.newpipe.extractor.stream.StreamType.POST_LIVE_AUDIO_STREAM
 import org.schabi.newpipe.extractor.stream.StreamType.POST_LIVE_STREAM
 import org.schabi.newpipe.extractor.stream.StreamType.VIDEO_STREAM
-import dev.jordanempire.youflow.util.Localization
-import dev.jordanempire.youflow.util.StreamTypeUtil
-import dev.jordanempire.youflow.util.image.CoilHelper
 
 data class StreamItem(
     val streamWithState: StreamWithState,

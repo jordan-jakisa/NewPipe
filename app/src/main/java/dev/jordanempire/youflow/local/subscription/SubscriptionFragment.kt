@@ -22,7 +22,6 @@ import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.Section
 import com.xwray.groupie.viewbinding.GroupieViewHolder
-import io.reactivex.rxjava3.disposables.CompositeDisposable
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity.Companion.GROUP_ALL_ID
 import dev.jordanempire.youflow.databinding.DialogTitleBinding
@@ -30,8 +29,6 @@ import dev.jordanempire.youflow.databinding.FeedItemCarouselBinding
 import dev.jordanempire.youflow.databinding.FragmentSubscriptionBinding
 import dev.jordanempire.youflow.error.ErrorInfo
 import dev.jordanempire.youflow.error.UserAction
-import org.schabi.newpipe.extractor.ServiceList
-import org.schabi.newpipe.extractor.channel.ChannelInfoItem
 import dev.jordanempire.youflow.fragments.BaseStateFragment
 import dev.jordanempire.youflow.ktx.animate
 import dev.jordanempire.youflow.local.subscription.SubscriptionViewModel.SubscriptionState
@@ -51,6 +48,9 @@ import dev.jordanempire.youflow.util.OnClickGesture
 import dev.jordanempire.youflow.util.ServiceHelper
 import dev.jordanempire.youflow.util.ThemeHelper.getGridSpanCountChannels
 import dev.jordanempire.youflow.util.external_communication.ShareUtils
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import org.schabi.newpipe.extractor.ServiceList
+import org.schabi.newpipe.extractor.channel.ChannelInfoItem
 
 class SubscriptionFragment : BaseStateFragment<SubscriptionState>() {
     private var _binding: FragmentSubscriptionBinding? = null

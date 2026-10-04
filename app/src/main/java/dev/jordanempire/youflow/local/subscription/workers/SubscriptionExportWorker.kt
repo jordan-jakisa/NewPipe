@@ -16,11 +16,11 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import dev.jordanempire.youflow.NewPipeDatabase
+import dev.jordanempire.youflow.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.reactive.awaitFirst
 import kotlinx.coroutines.withContext
-import dev.jordanempire.youflow.NewPipeDatabase
-import dev.jordanempire.youflow.R
 
 class SubscriptionExportWorker(
     appContext: Context,

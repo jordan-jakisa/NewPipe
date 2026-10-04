@@ -5,12 +5,12 @@
 
 package dev.jordanempire.youflow.local.playlist
 
+import dev.jordanempire.youflow.database.AppDatabase
+import dev.jordanempire.youflow.database.playlist.model.PlaylistRemoteEntity
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
-import dev.jordanempire.youflow.database.AppDatabase
-import dev.jordanempire.youflow.database.playlist.model.PlaylistRemoteEntity
 import org.schabi.newpipe.extractor.playlist.PlaylistInfo
 
 class RemotePlaylistManager(private val database: AppDatabase) {

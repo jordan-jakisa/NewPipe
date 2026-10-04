@@ -21,6 +21,11 @@ import androidx.work.ForegroundInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import dev.jordanempire.youflow.R
+import dev.jordanempire.youflow.local.subscription.SubscriptionManager
+import dev.jordanempire.youflow.streams.io.SharpInputStream
+import dev.jordanempire.youflow.streams.io.StoredFileHelper
+import dev.jordanempire.youflow.util.ExtractorHelper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.asFlow
@@ -32,12 +37,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
-import dev.jordanempire.youflow.R
 import org.schabi.newpipe.extractor.NewPipe
-import dev.jordanempire.youflow.local.subscription.SubscriptionManager
-import dev.jordanempire.youflow.streams.io.SharpInputStream
-import dev.jordanempire.youflow.streams.io.StoredFileHelper
-import dev.jordanempire.youflow.util.ExtractorHelper
 
 class SubscriptionImportWorker(
     private val context: Context,

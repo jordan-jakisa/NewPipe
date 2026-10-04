@@ -49,12 +49,6 @@ import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.Item
 import com.xwray.groupie.OnItemClickListener
 import com.xwray.groupie.OnItemLongClickListener
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.schedulers.Schedulers
-import java.time.OffsetDateTime
-import java.util.function.Consumer
 import dev.jordanempire.youflow.NewPipeDatabase
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
@@ -63,10 +57,6 @@ import dev.jordanempire.youflow.databinding.FragmentFeedBinding
 import dev.jordanempire.youflow.error.ErrorInfo
 import dev.jordanempire.youflow.error.ErrorUtil
 import dev.jordanempire.youflow.error.UserAction
-import org.schabi.newpipe.extractor.exceptions.AccountTerminatedException
-import org.schabi.newpipe.extractor.exceptions.ContentNotAvailableException
-import org.schabi.newpipe.extractor.stream.StreamInfoItem
-import org.schabi.newpipe.extractor.utils.Utils.isNullOrEmpty
 import dev.jordanempire.youflow.fragments.BaseStateFragment
 import dev.jordanempire.youflow.info_list.ItemViewMode
 import dev.jordanempire.youflow.info_list.dialog.InfoItemDialog
@@ -83,6 +73,16 @@ import dev.jordanempire.youflow.util.ThemeHelper.getGridSpanCountStreams
 import dev.jordanempire.youflow.util.ThemeHelper.getItemViewMode
 import dev.jordanempire.youflow.util.ThemeHelper.resolveDrawable
 import dev.jordanempire.youflow.util.ThemeHelper.shouldUseGridLayout
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import java.time.OffsetDateTime
+import java.util.function.Consumer
+import org.schabi.newpipe.extractor.exceptions.AccountTerminatedException
+import org.schabi.newpipe.extractor.exceptions.ContentNotAvailableException
+import org.schabi.newpipe.extractor.stream.StreamInfoItem
+import org.schabi.newpipe.extractor.utils.Utils.isNullOrEmpty
 
 class FeedFragment : BaseStateFragment<FeedState>() {
     private var _feedBinding: FragmentFeedBinding? = null

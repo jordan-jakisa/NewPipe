@@ -15,7 +15,6 @@ import com.evernote.android.state.State
 import com.livefront.bridge.Bridge
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.TouchCallback
-import java.util.Collections
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
 import dev.jordanempire.youflow.databinding.DialogFeedGroupReorderBinding
@@ -23,6 +22,7 @@ import dev.jordanempire.youflow.local.subscription.dialog.FeedGroupReorderDialog
 import dev.jordanempire.youflow.local.subscription.dialog.FeedGroupReorderDialogViewModel.DialogEvent.SuccessEvent
 import dev.jordanempire.youflow.local.subscription.item.FeedGroupReorderItem
 import dev.jordanempire.youflow.util.ThemeHelper
+import java.util.Collections
 
 class FeedGroupReorderDialog : DialogFragment() {
     private var _binding: DialogFeedGroupReorderBinding? = null

@@ -11,14 +11,14 @@ import android.webkit.WebView
 import androidx.annotation.MainThread
 import androidx.webkit.WebSettingsCompat
 import androidx.webkit.WebViewFeature
+import dev.jordanempire.youflow.BuildConfig
+import dev.jordanempire.youflow.DownloaderImpl
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.core.SingleEmitter
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.time.Instant
-import dev.jordanempire.youflow.BuildConfig
-import dev.jordanempire.youflow.DownloaderImpl
 
 class PoTokenWebView private constructor(
     context: Context,

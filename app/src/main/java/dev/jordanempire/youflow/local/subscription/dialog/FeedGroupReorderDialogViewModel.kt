@@ -4,11 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
+import dev.jordanempire.youflow.local.feed.FeedDatabaseManager
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
-import dev.jordanempire.youflow.local.feed.FeedDatabaseManager
 
 class FeedGroupReorderDialogViewModel(application: Application) : AndroidViewModel(application) {
     private var feedDatabaseManager: FeedDatabaseManager = FeedDatabaseManager(application)

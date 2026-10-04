@@ -17,9 +17,9 @@ import dev.jordanempire.youflow.database.playlist.PlaylistLocalItem
 import dev.jordanempire.youflow.database.playlist.model.PlaylistRemoteEntity.Companion.REMOTE_PLAYLIST_SERVICE_ID
 import dev.jordanempire.youflow.database.playlist.model.PlaylistRemoteEntity.Companion.REMOTE_PLAYLIST_TABLE
 import dev.jordanempire.youflow.database.playlist.model.PlaylistRemoteEntity.Companion.REMOTE_PLAYLIST_URL
-import org.schabi.newpipe.extractor.playlist.PlaylistInfo
 import dev.jordanempire.youflow.util.NO_SERVICE_ID
 import dev.jordanempire.youflow.util.image.ImageStrategy
+import org.schabi.newpipe.extractor.playlist.PlaylistInfo
 
 @Entity(
     tableName = REMOTE_PLAYLIST_TABLE,

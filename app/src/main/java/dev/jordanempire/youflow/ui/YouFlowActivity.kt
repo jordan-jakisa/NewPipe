@@ -37,7 +37,10 @@ class YouFlowActivity : ComponentActivity() {
         engine = PlaybackEngine.get(application)
         setUpNotifications()
         androidx.core.content.ContextCompat.registerReceiver(
-            this, pipReceiver, android.content.IntentFilter(ACTION_PIP_TOGGLE), androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
+            this,
+            pipReceiver,
+            android.content.IntentFilter(ACTION_PIP_TOGGLE),
+            androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
         )
 
         setContent {
@@ -116,13 +119,18 @@ class YouFlowActivity : ComponentActivity() {
     private fun pipActions(): List<android.app.RemoteAction> {
         val paused = !engine.state.value.playWhenReady
         val pending = android.app.PendingIntent.getBroadcast(
-            this, 0, Intent(ACTION_PIP_TOGGLE).setPackage(packageName), android.app.PendingIntent.FLAG_IMMUTABLE
+            this,
+            0,
+            Intent(ACTION_PIP_TOGGLE).setPackage(packageName),
+            android.app.PendingIntent.FLAG_IMMUTABLE
         )
         val title = if (paused) "Play" else "Pause"
         return listOf(
             android.app.RemoteAction(
                 android.graphics.drawable.Icon.createWithResource(this, if (paused) dev.jordanempire.youflow.R.drawable.ic_play_arrow else dev.jordanempire.youflow.R.drawable.ic_pause),
-                title, title, pending
+                title,
+                title,
+                pending
             )
         )
     }

@@ -23,7 +23,6 @@ import com.livefront.bridge.Bridge
 import com.xwray.groupie.GroupieAdapter
 import com.xwray.groupie.OnItemClickListener
 import com.xwray.groupie.Section
-import java.io.Serializable
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
 import dev.jordanempire.youflow.databinding.DialogFeedGroupCreateBinding
@@ -41,6 +40,7 @@ import dev.jordanempire.youflow.local.subscription.item.PickerIconItem
 import dev.jordanempire.youflow.local.subscription.item.PickerSubscriptionItem
 import dev.jordanempire.youflow.util.DeviceUtils
 import dev.jordanempire.youflow.util.ThemeHelper
+import java.io.Serializable
 
 class FeedGroupDialog : DialogFragment(), BackPressable {
     private var _feedGroupCreateBinding: DialogFeedGroupCreateBinding? = null

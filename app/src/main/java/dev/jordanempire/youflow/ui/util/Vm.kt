@@ -10,8 +10,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 
 /** A ViewModel scoped to [key] (one per channel/playlist url) that needs the Application. */
 @Composable
-inline fun <reified VM : ViewModel> keyedViewModel(key: String, crossinline create: (Application) -> VM): VM =
-    viewModel(
-        key = key,
-        factory = viewModelFactory { initializer { create(this[APPLICATION_KEY] as Application) } }
-    )
+inline fun <reified VM : ViewModel> keyedViewModel(key: String, crossinline create: (Application) -> VM): VM = viewModel(
+    key = key,
+    factory = viewModelFactory { initializer { create(this[APPLICATION_KEY] as Application) } }
+)

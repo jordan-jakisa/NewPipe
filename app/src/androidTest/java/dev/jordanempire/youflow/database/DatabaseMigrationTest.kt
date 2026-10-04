@@ -8,13 +8,13 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import dev.jordanempire.youflow.database.playlist.model.PlaylistEntity
+import dev.jordanempire.youflow.database.playlist.model.PlaylistRemoteEntity
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import dev.jordanempire.youflow.database.playlist.model.PlaylistEntity
-import dev.jordanempire.youflow.database.playlist.model.PlaylistRemoteEntity
 import org.schabi.newpipe.extractor.stream.StreamType
 
 @RunWith(AndroidJUnit4::class)

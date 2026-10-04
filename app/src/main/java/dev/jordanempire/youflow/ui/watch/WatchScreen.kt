@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +22,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -72,10 +72,10 @@ import dev.jordanempire.youflow.util.image.ImageStrategy
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import org.schabi.newpipe.extractor.stream.StreamInfo
@@ -100,8 +100,11 @@ class WatchViewModel(app: Application) : AndroidViewModel(app) {
             } else {
                 repo.subscribe(
                     ChannelItem(
-                        url, info.uploaderName.orEmpty(), ImageStrategy.choosePreferredImage(info.uploaderAvatars),
-                        info.uploaderSubscriberCount.takeIf { it >= 0 }, null
+                        url,
+                        info.uploaderName.orEmpty(),
+                        ImageStrategy.choosePreferredImage(info.uploaderAvatars),
+                        info.uploaderSubscriberCount.takeIf { it >= 0 },
+                        null
                     )
                 )
             }
@@ -141,7 +144,13 @@ fun WatchScreen(
 
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
         PlayerBox(
-            engine, state, fullscreen = false, onToggleFullscreen, onCollapse, { showSettings = true }, { showChapters = true },
+            engine,
+            state,
+            fullscreen = false,
+            onToggleFullscreen,
+            onCollapse,
+            { showSettings = true },
+            { showChapters = true },
             Modifier.fillMaxWidth().background(Color.Black).statusBarsPadding().aspectRatio(state.videoAspect.coerceIn(1f, 16f / 9f))
         )
         LazyColumn(Modifier.fillMaxSize(), contentPadding = WindowInsets.navigationBars.asPaddingValues()) {
@@ -319,21 +328,20 @@ private val TimestampRegex = Regex("""(?<![\d:])(?:(\d{1,2}):)?([0-5]?\d):([0-5]
 private val UrlRegex = Regex("""https?://[^\s)\]>"']+""")
 
 /** Turns "12:34" timestamps into seek links and URLs into browser links. */
-internal fun linkify(text: String, color: Color): androidx.compose.ui.text.AnnotatedString =
-    androidx.compose.ui.text.buildAnnotatedString {
-        append(text)
-        val style = androidx.compose.ui.text.SpanStyle(color = color, textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline)
-        TimestampRegex.findAll(text).forEach { m ->
-            val hours = m.groupValues[1].toLongOrNull() ?: 0
-            val seconds = hours * 3600 + m.groupValues[2].toLong() * 60 + m.groupValues[3].toLong()
-            addStyle(style, m.range.first, m.range.last + 1)
-            addStringAnnotation("seek", (seconds * 1000).toString(), m.range.first, m.range.last + 1)
-        }
-        UrlRegex.findAll(text).forEach { m ->
-            addStyle(style, m.range.first, m.range.last + 1)
-            addStringAnnotation("url", m.value, m.range.first, m.range.last + 1)
-        }
+internal fun linkify(text: String, color: Color): androidx.compose.ui.text.AnnotatedString = androidx.compose.ui.text.buildAnnotatedString {
+    append(text)
+    val style = androidx.compose.ui.text.SpanStyle(color = color, textDecoration = androidx.compose.ui.text.style.TextDecoration.Underline)
+    TimestampRegex.findAll(text).forEach { m ->
+        val hours = m.groupValues[1].toLongOrNull() ?: 0
+        val seconds = hours * 3600 + m.groupValues[2].toLong() * 60 + m.groupValues[3].toLong()
+        addStyle(style, m.range.first, m.range.last + 1)
+        addStringAnnotation("seek", (seconds * 1000).toString(), m.range.first, m.range.last + 1)
     }
+    UrlRegex.findAll(text).forEach { m ->
+        addStyle(style, m.range.first, m.range.last + 1)
+        addStringAnnotation("url", m.value, m.range.first, m.range.last + 1)
+    }
+}
 
 internal fun StreamInfoItem.toVideoItem() = VideoItem(
     url = url,
@@ -355,7 +363,9 @@ private fun formatUploaded(info: StreamInfo): String? {
     if (date != null) {
         val millis = date.offsetDateTime().toInstant().toEpochMilli()
         return android.text.format.DateUtils.getRelativeTimeSpanString(
-            millis, System.currentTimeMillis(), android.text.format.DateUtils.MINUTE_IN_MILLIS
+            millis,
+            System.currentTimeMillis(),
+            android.text.format.DateUtils.MINUTE_IN_MILLIS
         ).toString()
     }
     return info.textualUploadDate?.takeIf { it.isNotBlank() }

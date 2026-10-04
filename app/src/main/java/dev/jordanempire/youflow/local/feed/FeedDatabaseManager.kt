@@ -2,14 +2,6 @@ package dev.jordanempire.youflow.local.feed
 
 import android.content.Context
 import android.util.Log
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.schedulers.Schedulers
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
 import dev.jordanempire.youflow.MainActivity.DEBUG
 import dev.jordanempire.youflow.NewPipeDatabase
 import dev.jordanempire.youflow.database.feed.model.FeedEntity
@@ -18,9 +10,17 @@ import dev.jordanempire.youflow.database.feed.model.FeedLastUpdatedEntity
 import dev.jordanempire.youflow.database.stream.StreamWithState
 import dev.jordanempire.youflow.database.stream.model.StreamEntity
 import dev.jordanempire.youflow.database.subscription.NotificationMode
+import dev.jordanempire.youflow.local.subscription.FeedGroupIcon
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Maybe
+import io.reactivex.rxjava3.schedulers.Schedulers
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import org.schabi.newpipe.extractor.stream.StreamType
-import dev.jordanempire.youflow.local.subscription.FeedGroupIcon
 
 class FeedDatabaseManager(context: Context) {
     private val database = NewPipeDatabase.getInstance(context)

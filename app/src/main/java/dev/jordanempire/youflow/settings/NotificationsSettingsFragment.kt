@@ -8,8 +8,6 @@ import android.os.Bundle
 import androidx.preference.Preference
 import androidx.preference.SwitchPreference
 import com.google.android.material.snackbar.Snackbar
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.Disposable
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.database.subscription.NotificationMode
 import dev.jordanempire.youflow.database.subscription.SubscriptionEntity
@@ -20,6 +18,8 @@ import dev.jordanempire.youflow.local.feed.notifications.NotificationHelper
 import dev.jordanempire.youflow.local.feed.notifications.NotificationWorker
 import dev.jordanempire.youflow.local.feed.notifications.ScheduleOptions
 import dev.jordanempire.youflow.local.subscription.SubscriptionManager
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.Disposable
 
 class NotificationsSettingsFragment : BasePreferenceFragment(), OnSharedPreferenceChangeListener {
 

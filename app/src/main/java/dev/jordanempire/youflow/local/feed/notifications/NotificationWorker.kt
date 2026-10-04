@@ -14,9 +14,6 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.rxjava3.RxWorker
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Single
-import java.util.concurrent.TimeUnit
 import dev.jordanempire.youflow.App
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.error.ErrorInfo
@@ -24,6 +21,9 @@ import dev.jordanempire.youflow.error.ErrorUtil
 import dev.jordanempire.youflow.error.UserAction
 import dev.jordanempire.youflow.local.feed.service.FeedLoadManager
 import dev.jordanempire.youflow.local.feed.service.FeedLoadService
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import java.util.concurrent.TimeUnit
 
 /*
  * Worker which checks for new streams of subscribed channels

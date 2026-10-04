@@ -58,7 +58,10 @@ class LocalPlaylistViewModel(app: Application, val playlistId: Long) : AndroidVi
 
     fun remove(streamId: Long) = viewModelScope.launch { repo.removeFromPlaylist(playlistId, streamId) }
     fun rename(name: String) = viewModelScope.launch { repo.renamePlaylist(playlistId, name) }
-    fun delete(done: () -> Unit) = viewModelScope.launch { repo.deletePlaylist(playlistId); done() }
+    fun delete(done: () -> Unit) = viewModelScope.launch {
+        repo.deletePlaylist(playlistId)
+        done()
+    }
 }
 
 @Composable
@@ -86,7 +89,9 @@ fun LocalPlaylistScreen(playlistId: Long, actions: AppActions, onBack: () -> Uni
         val list = videos
         when {
             list == null -> Unit
+
             list.isEmpty() -> MessageBox("Nothing here yet", "Use Save on a video to add it to this playlist.", modifier = Modifier.padding(padding))
+
             else -> LazyColumn(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()), contentPadding = WindowInsets.navigationBars.asPaddingValues()) {
                 item("actions") {
                     Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -116,7 +121,12 @@ fun LocalPlaylistScreen(playlistId: Long, actions: AppActions, onBack: () -> Uni
             onDismissRequest = { confirmDelete = false },
             title = { Text("Delete \"$name\"?") },
             text = { Text("The videos stay in your history, only the playlist is removed.") },
-            confirmButton = { TextButton(onClick = { confirmDelete = false; vm.delete(onBack) }) { Text("Delete") } },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmDelete = false
+                    vm.delete(onBack)
+                }) { Text("Delete") }
+            },
             dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text("Cancel") } }
         )
     }

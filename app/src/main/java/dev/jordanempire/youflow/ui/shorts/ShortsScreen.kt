@@ -98,7 +98,9 @@ fun ShortsScreen(actions: AppActions, vm: ShortsViewModel = viewModel()) {
     Box(Modifier.fillMaxSize().background(Color.Black)) {
         when (val s = state) {
             UiState.Loading -> LoadingBox()
+
             is UiState.Error -> ErrorBox(s, vm::load)
+
             is UiState.Content -> if (s.data.isEmpty()) {
                 MessageBox("No Shorts yet", "Subscribe to channels and their Shorts will show up here.")
             } else {
@@ -125,7 +127,10 @@ private fun ShortsPager(items: List<VideoItem>, player: ShortsPlayer, actions: A
         val item = items[page]
         Box(
             Modifier.fillMaxSize().pointerInput(page) {
-                detectTapGestures(onTap = { player.togglePlayPause(); paused = !paused })
+                detectTapGestures(onTap = {
+                    player.togglePlayPause()
+                    paused = !paused
+                })
             }
         ) {
             if (page == pager.currentPage) {

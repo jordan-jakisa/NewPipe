@@ -9,14 +9,14 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.schedulers.Schedulers
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.database.subscription.NotificationMode
 import dev.jordanempire.youflow.databinding.FragmentChannelsNotificationsBinding
 import dev.jordanempire.youflow.local.subscription.SubscriptionManager
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 /**
  * [NotificationModeConfigFragment] is a settings fragment

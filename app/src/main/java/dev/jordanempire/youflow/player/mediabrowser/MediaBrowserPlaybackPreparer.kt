@@ -10,19 +10,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector.PlaybackPreparer
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Single
-import io.reactivex.rxjava3.disposables.Disposable
-import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.function.BiConsumer
-import java.util.function.Consumer
 import dev.jordanempire.youflow.MainActivity
 import dev.jordanempire.youflow.NewPipeDatabase
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.error.ErrorInfo
-import org.schabi.newpipe.extractor.InfoItem.InfoType
-import org.schabi.newpipe.extractor.exceptions.ContentNotAvailableException
-import org.schabi.newpipe.extractor.linkhandler.ListLinkHandler
 import dev.jordanempire.youflow.local.playlist.LocalPlaylistManager
 import dev.jordanempire.youflow.local.playlist.RemotePlaylistManager
 import dev.jordanempire.youflow.player.playqueue.ChannelTabPlayQueue
@@ -32,6 +23,15 @@ import dev.jordanempire.youflow.player.playqueue.SinglePlayQueue
 import dev.jordanempire.youflow.util.ChannelTabHelper
 import dev.jordanempire.youflow.util.ExtractorHelper
 import dev.jordanempire.youflow.util.NavigationHelper
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.function.BiConsumer
+import java.util.function.Consumer
+import org.schabi.newpipe.extractor.InfoItem.InfoType
+import org.schabi.newpipe.extractor.exceptions.ContentNotAvailableException
+import org.schabi.newpipe.extractor.linkhandler.ListLinkHandler
 
 /**
  * This class is used to cleanly separate the Service implementation (in

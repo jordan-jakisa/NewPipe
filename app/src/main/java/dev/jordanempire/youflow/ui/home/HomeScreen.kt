@@ -1,23 +1,19 @@
 package dev.jordanempire.youflow.ui.home
 
-import dev.jordanempire.youflow.ui.util.toUiError
 import android.app.Application
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.MaterialTheme
-import dev.jordanempire.youflow.ui.components.VideoTile
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -30,20 +26,25 @@ import dev.jordanempire.youflow.ui.AppActions
 import dev.jordanempire.youflow.ui.components.MessageBox
 import dev.jordanempire.youflow.ui.components.StateHost
 import dev.jordanempire.youflow.ui.components.VideoCard
+import dev.jordanempire.youflow.ui.components.VideoTile
 import dev.jordanempire.youflow.ui.data.YouTubeRepository
 import dev.jordanempire.youflow.ui.model.KioskRef
 import dev.jordanempire.youflow.ui.model.UiState
 import dev.jordanempire.youflow.ui.model.VideoItem
+import dev.jordanempire.youflow.ui.util.toUiError
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 private const val FEED_ID = "feed"
 
 class HomeViewModel(app: Application) : AndroidViewModel(app) {
     private val repo = YouTubeRepository(app)
+
     /** "Following" shows your subscription feed, the rest are YouTube's own lists. */
     val kiosks = listOf(KioskRef(FEED_ID, "", "Following")) + repo.kiosks
 

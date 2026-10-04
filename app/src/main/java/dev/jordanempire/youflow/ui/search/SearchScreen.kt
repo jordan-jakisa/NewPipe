@@ -1,17 +1,15 @@
 package dev.jordanempire.youflow.ui.search
 
-import dev.jordanempire.youflow.ui.util.toUiError
 import android.app.Application
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material3.FilterChip
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
@@ -20,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,8 +44,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.jordanempire.youflow.ui.AppActions
 import dev.jordanempire.youflow.ui.components.ChannelRow
-import dev.jordanempire.youflow.ui.components.LoadingBox
 import dev.jordanempire.youflow.ui.components.ErrorBox
+import dev.jordanempire.youflow.ui.components.LoadingBox
 import dev.jordanempire.youflow.ui.components.MessageBox
 import dev.jordanempire.youflow.ui.components.PlaylistRow
 import dev.jordanempire.youflow.ui.components.VideoCard
@@ -56,6 +55,7 @@ import dev.jordanempire.youflow.ui.model.ContentItem
 import dev.jordanempire.youflow.ui.model.PlaylistItem
 import dev.jordanempire.youflow.ui.model.UiState
 import dev.jordanempire.youflow.ui.model.VideoItem
+import dev.jordanempire.youflow.ui.util.toUiError
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -91,6 +91,7 @@ class SearchViewModel(app: Application) : AndroidViewModel(app) {
     private val _filter = MutableStateFlow<String?>(null)
     val filter = _filter.asStateFlow()
     private val _correction = MutableStateFlow<Pair<String, Boolean>?>(null)
+
     /** Suggested query and whether the shown results are already for the corrected text. */
     val correction = _correction.asStateFlow()
 
@@ -230,8 +231,11 @@ fun SearchScreen(actions: AppActions, onClose: () -> Unit, initialQuery: String?
                     }
                 }
             }
+
             UiState.Loading -> LoadingBox(modifier)
+
             is UiState.Error -> ErrorBox(r, { vm.submit() }, modifier, "Search failed")
+
             is UiState.Content -> if (r.data.isEmpty()) {
                 MessageBox("No results", "Try different words.", modifier = modifier)
             } else {

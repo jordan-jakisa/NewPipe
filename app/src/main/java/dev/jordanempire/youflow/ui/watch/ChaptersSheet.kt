@@ -26,8 +26,7 @@ import dev.jordanempire.youflow.util.image.ImageStrategy
 import org.schabi.newpipe.extractor.stream.StreamSegment
 
 /** Index of the chapter playing at [positionMs], or -1 when there are none. */
-fun currentChapter(segments: List<StreamSegment>, positionMs: Long): Int =
-    segments.indexOfLast { it.startTimeSeconds * 1000L <= positionMs }
+fun currentChapter(segments: List<StreamSegment>, positionMs: Long): Int = segments.indexOfLast { it.startTimeSeconds * 1000L <= positionMs }
 
 @Composable
 fun ChaptersSheet(segments: List<StreamSegment>, currentIndex: Int, onSeek: (Long) -> Unit, onDismiss: () -> Unit) {
@@ -39,7 +38,10 @@ fun ChaptersSheet(segments: List<StreamSegment>, currentIndex: Int, onSeek: (Lon
                 Row(
                     Modifier.fillMaxWidth()
                         .background(if (selected) MaterialTheme.colorScheme.secondaryContainer else androidx.compose.ui.graphics.Color.Transparent)
-                        .clickable { onSeek(segment.startTimeSeconds * 1000L); onDismiss() }
+                        .clickable {
+                            onSeek(segment.startTimeSeconds * 1000L)
+                            onDismiss()
+                        }
                         .padding(horizontal = 20.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {

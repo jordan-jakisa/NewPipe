@@ -8,9 +8,9 @@ package dev.jordanempire.youflow.database.history.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import io.reactivex.rxjava3.core.Flowable
 import dev.jordanempire.youflow.database.BasicDAO
 import dev.jordanempire.youflow.database.history.model.SearchHistoryEntry
+import io.reactivex.rxjava3.core.Flowable
 
 @Dao
 interface SearchHistoryDAO : BasicDAO<SearchHistoryEntry> {

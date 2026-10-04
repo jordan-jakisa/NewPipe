@@ -32,11 +32,9 @@ class ShortsPlayer(private val app: Application) {
         app,
         dataSource,
         object : VideoPlaybackResolver.QualityResolver {
-            override fun getDefaultResolutionIndex(sortedVideos: List<VideoStream>) =
-                ListHelper.getDefaultResolutionIndex(app, sortedVideos)
+            override fun getDefaultResolutionIndex(sortedVideos: List<VideoStream>) = ListHelper.getDefaultResolutionIndex(app, sortedVideos)
 
-            override fun getOverrideResolutionIndex(sortedVideos: List<VideoStream>, playbackQuality: String) =
-                ListHelper.getResolutionIndex(app, sortedVideos, playbackQuality)
+            override fun getOverrideResolutionIndex(sortedVideos: List<VideoStream>, playbackQuality: String) = ListHelper.getResolutionIndex(app, sortedVideos, playbackQuality)
         }
     )
 
@@ -116,7 +114,6 @@ class ShortsPlayer(private val app: Application) {
         @Volatile
         private var instance: ShortsPlayer? = null
 
-        fun get(app: Application): ShortsPlayer =
-            instance ?: synchronized(this) { instance ?: ShortsPlayer(app).also { instance = it } }
+        fun get(app: Application): ShortsPlayer = instance ?: synchronized(this) { instance ?: ShortsPlayer(app).also { instance = it } }
     }
 }

@@ -15,6 +15,18 @@ import coil3.request.allowRgb565
 import coil3.request.crossfade
 import coil3.util.DebugLogger
 import com.jakewharton.processphoenix.ProcessPhoenix
+import dev.jordanempire.youflow.error.ErrorInfo
+import dev.jordanempire.youflow.error.ErrorUtil
+import dev.jordanempire.youflow.error.ReCaptchaActivity
+import dev.jordanempire.youflow.error.UserAction
+import dev.jordanempire.youflow.ktx.hasAssignableCause
+import dev.jordanempire.youflow.settings.NewPipeSettings
+import dev.jordanempire.youflow.util.BridgeStateSaverInitializer
+import dev.jordanempire.youflow.util.Localization
+import dev.jordanempire.youflow.util.StateSaver
+import dev.jordanempire.youflow.util.image.ImageStrategy
+import dev.jordanempire.youflow.util.image.PreferredImageQuality
+import dev.jordanempire.youflow.util.potoken.PoTokenProviderImpl
 import io.reactivex.rxjava3.exceptions.CompositeException
 import io.reactivex.rxjava3.exceptions.MissingBackpressureException
 import io.reactivex.rxjava3.exceptions.OnErrorNotImplementedException
@@ -24,21 +36,9 @@ import io.reactivex.rxjava3.plugins.RxJavaPlugins
 import java.io.IOException
 import java.io.InterruptedIOException
 import java.net.SocketException
-import dev.jordanempire.youflow.error.ErrorInfo
-import dev.jordanempire.youflow.error.ErrorUtil
-import dev.jordanempire.youflow.error.ReCaptchaActivity
-import dev.jordanempire.youflow.error.UserAction
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.downloader.Downloader
 import org.schabi.newpipe.extractor.services.youtube.extractors.YoutubeStreamExtractor
-import dev.jordanempire.youflow.ktx.hasAssignableCause
-import dev.jordanempire.youflow.settings.NewPipeSettings
-import dev.jordanempire.youflow.util.BridgeStateSaverInitializer
-import dev.jordanempire.youflow.util.Localization
-import dev.jordanempire.youflow.util.StateSaver
-import dev.jordanempire.youflow.util.image.ImageStrategy
-import dev.jordanempire.youflow.util.image.PreferredImageQuality
-import dev.jordanempire.youflow.util.potoken.PoTokenProviderImpl
 
 /*
  * Copyright (C) Hans-Christoph Steiner 2016 <hans@eds.org>

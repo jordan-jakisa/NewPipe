@@ -1,23 +1,23 @@
 package dev.jordanempire.youflow.local.subscription
 
 import android.content.Context
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.schedulers.Schedulers
 import dev.jordanempire.youflow.NewPipeDatabase
 import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
 import dev.jordanempire.youflow.database.stream.model.StreamEntity
 import dev.jordanempire.youflow.database.subscription.NotificationMode
 import dev.jordanempire.youflow.database.subscription.SubscriptionDAO
 import dev.jordanempire.youflow.database.subscription.SubscriptionEntity
-import org.schabi.newpipe.extractor.channel.ChannelInfo
-import org.schabi.newpipe.extractor.channel.tabs.ChannelTabInfo
-import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import dev.jordanempire.youflow.local.feed.FeedDatabaseManager
 import dev.jordanempire.youflow.local.feed.service.FeedUpdateInfo
 import dev.jordanempire.youflow.util.ExtractorHelper
 import dev.jordanempire.youflow.util.image.ImageStrategy
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import org.schabi.newpipe.extractor.channel.ChannelInfo
+import org.schabi.newpipe.extractor.channel.tabs.ChannelTabInfo
+import org.schabi.newpipe.extractor.stream.StreamInfoItem
 
 class SubscriptionManager(context: Context) {
     private val database = NewPipeDatabase.getInstance(context)

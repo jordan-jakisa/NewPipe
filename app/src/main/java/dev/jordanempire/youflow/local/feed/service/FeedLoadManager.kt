@@ -3,6 +3,17 @@ package dev.jordanempire.youflow.local.feed.service
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import dev.jordanempire.youflow.R
+import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
+import dev.jordanempire.youflow.database.subscription.NotificationMode
+import dev.jordanempire.youflow.database.subscription.SubscriptionEntity
+import dev.jordanempire.youflow.ktx.getStringSafe
+import dev.jordanempire.youflow.local.feed.FeedDatabaseManager
+import dev.jordanempire.youflow.local.subscription.SubscriptionManager
+import dev.jordanempire.youflow.util.ChannelTabHelper
+import dev.jordanempire.youflow.util.ExtractorHelper.getChannelInfo
+import dev.jordanempire.youflow.util.ExtractorHelper.getChannelTab
+import dev.jordanempire.youflow.util.ExtractorHelper.getMoreChannelTabItems
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Flowable
@@ -15,22 +26,11 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
-import dev.jordanempire.youflow.R
-import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
-import dev.jordanempire.youflow.database.subscription.NotificationMode
-import dev.jordanempire.youflow.database.subscription.SubscriptionEntity
 import org.schabi.newpipe.extractor.Info
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.feed.FeedInfo
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
-import dev.jordanempire.youflow.ktx.getStringSafe
-import dev.jordanempire.youflow.local.feed.FeedDatabaseManager
-import dev.jordanempire.youflow.local.subscription.SubscriptionManager
-import dev.jordanempire.youflow.util.ChannelTabHelper
-import dev.jordanempire.youflow.util.ExtractorHelper.getChannelInfo
-import dev.jordanempire.youflow.util.ExtractorHelper.getChannelTab
-import dev.jordanempire.youflow.util.ExtractorHelper.getMoreChannelTabItems
 
 class FeedLoadManager(private val context: Context) {
 

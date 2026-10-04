@@ -1,5 +1,6 @@
 package dev.jordanempire.youflow.local.subscription.workers
 
+import dev.jordanempire.youflow.streams.io.StoredFileHelper
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
@@ -14,7 +15,6 @@ import org.mockito.Mockito.withSettings
 import org.mockito.junit.MockitoJUnitRunner
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.subscription.SubscriptionItem as ExtractorSubscriptionItem
-import dev.jordanempire.youflow.streams.io.StoredFileHelper
 
 @RunWith(MockitoJUnitRunner::class)
 class SubscriptionImportWorkerTest {

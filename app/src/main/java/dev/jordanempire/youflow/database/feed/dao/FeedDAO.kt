@@ -6,9 +6,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.core.Maybe
-import java.time.OffsetDateTime
 import dev.jordanempire.youflow.database.feed.model.FeedEntity
 import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
 import dev.jordanempire.youflow.database.feed.model.FeedLastUpdatedEntity
@@ -16,6 +13,9 @@ import dev.jordanempire.youflow.database.stream.StreamWithState
 import dev.jordanempire.youflow.database.stream.model.StreamStateEntity
 import dev.jordanempire.youflow.database.subscription.NotificationMode
 import dev.jordanempire.youflow.database.subscription.SubscriptionEntity
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Maybe
+import java.time.OffsetDateTime
 
 @Dao
 abstract class FeedDAO {

@@ -8,7 +8,6 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isVisible
-import kotlin.math.abs
 import dev.jordanempire.youflow.MainActivity
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.ktx.AnimationType
@@ -18,6 +17,7 @@ import dev.jordanempire.youflow.player.helper.AudioReactor
 import dev.jordanempire.youflow.player.helper.PlayerHelper
 import dev.jordanempire.youflow.player.ui.MainPlayerUi
 import dev.jordanempire.youflow.util.ThemeHelper.getAndroidDimenPx
+import kotlin.math.abs
 
 /**
  * GestureListener for the player

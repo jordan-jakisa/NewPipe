@@ -1,6 +1,10 @@
 package dev.jordanempire.youflow.local.history
 
 import androidx.test.core.app.ApplicationProvider
+import dev.jordanempire.youflow.database.AppDatabase
+import dev.jordanempire.youflow.database.history.model.SearchHistoryEntry
+import dev.jordanempire.youflow.testUtil.TestDatabase
+import dev.jordanempire.youflow.testUtil.TrampolineSchedulerRule
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -10,10 +14,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import dev.jordanempire.youflow.database.AppDatabase
-import dev.jordanempire.youflow.database.history.model.SearchHistoryEntry
-import dev.jordanempire.youflow.testUtil.TestDatabase
-import dev.jordanempire.youflow.testUtil.TrampolineSchedulerRule
 
 class HistoryRecordManagerTest {
 

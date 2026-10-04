@@ -1,14 +1,13 @@
 package dev.jordanempire.youflow.ui.playlist
 
-import dev.jordanempire.youflow.ui.util.toUiError
 import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
@@ -39,8 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import dev.jordanempire.youflow.ui.AppActions
-import dev.jordanempire.youflow.ui.components.LoadingBox
 import dev.jordanempire.youflow.ui.components.ErrorBox
+import dev.jordanempire.youflow.ui.components.LoadingBox
 import dev.jordanempire.youflow.ui.components.MessageBox
 import dev.jordanempire.youflow.ui.components.Thumbnail
 import dev.jordanempire.youflow.ui.components.VideoRow
@@ -49,6 +48,7 @@ import dev.jordanempire.youflow.ui.model.PlaylistDetails
 import dev.jordanempire.youflow.ui.model.UiState
 import dev.jordanempire.youflow.ui.model.VideoItem
 import dev.jordanempire.youflow.ui.util.keyedViewModel
+import dev.jordanempire.youflow.ui.util.toUiError
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -125,7 +125,9 @@ fun PlaylistScreen(url: String, actions: AppActions, onBack: () -> Unit) {
     ) { padding ->
         when (val s = state) {
             UiState.Loading -> LoadingBox(Modifier.padding(padding))
+
             is UiState.Error -> ErrorBox(s, vm::load, Modifier.padding(padding), "Couldn't load this playlist")
+
             is UiState.Content -> {
                 val (details, videos) = s.data
                 LazyColumn(

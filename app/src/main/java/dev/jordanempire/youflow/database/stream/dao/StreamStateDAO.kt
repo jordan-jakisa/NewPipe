@@ -11,9 +11,9 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import io.reactivex.rxjava3.core.Flowable
 import dev.jordanempire.youflow.database.BasicDAO
 import dev.jordanempire.youflow.database.stream.model.StreamStateEntity
+import io.reactivex.rxjava3.core.Flowable
 
 @Dao
 interface StreamStateDAO : BasicDAO<StreamStateEntity> {

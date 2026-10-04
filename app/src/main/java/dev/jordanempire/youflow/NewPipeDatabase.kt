@@ -8,7 +8,6 @@ package dev.jordanempire.youflow
 
 import android.content.Context
 import androidx.room.Room.databaseBuilder
-import kotlin.concurrent.Volatile
 import dev.jordanempire.youflow.database.AppDatabase
 import dev.jordanempire.youflow.database.Migrations.MIGRATION_1_2
 import dev.jordanempire.youflow.database.Migrations.MIGRATION_2_3
@@ -19,6 +18,7 @@ import dev.jordanempire.youflow.database.Migrations.MIGRATION_6_7
 import dev.jordanempire.youflow.database.Migrations.MIGRATION_7_8
 import dev.jordanempire.youflow.database.Migrations.MIGRATION_8_9
 import dev.jordanempire.youflow.database.Migrations.MIGRATION_9_10
+import kotlin.concurrent.Volatile
 
 object NewPipeDatabase {
 

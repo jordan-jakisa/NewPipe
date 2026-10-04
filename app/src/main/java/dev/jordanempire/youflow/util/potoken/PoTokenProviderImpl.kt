@@ -5,12 +5,12 @@ import android.os.Looper
 import android.util.Log
 import dev.jordanempire.youflow.App
 import dev.jordanempire.youflow.BuildConfig
+import dev.jordanempire.youflow.util.DeviceUtils
 import org.schabi.newpipe.extractor.NewPipe
 import org.schabi.newpipe.extractor.services.youtube.InnertubeClientRequestInfo
 import org.schabi.newpipe.extractor.services.youtube.PoTokenProvider
 import org.schabi.newpipe.extractor.services.youtube.PoTokenResult
 import org.schabi.newpipe.extractor.services.youtube.YoutubeParsingHelper
-import dev.jordanempire.youflow.util.DeviceUtils
 
 object PoTokenProviderImpl : PoTokenProvider {
     val TAG = PoTokenProviderImpl::class.simpleName

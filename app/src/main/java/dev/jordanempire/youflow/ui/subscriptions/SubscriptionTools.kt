@@ -66,8 +66,14 @@ fun SubscriptionToolsMenu() {
     Box {
         IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, contentDescription = "Import and export") }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            DropdownMenuItem(text = { Text("Import from Google Takeout") }, onClick = { open = false; takeout.launch(arrayOf("*/*")) })
-            DropdownMenuItem(text = { Text("Import a previous export") }, onClick = { open = false; previous.launch(arrayOf("*/*")) })
+            DropdownMenuItem(text = { Text("Import from Google Takeout") }, onClick = {
+                open = false
+                takeout.launch(arrayOf("*/*"))
+            })
+            DropdownMenuItem(text = { Text("Import a previous export") }, onClick = {
+                open = false
+                previous.launch(arrayOf("*/*"))
+            })
             DropdownMenuItem(
                 text = { Text("Export subscriptions") },
                 onClick = {

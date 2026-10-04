@@ -62,7 +62,9 @@ fun HistoryScreen(actions: AppActions, onBack: () -> Unit, vm: HistoryViewModel 
         val list = history
         when {
             list == null -> Unit
+
             list.isEmpty() -> MessageBox("No history yet", "Videos you watch will show up here.", modifier = Modifier.padding(padding))
+
             else -> LazyColumn(Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()), contentPadding = WindowInsets.navigationBars.asPaddingValues()) {
                 itemsIndexed(list, key = { index, v -> "$index:${v.url}" }) { _, video ->
                     VideoRow(video, onClick = { actions.openVideo(video) })
@@ -75,7 +77,12 @@ fun HistoryScreen(actions: AppActions, onBack: () -> Unit, vm: HistoryViewModel 
             onDismissRequest = { confirm = false },
             title = { Text("Clear watch history?") },
             text = { Text("This also forgets where you stopped in each video.") },
-            confirmButton = { TextButton(onClick = { confirm = false; vm.clear() }) { Text("Clear") } },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirm = false
+                    vm.clear()
+                }) { Text("Clear") }
+            },
             dismissButton = { TextButton(onClick = { confirm = false }) { Text("Cancel") } }
         )
     }

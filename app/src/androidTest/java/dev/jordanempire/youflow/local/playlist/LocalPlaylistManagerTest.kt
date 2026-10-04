@@ -1,14 +1,14 @@
 package dev.jordanempire.youflow.local.playlist
 
+import dev.jordanempire.youflow.database.AppDatabase
+import dev.jordanempire.youflow.database.stream.model.StreamEntity
+import dev.jordanempire.youflow.testUtil.TestDatabase
+import dev.jordanempire.youflow.testUtil.TrampolineSchedulerRule
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import dev.jordanempire.youflow.database.AppDatabase
-import dev.jordanempire.youflow.database.stream.model.StreamEntity
 import org.schabi.newpipe.extractor.stream.StreamType
-import dev.jordanempire.youflow.testUtil.TestDatabase
-import dev.jordanempire.youflow.testUtil.TrampolineSchedulerRule
 
 class LocalPlaylistManagerTest {
 

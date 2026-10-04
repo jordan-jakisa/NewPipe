@@ -6,10 +6,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.xwray.groupie.Group
-import io.reactivex.rxjava3.core.Flowable
-import io.reactivex.rxjava3.processors.BehaviorProcessor
-import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.concurrent.TimeUnit
 import dev.jordanempire.youflow.info_list.ItemViewMode
 import dev.jordanempire.youflow.local.feed.FeedDatabaseManager
 import dev.jordanempire.youflow.local.subscription.item.ChannelItem
@@ -17,6 +13,10 @@ import dev.jordanempire.youflow.local.subscription.item.FeedGroupCardGridItem
 import dev.jordanempire.youflow.local.subscription.item.FeedGroupCardItem
 import dev.jordanempire.youflow.util.DEFAULT_THROTTLE_TIMEOUT
 import dev.jordanempire.youflow.util.ThemeHelper.getItemViewMode
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.processors.BehaviorProcessor
+import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
 class SubscriptionViewModel(application: Application) : AndroidViewModel(application) {
     private var feedDatabaseManager: FeedDatabaseManager = FeedDatabaseManager(application)

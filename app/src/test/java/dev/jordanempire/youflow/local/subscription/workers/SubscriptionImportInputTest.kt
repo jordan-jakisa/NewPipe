@@ -2,11 +2,11 @@ package dev.jordanempire.youflow.local.subscription.workers
 
 import androidx.work.Data
 import androidx.work.workDataOf
-import org.junit.Assert.assertEquals
-import org.junit.Test
 import dev.jordanempire.youflow.local.subscription.workers.SubscriptionImportInput.ChannelUrlMode
 import dev.jordanempire.youflow.local.subscription.workers.SubscriptionImportInput.InputStreamMode
 import dev.jordanempire.youflow.local.subscription.workers.SubscriptionImportInput.PreviousExportMode
+import org.junit.Assert.assertEquals
+import org.junit.Test
 
 class SubscriptionImportInputTest {
 

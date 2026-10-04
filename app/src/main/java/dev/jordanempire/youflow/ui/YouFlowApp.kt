@@ -14,10 +14,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.PlayCircle
-import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.filled.Subscriptions
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Subscriptions
 import androidx.compose.material.icons.outlined.VideoLibrary
@@ -70,7 +70,6 @@ private enum class Tab(val label: String, val selected: ImageVector, val unselec
     You("You", Icons.Filled.VideoLibrary, Icons.Outlined.VideoLibrary)
 }
 
-/** Window level state the activity needs to react to (PiP, fullscreen). */
 /** A request that came from outside the app: a shared link or text to search for. */
 sealed interface IncomingLink {
     data class Stream(val url: String) : IncomingLink
@@ -92,6 +91,7 @@ fun parseIncoming(text: String): IncomingLink {
     }
 }
 
+/** Window level state the activity needs to react to (PiP, fullscreen). */
 class WatchWindowState {
     var incoming by mutableStateOf<IncomingLink?>(null)
     var expanded by mutableStateOf(false)
@@ -114,36 +114,74 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
     var searchText by rememberSaveable { mutableStateOf<String?>(null) }
     // Pushed screens on top of the tabs: "c|<channel url>" or "p|<playlist url>".
     var stack by rememberSaveable { mutableStateOf(ArrayList<String>()) }
-    fun push(route: String) { stack = ArrayList(stack + route) }
-    fun pop() { stack = ArrayList(stack.dropLast(1)) }
+    fun push(route: String) {
+        stack = ArrayList(stack + route)
+    }
+    fun pop() {
+        stack = ArrayList(stack.dropLast(1))
+    }
 
     val actions = AppActions(
-        openVideo = { video -> engine.play(listOf(video.toEntry())); window.expanded = true },
-        openChannel = { push("c|$it"); searching = false; window.expanded = false },
-        openPlaylist = { push("p|$it"); searching = false; window.expanded = false },
-        openLocalPlaylist = { push("l|$it"); searching = false; window.expanded = false },
-        openHistory = { push("h|"); window.expanded = false },
+        openVideo = { video ->
+            engine.play(listOf(video.toEntry()))
+            window.expanded = true
+        },
+        openChannel = {
+            push("c|$it")
+            searching = false
+            window.expanded = false
+        },
+        openPlaylist = {
+            push("p|$it")
+            searching = false
+            window.expanded = false
+        },
+        openLocalPlaylist = {
+            push("l|$it")
+            searching = false
+            window.expanded = false
+        },
+        openHistory = {
+            push("h|")
+            window.expanded = false
+        },
         download = { url ->
             context.startActivity(Intent(context, DownloadHostActivity::class.java).putExtra(DownloadHostActivity.EXTRA_URL, url))
         },
         openDownloads = { context.startActivity(Intent(context, dev.jordanempire.youflow.download.DownloadActivity::class.java)) },
-        playNext = { engine.playNext(it.toEntry()); android.widget.Toast.makeText(context, "Playing next", android.widget.Toast.LENGTH_SHORT).show() },
-        enqueue = { engine.enqueue(it.toEntry()); android.widget.Toast.makeText(context, "Added to queue", android.widget.Toast.LENGTH_SHORT).show() },
+        playNext = {
+            engine.playNext(it.toEntry())
+            android.widget.Toast.makeText(context, "Playing next", android.widget.Toast.LENGTH_SHORT).show()
+        },
+        enqueue = {
+            engine.enqueue(it.toEntry())
+            android.widget.Toast.makeText(context, "Added to queue", android.widget.Toast.LENGTH_SHORT).show()
+        },
         saveVideo = { saving = it },
         playVideos = { videos, index ->
             engine.play(videos.map { it.toEntry() }, index)
             window.expanded = true
         },
         openClassicUi = onOpenClassicUi,
-        openSettings = { push("s|"); window.expanded = false }
+        openSettings = {
+            push("s|")
+            window.expanded = false
+        }
     )
 
     androidx.compose.runtime.LaunchedEffect(window.incoming) {
         when (val link = window.incoming) {
             is IncomingLink.Stream -> actions.openVideo(VideoItem(link.url, "", "", null, null, null, 0, null, null, false, false))
+
             is IncomingLink.Channel -> actions.openChannel(link.url)
+
             is IncomingLink.Playlist -> actions.openPlaylist(link.url)
-            is IncomingLink.Search -> { searchText = link.text; searching = true }
+
+            is IncomingLink.Search -> {
+                searchText = link.text
+                searching = true
+            }
+
             null -> Unit
         }
         window.incoming = null
@@ -165,13 +203,15 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
     Scaffold(
         modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            if (tab != Tab.Shorts) TopAppBar(
-                title = { Text("YouFlow", style = MaterialTheme.typography.headlineSmallEmphasized) },
-                actions = {
-                    IconButton(onClick = { searching = true }) { Icon(Icons.Outlined.Search, contentDescription = "Search") }
-                },
-                scrollBehavior = scrollBehavior
-            )
+            if (tab != Tab.Shorts) {
+                TopAppBar(
+                    title = { Text("YouFlow", style = MaterialTheme.typography.headlineSmallEmphasized) },
+                    actions = {
+                        IconButton(onClick = { searching = true }) { Icon(Icons.Outlined.Search, contentDescription = "Search") }
+                    },
+                    scrollBehavior = scrollBehavior
+                )
+            }
         },
         bottomBar = {
             Column {
@@ -182,7 +222,10 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
                     Tab.entries.forEach { entry ->
                         ShortNavigationBarItem(
                             selected = tab == entry,
-                            onClick = { tab = entry; stack = ArrayList() },
+                            onClick = {
+                                tab = entry
+                                stack = ArrayList()
+                            },
                             icon = { Icon(if (tab == entry) entry.selected else entry.unselected, contentDescription = null) },
                             label = { Text(entry.label) }
                         )
@@ -230,7 +273,10 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
         enter = fadeIn() + slideInVertically { it / 12 },
         exit = fadeOut() + slideOutVertically { it / 12 }
     ) {
-        SearchScreen(actions = actions, initialQuery = searchText, onClose = { searching = false; searchText = null })
+        SearchScreen(actions = actions, initialQuery = searchText, onClose = {
+            searching = false
+            searchText = null
+        })
     }
 
     AnimatedVisibility(
@@ -245,7 +291,10 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
             actions = actions,
             fullscreen = window.fullscreen,
             onToggleFullscreen = { window.fullscreen = !window.fullscreen },
-            onCollapse = { window.fullscreen = false; window.expanded = false }
+            onCollapse = {
+                window.fullscreen = false
+                window.expanded = false
+            }
         )
     }
 }

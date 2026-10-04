@@ -5,9 +5,9 @@ import com.xwray.groupie.viewbinding.BindableItem
 import com.xwray.groupie.viewbinding.GroupieViewHolder
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.databinding.ItemStreamSegmentBinding
-import org.schabi.newpipe.extractor.stream.StreamSegment
 import dev.jordanempire.youflow.util.Localization
 import dev.jordanempire.youflow.util.image.CoilHelper
+import org.schabi.newpipe.extractor.stream.StreamSegment
 
 class StreamSegmentItem(
     private val item: StreamSegment,

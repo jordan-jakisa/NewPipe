@@ -1,6 +1,5 @@
 package dev.jordanempire.youflow.ui.channel
 
-import dev.jordanempire.youflow.ui.util.toUiError
 import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,13 +7,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -51,11 +50,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import dev.jordanempire.youflow.ui.util.keyedViewModel
 import dev.jordanempire.youflow.ui.AppActions
 import dev.jordanempire.youflow.ui.components.ChannelRow
-import dev.jordanempire.youflow.ui.components.LoadingBox
 import dev.jordanempire.youflow.ui.components.ErrorBox
+import dev.jordanempire.youflow.ui.components.LoadingBox
 import dev.jordanempire.youflow.ui.components.MessageBox
 import dev.jordanempire.youflow.ui.components.PlaylistRow
 import dev.jordanempire.youflow.ui.components.Thumbnail
@@ -68,6 +66,8 @@ import dev.jordanempire.youflow.ui.model.PlaylistItem
 import dev.jordanempire.youflow.ui.model.UiState
 import dev.jordanempire.youflow.ui.model.VideoItem
 import dev.jordanempire.youflow.ui.util.formatCount
+import dev.jordanempire.youflow.ui.util.keyedViewModel
+import dev.jordanempire.youflow.ui.util.toUiError
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -87,7 +87,7 @@ class ChannelViewModel(app: Application, private val url: String) : AndroidViewM
     val tab = _tab.asStateFlow()
     private val _items = MutableStateFlow<UiState<List<ContentItem>>>(UiState.Loading)
     val items = _items.asStateFlow()
-    private val _loadingMore = MutableStateFlow(false)
+    private var loadingMore = false
     private var next: Page? = null
 
     val subscribed: StateFlow<Boolean> = repo.isSubscribed(url)
@@ -146,8 +146,8 @@ class ChannelViewModel(app: Application, private val url: String) : AndroidViewM
         val page = next ?: return
         val handler = loaded?.handlers?.getOrNull(_tab.value) ?: return
         val current = (_items.value as? UiState.Content)?.data ?: return
-        if (_loadingMore.value) return
-        _loadingMore.value = true
+        if (loadingMore) return
+        loadingMore = true
         viewModelScope.launch {
             try {
                 val more = repo.channelTab(handler, page)
@@ -158,7 +158,7 @@ class ChannelViewModel(app: Application, private val url: String) : AndroidViewM
             } catch (_: Throwable) {
                 next = null
             }
-            _loadingMore.value = false
+            loadingMore = false
         }
     }
 
@@ -202,7 +202,9 @@ fun ChannelScreen(url: String, actions: AppActions, onBack: () -> Unit) {
     ) { padding ->
         when (val c = channel) {
             UiState.Loading -> LoadingBox(Modifier.padding(padding))
+
             is UiState.Error -> ErrorBox(c, vm::load, Modifier.padding(padding), "Couldn't load this channel")
+
             is UiState.Content -> {
                 val details = c.data
                 LazyColumn(state = listState, modifier = Modifier.fillMaxSize(), contentPadding = WindowInsets.navigationBars.asPaddingValues()) {
@@ -228,12 +230,16 @@ fun ChannelScreen(url: String, actions: AppActions, onBack: () -> Unit) {
                     }
                     when (val list = items) {
                         UiState.Loading -> item(key = "loading") { LoadingBox(Modifier.fillMaxWidth().height(240.dp)) }
+
                         is UiState.Error -> item(key = "error") {
                             MessageBox("Couldn't load this tab", list.message, modifier = Modifier.fillMaxWidth().height(280.dp))
                         }
+
                         is UiState.Content -> {
-                            if (list.data.isEmpty()) item(key = "empty") {
-                                Text("Nothing here yet.", modifier = Modifier.padding(24.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            if (list.data.isEmpty()) {
+                                item(key = "empty") {
+                                    Text("Nothing here yet.", modifier = Modifier.padding(24.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                }
                             }
                             items(list.data, key = { it.url }) { item ->
                                 when (item) {
@@ -246,7 +252,9 @@ fun ChannelScreen(url: String, actions: AppActions, onBack: () -> Unit) {
                                         onEnqueue = { actions.enqueue(item) },
                                         modifier = Modifier.padding(top = 12.dp)
                                     )
+
                                     is PlaylistItem -> PlaylistRow(item, onClick = { actions.openPlaylist(item.url) })
+
                                     is ChannelItem -> ChannelRow(item, false, { actions.openChannel(item.url) }, {})
                                 }
                             }

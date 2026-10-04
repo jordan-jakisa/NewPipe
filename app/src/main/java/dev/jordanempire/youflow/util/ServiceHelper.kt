@@ -8,8 +8,8 @@ package dev.jordanempire.youflow.util
 import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import java.util.concurrent.TimeUnit
 import dev.jordanempire.youflow.R
+import java.util.concurrent.TimeUnit
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.StreamingService
 

@@ -10,15 +10,15 @@ import android.util.Pair
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import dev.jordanempire.youflow.NewPipeDatabase
+import dev.jordanempire.youflow.database.playlist.PlaylistStreamEntry
+import dev.jordanempire.youflow.database.playlist.model.PlaylistEntity
+import dev.jordanempire.youflow.local.history.HistoryRecordManager
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.Collections
-import dev.jordanempire.youflow.NewPipeDatabase
-import dev.jordanempire.youflow.database.playlist.PlaylistStreamEntry
-import dev.jordanempire.youflow.database.playlist.model.PlaylistEntity
-import dev.jordanempire.youflow.local.history.HistoryRecordManager
 
 class LocalPlaylistViewModel(application: Application) : AndroidViewModel(application) {
     private val playlistManager = LocalPlaylistManager(NewPipeDatabase.getInstance(application))

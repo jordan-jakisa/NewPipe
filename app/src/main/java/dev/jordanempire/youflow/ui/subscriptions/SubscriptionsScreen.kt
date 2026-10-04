@@ -4,11 +4,12 @@ import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,8 +19,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -95,6 +95,7 @@ fun SubscriptionsScreen(actions: AppActions, contentPadding: PaddingValues, vm: 
     val top = Modifier.padding(top = contentPadding.calculateTopPadding())
     when {
         channels == null -> Unit
+
         channels!!.isEmpty() -> Box(top.fillMaxSize()) {
             MessageBox(
                 title = "No subscriptions yet",
@@ -103,6 +104,7 @@ fun SubscriptionsScreen(actions: AppActions, contentPadding: PaddingValues, vm: 
             )
             Box(Modifier.align(Alignment.TopEnd)) { SubscriptionToolsMenu() }
         }
+
         else -> PullToRefreshBox(isRefreshing = refreshing, onRefresh = vm::refresh, modifier = top) {
             LazyColumn(contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding())) {
                 item(key = "tools") {
@@ -112,14 +114,20 @@ fun SubscriptionsScreen(actions: AppActions, contentPadding: PaddingValues, vm: 
                     }
                 }
                 item(key = "strip") { ChannelStrip(channels!!, actions) }
-                if (refreshing) item(key = "progress") {
-                    LinearWavyProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp))
+                if (refreshing) {
+                    item(key = "progress") {
+                        LinearWavyProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp))
+                    }
                 }
-                if (error != null) item(key = "error") {
-                    Text("Some channels failed to update: $error", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp))
+                if (error != null) {
+                    item(key = "error") {
+                        Text("Some channels failed to update: $error", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(16.dp))
+                    }
                 }
-                if (feed.isEmpty() && !refreshing) item(key = "empty") {
-                    Text("No new videos yet. Pull down to refresh.", modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (feed.isEmpty() && !refreshing) {
+                    item(key = "empty") {
+                        Text("No new videos yet. Pull down to refresh.", modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 }
                 items(feed, key = { it.url }) { video ->
                     VideoCard(video, onClick = { actions.openVideo(video) }, onChannelClick = { video.channelUrl?.let(actions.openChannel) }, onSave = { actions.saveVideo(video) }, onPlayNext = { actions.playNext(video) }, onEnqueue = { actions.enqueue(video) })

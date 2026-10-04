@@ -17,11 +17,11 @@ import coil3.size.Size
 import coil3.target.Target
 import coil3.toBitmap
 import coil3.transform.Transformation
-import kotlin.math.min
 import dev.jordanempire.youflow.MainActivity
 import dev.jordanempire.youflow.R
-import org.schabi.newpipe.extractor.Image
 import dev.jordanempire.youflow.ktx.scale
+import kotlin.math.min
+import org.schabi.newpipe.extractor.Image
 
 object CoilHelper {
     private val TAG = CoilHelper::class.java.simpleName

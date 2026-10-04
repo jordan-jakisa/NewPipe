@@ -7,11 +7,11 @@ package dev.jordanempire.youflow.util.text
 
 import android.content.Context
 import android.view.View
+import dev.jordanempire.youflow.util.external_communication.ShareUtils
+import dev.jordanempire.youflow.util.text.TimestampExtractor.TimestampMatchDTO
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import org.schabi.newpipe.extractor.ServiceList
 import org.schabi.newpipe.extractor.StreamingService
-import dev.jordanempire.youflow.util.external_communication.ShareUtils
-import dev.jordanempire.youflow.util.text.TimestampExtractor.TimestampMatchDTO
 
 class TimestampLongPressClickableSpan(
     private val context: Context,

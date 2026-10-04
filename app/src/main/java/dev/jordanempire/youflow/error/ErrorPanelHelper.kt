@@ -9,14 +9,14 @@ import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.jakewharton.rxbinding4.view.clicks
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.disposables.Disposable
-import java.util.concurrent.TimeUnit
 import dev.jordanempire.youflow.MainActivity
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.ktx.animate
 import dev.jordanempire.youflow.util.external_communication.ShareUtils
 import dev.jordanempire.youflow.util.text.setTextWithLinks
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.Disposable
+import java.util.concurrent.TimeUnit
 
 class ErrorPanelHelper(
     private val fragment: Fragment,

@@ -10,13 +10,13 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
-import io.reactivex.rxjava3.core.Flowable
 import dev.jordanempire.youflow.database.BasicDAO
 import dev.jordanempire.youflow.database.playlist.PlaylistDuplicatesEntry
 import dev.jordanempire.youflow.database.playlist.PlaylistMetadataEntry
 import dev.jordanempire.youflow.database.playlist.PlaylistStreamEntry
 import dev.jordanempire.youflow.database.playlist.model.PlaylistEntity.Companion.DEFAULT_THUMBNAIL_ID
 import dev.jordanempire.youflow.database.playlist.model.PlaylistStreamEntity
+import io.reactivex.rxjava3.core.Flowable
 
 @Dao
 interface PlaylistStreamDAO : BasicDAO<PlaylistStreamEntity> {

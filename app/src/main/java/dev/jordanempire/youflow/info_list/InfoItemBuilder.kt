@@ -6,11 +6,11 @@
 package dev.jordanempire.youflow.info_list
 
 import android.content.Context
+import dev.jordanempire.youflow.util.OnClickGesture
 import org.schabi.newpipe.extractor.channel.ChannelInfoItem
 import org.schabi.newpipe.extractor.comments.CommentsInfoItem
 import org.schabi.newpipe.extractor.playlist.PlaylistInfoItem
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
-import dev.jordanempire.youflow.util.OnClickGesture
 
 class InfoItemBuilder(val context: Context) {
     var onStreamSelectedListener: OnClickGesture<StreamInfoItem>? = null
