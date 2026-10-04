@@ -34,22 +34,28 @@ Status: the repository is prepared; nothing has been submitted. Checked against 
 - Draft recipe: `docs/fdroid/dev.jordanempire.youflow.yml` (uses `subdir: app` like NewPipe's).
 - `./gradlew assembleRelease` makes an unsigned, minified APK that launches without crashes.
 
+## Done
+
+- 512x512 icon in `fastlane/metadata/android/en-US/images/icon.png`.
+- Local tag `v0.1.0` (not pushed); its hash is in the recipe.
+- Recipe passes `fdroid lint` and `fdroid rewritemeta` against a current fdroiddata checkout.
+- A fresh `git clone --recurse-submodules` builds `assembleRelease` to the same APK.
+
 ## Still to do
 
-1. Push to GitHub including the submodule; tag `v0.1.0`.
-2. Add `fastlane/metadata/android/en-US/images/icon.png` (512x512) and phone screenshots in
-   `images/phoneScreenshots/`.
-3. Put the full commit hash of the tag into the recipe's `commit`.
-4. Test locally with fdroidserver: `fdroid lint dev.jordanempire.youflow`, `fdroid rewritemeta
-   dev.jordanempire.youflow`, `fdroid build dev.jordanempire.youflow` (or push to your fdroiddata fork
-   and let its CI run).
-5. Fork https://gitlab.com/fdroid/fdroiddata, add `metadata/dev.jordanempire.youflow.yml`, commit as
+1. Phone screenshots in `images/phoneScreenshots/` (use a clean profile: the Home and Subscriptions
+   screens show your own history and channels, and thumbnails are other people's artwork).
+2. Push the branch, the submodule and the tag to GitHub (`git push origin youtube-only v0.1.0`).
+3. `fdroid build dev.jordanempire.youflow` in an fdroiddata checkout, once the tag is public (it clones
+   the repo from GitHub).
+4. Fork https://gitlab.com/fdroid/fdroiddata, add `metadata/dev.jordanempire.youflow.yml`, commit as
    `New App: dev.jordanempire.youflow`, open a merge request. Listing appears about 24 to 48 hours
    after merge.
 
 ## Risks
 
-1. Trademark: the name "YouFlow" and the "YouTube" wording in the description. NewPipe and other
+1. Trademark: the icon is a coral-red play triangle on dark, which can read as YouTube's red play
+   button; consider a clearly different colour or shape. The name "YouFlow" and the "YouTube" wording in the description. NewPipe and other
    YouTube clients use "YouTube" descriptively and are listed, but the name begins with "You" and the
    icon is a play symbol. A reviewer could ask for a rename. Avoid anything that looks like YouTube's
    red play button or logo.

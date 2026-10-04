@@ -1,17 +1,18 @@
 # Draft recipe for https://gitlab.com/fdroid/fdroiddata (metadata/dev.jordanempire.youflow.yml).
-# Not submitted. Fill in after the first tagged release; see README.md in this folder.
+# Not submitted. `commit` is the v0.1.0 tag; if the tag is moved, update it. See README.md here.
+# Passes `fdroid lint` and `fdroid rewritemeta` against a current fdroiddata checkout.
+AntiFeatures:
+  NonFreeNet:
+    en-US: Depends on YouTube, a proprietary network service.
 Categories:
-  - Multimedia
   - Internet
+  - Multimedia
+  - Online Media Player
 License: GPL-3.0-or-later
 AuthorName: Jordan Mungujakisa
 WebSite: https://github.com/jordan-jakisa/NewPipe
 SourceCode: https://github.com/jordan-jakisa/NewPipe
 IssueTracker: https://github.com/jordan-jakisa/NewPipe/issues
-
-AntiFeatures:
-  NonFreeNet:
-    en-US: Depends on YouTube, a proprietary network service.
 
 RepoType: git
 Repo: https://github.com/jordan-jakisa/NewPipe
@@ -19,9 +20,7 @@ Repo: https://github.com/jordan-jakisa/NewPipe
 Builds:
   - versionName: 0.1.0
     versionCode: 1
-    # F-Droid wants the full commit hash here (a tag name works for the first build only if it is a
-    # tag); replace with `git rev-parse v0.1.0` once the release is tagged.
-    commit: v0.1.0
+    commit: 195fa72f9ca8ca26e50e2e863f708e35f98db31c
     subdir: app
     submodules: true
     gradle:
