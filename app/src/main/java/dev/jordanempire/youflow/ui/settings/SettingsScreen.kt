@@ -148,6 +148,8 @@ fun SettingsScreen(onBack: () -> Unit, onOpenClassicSettings: () -> Unit) {
                     }
                 )
             }
+            item { Header("Backup") }
+            item { BackupRows() }
             item { Header("More") }
             item {
                 ListItem(
