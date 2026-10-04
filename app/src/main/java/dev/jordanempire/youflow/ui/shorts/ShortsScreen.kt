@@ -235,7 +235,7 @@ private fun RailButton(icon: androidx.compose.ui.graphics.vector.ImageVector, la
         Icon(
             icon,
             contentDescription = label,
-            tint = if (active) MaterialTheme.colorScheme.primaryContainer else Color.White,
+            tint = if (active) MaterialTheme.colorScheme.primary else Color.White,
             modifier = Modifier.size(28.dp)
         )
     }
