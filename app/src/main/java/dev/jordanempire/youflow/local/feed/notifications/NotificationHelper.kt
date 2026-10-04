@@ -67,9 +67,7 @@ class NotificationHelper(val context: Context) {
         summaryBuilder.setStyle(style)
 
         // open the channel page when clicking on the summary notification
-        val intent = NavigationHelper
-            .getChannelIntent(context, data.serviceId, data.url)
-            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val intent = openInYouFlow(context, data.url)
         summaryBuilder.setContentIntent(
             PendingIntentCompat.getActivity(context, data.pseudoId, intent, 0, false)
         )
@@ -123,7 +121,7 @@ class NotificationHelper(val context: Context) {
                 PendingIntentCompat.getActivity(
                     context,
                     item.url.hashCode(),
-                    NavigationHelper.getStreamIntent(context, serviceId, item.url, item.name),
+                    openInYouFlow(context, item.url),
                     PendingIntent.FLAG_UPDATE_CURRENT,
                     false
                 )
@@ -189,3 +187,9 @@ class NotificationHelper(val context: Context) {
         }
     }
 }
+
+/** A link intent the new UI understands, so notifications open YouFlow rather than the classic screens. */
+private fun openInYouFlow(context: Context, url: String): Intent =
+    Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url))
+        .setClass(context, dev.jordanempire.youflow.ui.YouFlowActivity::class.java)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)

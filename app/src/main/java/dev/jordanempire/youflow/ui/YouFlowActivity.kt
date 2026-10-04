@@ -19,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import dev.jordanempire.youflow.MainActivity
+import dev.jordanempire.youflow.local.feed.notifications.NotificationWorker
 import dev.jordanempire.youflow.media.engine.PlaybackEngine
 import dev.jordanempire.youflow.settings.SettingsActivity
 import dev.jordanempire.youflow.ui.settings.AppSettings
@@ -34,6 +35,7 @@ class YouFlowActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         engine = PlaybackEngine.get(application)
+        setUpNotifications()
 
         setContent {
             val settings = androidx.compose.runtime.remember { AppSettings.get(application) }
@@ -67,6 +69,19 @@ class YouFlowActivity : ComponentActivity() {
         }
         lifecycleScope.launch {
             engine.state.collect { updatePipParams() }
+        }
+    }
+
+    /** Asks for the notification permission once, then schedules the new upload check. */
+    private fun setUpNotifications() {
+        val schedule = { NotificationWorker.initialize(this) }
+        if (android.os.Build.VERSION.SDK_INT >= 33 &&
+            checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED
+        ) {
+            registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { schedule() }
+                .launch(android.Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            schedule()
         }
     }
 
