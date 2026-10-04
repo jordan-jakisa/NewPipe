@@ -20,7 +20,7 @@ Repo: https://github.com/jordan-jakisa/NewPipe
 Builds:
   - versionName: 0.1.0
     versionCode: 1
-    commit: 195fa72f9ca8ca26e50e2e863f708e35f98db31c
+    commit: 935df79f0fbe974b7c4afe9b094cd7281ba60c7b
     subdir: app
     submodules: true
     gradle:
