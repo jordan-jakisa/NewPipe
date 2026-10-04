@@ -4,12 +4,16 @@ import dev.jordanempire.youflow.ui.util.toUiError
 import android.app.Application
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material3.FilterChip
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -29,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -80,6 +85,14 @@ class SearchViewModel(app: Application) : AndroidViewModel(app) {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptySet())
 
     private var searchJob: Job? = null
+    private var next: org.schabi.newpipe.extractor.Page? = null
+    private var loadingMore = false
+
+    private val _filter = MutableStateFlow<String?>(null)
+    val filter = _filter.asStateFlow()
+    private val _correction = MutableStateFlow<Pair<String, Boolean>?>(null)
+    /** Suggested query and whether the shown results are already for the corrected text. */
+    val correction = _correction.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -94,6 +107,31 @@ class SearchViewModel(app: Application) : AndroidViewModel(app) {
         if (_results.value != null) _results.value = null
     }
 
+    fun setFilter(filter: String?) {
+        if (_filter.value == filter) return
+        _filter.value = filter
+        submit()
+    }
+
+    fun loadMore() {
+        val page = next ?: return
+        val current = (_results.value as? UiState.Content)?.data ?: return
+        if (loadingMore) return
+        loadingMore = true
+        viewModelScope.launch {
+            try {
+                val more = repo.moreSearch(_query.value, _filter.value, page)
+                next = more.next
+                _results.value = UiState.Content((current + more.items).distinctBy { it.url })
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Throwable) {
+                next = null
+            }
+            loadingMore = false
+        }
+    }
+
     fun submit(value: String = _query.value) {
         val q = value.trim()
         if (q.isEmpty()) return
@@ -101,8 +139,12 @@ class SearchViewModel(app: Application) : AndroidViewModel(app) {
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             _results.value = UiState.Loading
+            _correction.value = null
             _results.value = try {
-                UiState.Content(repo.search(q))
+                val page = repo.search(q, _filter.value)
+                next = page.next
+                _correction.value = page.suggestion?.takeIf { it.isNotBlank() }?.let { it to page.corrected }
+                UiState.Content(page.items)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
@@ -118,12 +160,21 @@ class SearchViewModel(app: Application) : AndroidViewModel(app) {
     }
 }
 
+private val SearchFilters = listOf("All" to null, "Videos" to "videos", "Channels" to "channels", "Playlists" to "playlists")
+
 @Composable
 fun SearchScreen(actions: AppActions, onClose: () -> Unit, vm: SearchViewModel = viewModel()) {
     val query by vm.query.collectAsState()
     val suggestions by vm.suggestions.collectAsState()
     val results by vm.results.collectAsState()
     val subscribed by vm.subscribedUrls.collectAsState()
+    val filter by vm.filter.collectAsState()
+    val correction by vm.correction.collectAsState()
+    val resultsState = rememberLazyListState()
+    LaunchedEffect(resultsState) {
+        snapshotFlow { resultsState.layoutInfo.visibleItemsInfo.lastOrNull()?.index to resultsState.layoutInfo.totalItemsCount }
+            .collect { (last, total) -> if (last != null && total > 0 && last >= total - 4) vm.loadMore() }
+    }
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { focus.requestFocus() }
     BackHandler(onBack = onClose)
@@ -177,7 +228,24 @@ fun SearchScreen(actions: AppActions, onClose: () -> Unit, vm: SearchViewModel =
             is UiState.Content -> if (r.data.isEmpty()) {
                 MessageBox("No results", "Try different words.", modifier = modifier)
             } else {
-                LazyColumn(modifier) {
+                LazyColumn(modifier, state = resultsState) {
+                    item("filters") {
+                        LazyRow(contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            items(SearchFilters) { (label, value) ->
+                                FilterChip(selected = filter == value, onClick = { vm.setFilter(value) }, label = { Text(label) })
+                            }
+                        }
+                    }
+                    correction?.let { (suggestion, corrected) ->
+                        item("correction") {
+                            Text(
+                                if (corrected) "Showing results for $suggestion" else "Did you mean $suggestion?",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.fillMaxWidth().clickable { vm.submit(suggestion) }.padding(horizontal = 16.dp, vertical = 8.dp)
+                            )
+                        }
+                    }
                     items(r.data, key = { it.url }) { item ->
                         when (item) {
                             is VideoItem -> VideoCard(item, { actions.openVideo(item) }, { item.channelUrl?.let(actions.openChannel) }, onSave = { actions.saveVideo(item) })

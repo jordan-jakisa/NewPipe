@@ -122,17 +122,22 @@ fun WatchScreen(
     val info = state.info
     var showSettings by remember { mutableStateOf(false) }
     var showComments by remember { mutableStateOf(false) }
+    var showChapters by remember { mutableStateOf(false) }
+    val chapterPosition by engine.position.collectAsState()
+    if (showChapters && info != null) {
+        ChaptersSheet(info.streamSegments, currentChapter(info.streamSegments, chapterPosition), onSeek = engine::seekTo) { showChapters = false }
+    }
     if (showSettings) PlayerSettingsSheet(engine, state) { showSettings = false }
     if (showComments) CommentsSheet(onDismiss = { showComments = false })
 
     if (fullscreen) {
-        PlayerBox(engine, state, fullscreen = true, onToggleFullscreen, onCollapse, { showSettings = true }, Modifier.fillMaxSize().background(Color.Black))
+        PlayerBox(engine, state, fullscreen = true, onToggleFullscreen, onCollapse, { showSettings = true }, { showChapters = true }, Modifier.fillMaxSize().background(Color.Black))
         return
     }
 
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
         PlayerBox(
-            engine, state, fullscreen = false, onToggleFullscreen, onCollapse, { showSettings = true },
+            engine, state, fullscreen = false, onToggleFullscreen, onCollapse, { showSettings = true }, { showChapters = true },
             Modifier.fillMaxWidth().background(Color.Black).statusBarsPadding().aspectRatio(state.videoAspect.coerceIn(1f, 16f / 9f))
         )
         LazyColumn(Modifier.fillMaxSize(), contentPadding = WindowInsets.navigationBars.asPaddingValues()) {
@@ -177,6 +182,7 @@ private fun PlayerBox(
     onToggleFullscreen: () -> Unit,
     onCollapse: () -> Unit,
     onSettings: () -> Unit,
+    onChapters: () -> Unit,
     modifier: Modifier
 ) {
     Box(modifier) {
@@ -186,7 +192,7 @@ private fun PlayerBox(
             contentScale = androidx.compose.ui.layout.ContentScale.Fit,
             modifier = Modifier.fillMaxSize()
         )
-        PlayerControls(engine, state, fullscreen, onToggleFullscreen, onCollapse, onSettings)
+        PlayerControls(engine, state, fullscreen, onToggleFullscreen, onCollapse, onSettings, onChapters)
     }
 }
 

@@ -96,9 +96,18 @@ class YouTubeRepository(private val context: Context) {
         ExtractorHelper.suggestionsFor(serviceId, query).await()
     }
 
-    suspend fun search(query: String): List<ContentItem> = withContext(Dispatchers.IO) {
-        val info = ExtractorHelper.searchFor(serviceId, query, emptyList(), "").await()
-        info.relatedItems.mapNotNull { it.toContent() }
+    class SearchPage(val items: List<ContentItem>, val next: Page?, val suggestion: String?, val corrected: Boolean)
+
+    /** [filter] is one of the extractor's content filters ("videos", "channels", "playlists") or null for all. */
+    suspend fun search(query: String, filter: String? = null): SearchPage = withContext(Dispatchers.IO) {
+        val filters = listOfNotNull(filter)
+        val info = ExtractorHelper.searchFor(serviceId, query, filters, "").await()
+        SearchPage(info.relatedItems.mapNotNull { it.toContent() }, info.nextPage, info.searchSuggestion, info.isCorrectedSearch)
+    }
+
+    suspend fun moreSearch(query: String, filter: String?, page: Page): Paged<ContentItem> = withContext(Dispatchers.IO) {
+        val more = ExtractorHelper.getMoreSearchItems(serviceId, query, listOfNotNull(filter), "", page).await()
+        Paged(more.items.mapNotNull { it.toContent() }, more.nextPage)
     }
 
     /** Videos from subscribed channels, newest first, with resume progress. */
@@ -331,7 +340,7 @@ class YouTubeRepository(private val context: Context) {
             }.getOrDefault(emptyList())
         }
         if (fromChannels.size >= 6) return fromChannels.shuffled()
-        val searched = runCatching { search("#shorts") }.getOrDefault(emptyList())
+        val searched = runCatching { search("#shorts").items }.getOrDefault(emptyList())
             .filterIsInstance<VideoItem>().filter { it.isShort || (it.durationSeconds in 1..61) }
         return (fromChannels + searched).distinctBy { it.url }.shuffled()
     }

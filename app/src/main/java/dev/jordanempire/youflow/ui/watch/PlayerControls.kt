@@ -72,6 +72,7 @@ fun PlayerControls(
     onToggleFullscreen: () -> Unit,
     onCollapse: () -> Unit,
     onSettings: () -> Unit,
+    onChapters: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var visible by remember { mutableStateOf(true) }
@@ -137,7 +138,7 @@ fun PlayerControls(
                 Column(Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(horizontal = 16.dp)) {
                     SeekBar(engine, state, onInteraction = { interaction++ })
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        TimeLabel(engine, state, Modifier.weight(1f))
+                        TimeLabel(engine, state, onChapters, Modifier.weight(1f))
                         IconButton(onClick = onToggleFullscreen, modifier = Modifier.size(36.dp)) {
                             Icon(
                                 if (fullscreen) Icons.Filled.FullscreenExit else Icons.Filled.Fullscreen,
@@ -265,14 +266,35 @@ private fun SeekBar(engine: PlaybackEngine, state: PlayerState, onInteraction: (
             drawRoundRect(Color.White.copy(alpha = 0.3f), top, androidx.compose.ui.geometry.Size(size.width, h), r)
             drawRoundRect(Color.White.copy(alpha = 0.45f), top, androidx.compose.ui.geometry.Size(size.width * bufferedFraction, h), r)
             drawRoundRect(active, top, androidx.compose.ui.geometry.Size(size.width * progress, h), r)
+            // Small gaps mark where chapters start.
+            state.info?.streamSegments?.forEach { segment ->
+                val f = (segment.startTimeSeconds * 1000f / duration)
+                if (f > 0.01f && f < 0.99f) {
+                    drawRect(Color.Black.copy(alpha = 0.55f), androidx.compose.ui.geometry.Offset(size.width * f - 1.5.dp.toPx(), y - h / 2), androidx.compose.ui.geometry.Size(3.dp.toPx(), h))
+                }
+            }
             drawCircle(active, radius = (if (dragging != null) 9f else 6f).dp.toPx(), center = androidx.compose.ui.geometry.Offset(size.width * progress, y))
         }
     }
 }
 
 @Composable
-private fun TimeLabel(engine: PlaybackEngine, state: PlayerState, modifier: Modifier) {
+private fun TimeLabel(engine: PlaybackEngine, state: PlayerState, onChapters: () -> Unit, modifier: Modifier) {
     val position by engine.position.collectAsState()
-    val text = if (state.isLive) "LIVE" else "${formatDuration(position / 1000).ifEmpty { "0:00" }} / ${formatDuration(state.durationMs / 1000).ifEmpty { "0:00" }}"
-    Text(text, color = Color.White, style = MaterialTheme.typography.labelLarge, modifier = modifier.padding(start = 12.dp))
+    val segments = state.info?.streamSegments.orEmpty()
+    val chapter = segments.getOrNull(currentChapter(segments, position))
+    val time = if (state.isLive) "LIVE" else "${formatDuration(position / 1000).ifEmpty { "0:00" }} / ${formatDuration(state.durationMs / 1000).ifEmpty { "0:00" }}"
+    Row(modifier.padding(start = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(time, color = Color.White, style = MaterialTheme.typography.labelLarge)
+        if (chapter != null) {
+            Text(
+                "  \u2022  ${chapter.title.orEmpty()}",
+                color = Color.White.copy(alpha = 0.85f),
+                style = MaterialTheme.typography.labelLarge,
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false).pointerInput(Unit) { detectTapGestures { onChapters() } }
+            )
+        }
+    }
 }
