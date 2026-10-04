@@ -84,8 +84,8 @@ fun SettingsScreen(onBack: () -> Unit, onOpenPreferences: (screen: String) -> Un
             }
             item {
                 ListItem(
-                    headlineContent = { Text("Dynamic colour") },
-                    supportingContent = { Text("Use your wallpaper colours") },
+                    headlineContent = { Text("Use wallpaper colours") },
+                    supportingContent = { Text("Material You colours instead of the YouFlow palette") },
                     trailingContent = { Switch(checked = dynamic, onCheckedChange = settings::setDynamicColor) }
                 )
             }

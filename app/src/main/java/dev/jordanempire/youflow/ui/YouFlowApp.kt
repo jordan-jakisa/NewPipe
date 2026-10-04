@@ -10,7 +10,10 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.PlayCircle
@@ -38,14 +41,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.compose.ContentFrame
 import androidx.media3.ui.compose.SURFACE_TYPE_SURFACE_VIEW
+import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.media.engine.PlaybackEngine
 import dev.jordanempire.youflow.media.engine.QueueEntry
 import dev.jordanempire.youflow.ui.channel.ChannelScreen
@@ -209,7 +216,21 @@ fun YouFlowApp(window: WatchWindowState, onOpenPreferences: (screen: String) -> 
         topBar = {
             if (tab != Tab.Shorts) {
                 TopAppBar(
-                    title = { Text("YouFlow", style = MaterialTheme.typography.headlineSmallEmphasized) },
+                    title = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                painterResource(R.drawable.ic_youflow_mark),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(30.dp)
+                            )
+                            Text(
+                                "YouFlow",
+                                style = MaterialTheme.typography.headlineSmallEmphasized,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
+                        }
+                    },
                     actions = {
                         IconButton(onClick = { searching = true }) { Icon(Icons.Outlined.Search, contentDescription = "Search") }
                     },

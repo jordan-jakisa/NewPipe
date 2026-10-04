@@ -20,6 +20,11 @@ class YouFlowPlayerService : MediaSessionService() {
             Intent(this, YouFlowActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
+        setMediaNotificationProvider(
+            androidx.media3.session.DefaultMediaNotificationProvider(this).also {
+                it.setSmallIcon(dev.jordanempire.youflow.R.drawable.ic_youflow_mark)
+            }
+        )
         session = MediaSession.Builder(this, engine.sessionPlayer).setSessionActivity(open).build()
     }
 

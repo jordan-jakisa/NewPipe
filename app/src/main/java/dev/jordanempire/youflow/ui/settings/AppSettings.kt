@@ -13,7 +13,7 @@ class AppSettings private constructor(app: Application) {
 
     private val _theme = MutableStateFlow(prefs.getString(KEY_THEME, THEME_SYSTEM) ?: THEME_SYSTEM)
     val theme: StateFlow<String> = _theme.asStateFlow()
-    private val _dynamicColor = MutableStateFlow(prefs.getBoolean(KEY_DYNAMIC, true))
+    private val _dynamicColor = MutableStateFlow(prefs.getBoolean(KEY_DYNAMIC, false))
     val dynamicColor: StateFlow<Boolean> = _dynamicColor.asStateFlow()
     private val _autoplay = MutableStateFlow(prefs.getBoolean(KEY_AUTOPLAY, true))
     val autoplay: StateFlow<Boolean> = _autoplay.asStateFlow()

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- YouFlow mark: a rounded play triangle over a flowing line, inside the adaptive icon safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FF5547"
+        android:pathData="M44,31 L44,59 L70,45 Z"
+        android:strokeColor="#FF5547"
+        android:strokeWidth="5"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M30,75 C38,67 46,83 54,75 C62,67 70,83 78,75"
+        android:strokeColor="#FFE3DE"
+        android:strokeWidth="4"
+        android:strokeLineCap="round" />
+</vector>
