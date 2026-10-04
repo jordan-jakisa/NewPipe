@@ -8,7 +8,7 @@ package dev.jordanempire.youflow.database
 
 import android.util.Log
 import androidx.room.migration.Migration
-import dev.jordanempire.youflow.MainActivity
+import dev.jordanempire.youflow.BuildConfig
 
 object Migrations {
 
@@ -32,7 +32,7 @@ object Migrations {
     const val DB_VER_10 = 10
 
     private val TAG = Migrations::class.java.getName()
-    private val isDebug = MainActivity.DEBUG
+    private val isDebug = BuildConfig.DEBUG
 
     val MIGRATION_1_2 = Migration(DB_VER_1, DB_VER_2) { db ->
         if (isDebug) {

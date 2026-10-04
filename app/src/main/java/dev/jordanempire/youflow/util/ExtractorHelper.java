@@ -20,7 +20,6 @@
 package dev.jordanempire.youflow.util;
 
 import static org.schabi.newpipe.extractor.utils.Utils.isNullOrEmpty;
-import static dev.jordanempire.youflow.util.text.TextLinkifier.SET_LINK_MOVEMENT_METHOD;
 
 import android.content.Context;
 import android.util.Log;
@@ -32,7 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.core.text.HtmlCompat;
 import androidx.preference.PreferenceManager;
 
-import dev.jordanempire.youflow.MainActivity;
+import dev.jordanempire.youflow.BuildConfig;
 import dev.jordanempire.youflow.R;
 import org.schabi.newpipe.extractor.Info;
 import org.schabi.newpipe.extractor.InfoItem;
@@ -51,7 +50,6 @@ import org.schabi.newpipe.extractor.search.SearchInfo;
 import org.schabi.newpipe.extractor.stream.StreamInfo;
 import org.schabi.newpipe.extractor.stream.StreamInfoItem;
 import org.schabi.newpipe.extractor.suggestion.SuggestionExtractor;
-import dev.jordanempire.youflow.util.text.TextLinkifier;
 
 import java.util.Collections;
 import java.util.List;
@@ -261,7 +259,7 @@ public final class ExtractorHelper {
         return Maybe.defer(() -> {
             //noinspection unchecked
             final I info = (I) CACHE.getFromKey(serviceId, url, cacheType);
-            if (MainActivity.DEBUG) {
+            if (BuildConfig.DEBUG) {
                 Log.d(TAG, "loadFromCache() called, info > " + info);
             }
 
@@ -284,63 +282,6 @@ public final class ExtractorHelper {
     /*//////////////////////////////////////////////////////////////////////////
     // Utils
     //////////////////////////////////////////////////////////////////////////*/
-
-    /**
-     * Formats the text contained in the meta info list as HTML and puts it into the text view,
-     * while also making the separator visible. If the list is null or empty, or the user chose not
-     * to see meta information, both the text view and the separator are hidden
-     *
-     * @param metaInfos         a list of meta information, can be null or empty
-     * @param metaInfoTextView  the text view in which to show the formatted HTML
-     * @param metaInfoSeparator another view to be shown or hidden accordingly to the text view
-     * @param disposables       disposables created by the method are added here and their lifecycle
-     *                          should be handled by the calling class
-     */
-    public static void showMetaInfoInTextView(@Nullable final List<MetaInfo> metaInfos,
-                                              final TextView metaInfoTextView,
-                                              final View metaInfoSeparator,
-                                              final CompositeDisposable disposables) {
-        final Context context = metaInfoTextView.getContext();
-        if (metaInfos == null || metaInfos.isEmpty()
-                || !PreferenceManager.getDefaultSharedPreferences(context).getBoolean(
-                context.getString(R.string.show_meta_info_key), true)) {
-            metaInfoTextView.setVisibility(View.GONE);
-            metaInfoSeparator.setVisibility(View.GONE);
-
-        } else {
-            final StringBuilder stringBuilder = new StringBuilder();
-            for (final MetaInfo metaInfo : metaInfos) {
-                if (!isNullOrEmpty(metaInfo.getTitle())) {
-                    stringBuilder.append("<b>").append(metaInfo.getTitle()).append("</b>")
-                            .append(Localization.DOT_SEPARATOR);
-                }
-
-                String content = metaInfo.getContent().content().trim();
-                if (content.endsWith(".")) {
-                    content = content.substring(0, content.length() - 1); // remove . at end
-                }
-                stringBuilder.append(content);
-
-                for (int i = 0; i < metaInfo.getUrls().size(); i++) {
-                    if (i == 0) {
-                        stringBuilder.append(Localization.DOT_SEPARATOR);
-                    } else {
-                        stringBuilder.append("<br/><br/>");
-                    }
-
-                    stringBuilder
-                            .append("<a href=\"").append(metaInfo.getUrls().get(i)).append("\">")
-                            .append(capitalizeIfAllUppercase(metaInfo.getUrlTexts().get(i).trim()))
-                            .append("</a>");
-                }
-            }
-
-            metaInfoSeparator.setVisibility(View.VISIBLE);
-            TextLinkifier.fromHtml(metaInfoTextView, stringBuilder.toString(),
-                    HtmlCompat.FROM_HTML_SEPARATOR_LINE_BREAK_HEADING, null, null, disposables,
-                    SET_LINK_MOVEMENT_METHOD);
-        }
-    }
 
     private static String capitalizeIfAllUppercase(final String text) {
         for (int i = 0; i < text.length(); i++) {

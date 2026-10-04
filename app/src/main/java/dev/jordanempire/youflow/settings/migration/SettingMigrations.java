@@ -1,6 +1,6 @@
 package dev.jordanempire.youflow.settings.migration;
 
-import static dev.jordanempire.youflow.MainActivity.DEBUG;
+import static dev.jordanempire.youflow.BuildConfig.DEBUG;
 import static org.schabi.newpipe.extractor.ServiceList.YouTube;
 
 import android.content.Context;
@@ -16,8 +16,6 @@ import dev.jordanempire.youflow.R;
 import dev.jordanempire.youflow.error.ErrorInfo;
 import dev.jordanempire.youflow.error.ErrorUtil;
 import dev.jordanempire.youflow.error.UserAction;
-import dev.jordanempire.youflow.settings.tabs.Tab;
-import dev.jordanempire.youflow.settings.tabs.TabsManager;
 import dev.jordanempire.youflow.util.DeviceUtils;
 
 import java.util.Collections;
@@ -171,36 +169,7 @@ public final class SettingMigrations {
     private static final Migration MIGRATION_7_8 = new Migration(7, 8) {
         @Override
         protected void migrate(@NonNull final Context context) {
-            // YouTube remove the combined Trending kiosk, see
-            // https://github.com/TeamNewPipe/NewPipe/discussions/12445 for more information.
-            // If the user has a dedicated YouTube/Trending kiosk tab,
-            // it is removed and replaced with the new live kiosk tab.
-            // The default trending kiosk tab is not touched
-            // because it uses the default kiosk provided by the extractor
-            // and is thus updated automatically.
-            final TabsManager tabsManager = TabsManager.getManager(context);
-            final List<Tab> tabs = tabsManager.getTabs();
-            final List<Tab> cleanedTabs = tabs.stream()
-                    .filter(tab -> !(tab instanceof Tab.KioskTab kioskTab
-                            && kioskTab.getKioskServiceId() == YouTube.getServiceId()
-                            && kioskTab.getKioskId().equals("Trending")))
-                    .collect(Collectors.toUnmodifiableList());
-            if (tabs.size() != cleanedTabs.size()) {
-                tabsManager.saveTabs(cleanedTabs);
-            }
-
-            final boolean hasDefaultTrendingTab = tabs.stream()
-                    .anyMatch(tab -> tab instanceof Tab.DefaultKioskTab);
-
-            if (tabs.size() != cleanedTabs.size() || hasDefaultTrendingTab) {
-                // User is informed about the change
-                MigrationManager.addMigrationInfo(uiContext ->
-                        MigrationManager.createMigrationInfoDialog(
-                                        uiContext,
-                                        uiContext.getString(R.string.migration_info_7_8_title),
-                                        uiContext.getString(R.string.migration_info_7_8_message))
-                                .show());
-            }
+            // The customisable main page tabs no longer exist, so there is nothing to clean up.
         }
     };
 
@@ -226,29 +195,6 @@ public final class SettingMigrations {
     private static final Migration MIGRATION_9_10 = new Migration(9, 10) {
         @Override
         protected void migrate(@NonNull final Context context) {
-            // Only YouTube is supported now: drop the kiosk, channel and remote playlist tabs
-            // of any other service from the saved tabs.
-            final TabsManager tabsManager = TabsManager.getManager(context);
-            final List<Tab> tabs = tabsManager.getTabs();
-            final int youtubeId = YouTube.getServiceId();
-            final List<Tab> cleanedTabs = tabs.stream()
-                    .filter(tab -> {
-                        if (tab instanceof Tab.KioskTab kioskTab) {
-                            return kioskTab.getKioskServiceId() == youtubeId;
-                        } else if (tab instanceof Tab.ChannelTab channelTab) {
-                            return channelTab.getChannelServiceId() == youtubeId;
-                        } else if (tab instanceof Tab.PlaylistTab playlistTab) {
-                            // -1 is a local playlist
-                            return playlistTab.getPlaylistServiceId() == -1
-                                    || playlistTab.getPlaylistServiceId() == youtubeId;
-                        }
-                        return true;
-                    })
-                    .collect(Collectors.toUnmodifiableList());
-            if (tabs.size() != cleanedTabs.size()) {
-                tabsManager.saveTabs(cleanedTabs);
-            }
-
             // Remove the keys of features that no longer exist (service selection, PeerTube
             // instances and the update checker).
             final SharedPreferences.Editor editor = sp.edit();

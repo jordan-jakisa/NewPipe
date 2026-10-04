@@ -30,7 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.core.os.BundleCompat;
 
 import dev.jordanempire.youflow.BuildConfig;
-import dev.jordanempire.youflow.MainActivity;
+import dev.jordanempire.youflow.BuildConfig;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -103,7 +103,7 @@ public final class StateSaver {
     @Nullable
     private static SavedState tryToRestore(@NonNull final SavedState savedState,
                                            @NonNull final WriteRead writeRead) {
-        if (MainActivity.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Log.d(TAG, "tryToRestore() called with: savedState = [" + savedState + "], "
                     + "writeRead = [" + writeRead + "]");
         }
@@ -113,7 +113,7 @@ public final class StateSaver {
                     STATE_OBJECTS_HOLDER.remove(savedState.getPrefixFileSaved());
             if (savedObjects != null) {
                 writeRead.readFrom(savedObjects);
-                if (MainActivity.DEBUG) {
+                if (BuildConfig.DEBUG) {
                     Log.d(TAG, "tryToSave: reading objects from holder > " + savedObjects
                             + ", stateObjectsHolder > " + STATE_OBJECTS_HOLDER);
                 }
@@ -122,7 +122,7 @@ public final class StateSaver {
 
             final File file = new File(savedState.getPathFileSaved());
             if (!file.exists()) {
-                if (MainActivity.DEBUG) {
+                if (BuildConfig.DEBUG) {
                     Log.d(TAG, "Cache file doesn't exist: " + file.getAbsolutePath());
                 }
                 return null;
@@ -199,7 +199,7 @@ public final class StateSaver {
     @Nullable
     private static SavedState tryToSave(final boolean isChangingConfig, final String prefixFileName,
                                         final String suffixFileName, final WriteRead writeRead) {
-        if (MainActivity.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Log.d(TAG, "tryToSave() called with: "
                     + "isChangingConfig = [" + isChangingConfig + "], "
                     + "prefixFileName = [" + prefixFileName + "], "
@@ -215,7 +215,7 @@ public final class StateSaver {
                 STATE_OBJECTS_HOLDER.put(prefixFileName, savedObjects);
                 return new SavedState(prefixFileName, "");
             } else {
-                if (MainActivity.DEBUG) {
+                if (BuildConfig.DEBUG) {
                     Log.d(TAG, "Nothing to save");
                 }
                 return null;
@@ -271,7 +271,7 @@ public final class StateSaver {
      * @param savedState the saved state to delete
      */
     public static void onDestroy(final SavedState savedState) {
-        if (MainActivity.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Log.d(TAG, "onDestroy() called with: savedState = [" + savedState + "]");
         }
 
@@ -289,7 +289,7 @@ public final class StateSaver {
      * Clear all the files in cache (in memory and disk).
      */
     public static void clearStateFiles() {
-        if (MainActivity.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Log.d(TAG, "clearStateFiles() called");
         }
 

@@ -21,7 +21,7 @@ import androidx.core.app.NavUtils;
 import androidx.preference.PreferenceManager;
 
 import dev.jordanempire.youflow.DownloaderImpl;
-import dev.jordanempire.youflow.MainActivity;
+import dev.jordanempire.youflow.BuildConfig;
 import dev.jordanempire.youflow.R;
 import dev.jordanempire.youflow.databinding.ActivityRecaptchaBinding;
 import org.schabi.newpipe.extractor.utils.Utils;
@@ -88,7 +88,7 @@ public class ReCaptchaActivity extends AppCompatActivity {
             @Override
             public boolean shouldOverrideUrlLoading(final WebView view,
                                                     final WebResourceRequest request) {
-                if (MainActivity.DEBUG) {
+                if (BuildConfig.DEBUG) {
                     Log.d(TAG, "shouldOverrideUrlLoading: url=" + request.getUrl().toString());
                 }
 
@@ -143,7 +143,7 @@ public class ReCaptchaActivity extends AppCompatActivity {
     private void saveCookiesAndFinish() {
         // try to get cookies of unclosed page
         handleCookiesFromUrl(recaptchaBinding.reCaptchaWebView.getUrl());
-        if (MainActivity.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Log.d(TAG, "saveCookiesAndFinish: foundCookies=" + foundCookies);
         }
 
@@ -162,14 +162,14 @@ public class ReCaptchaActivity extends AppCompatActivity {
         // Navigate to blank page (unloads youtube to prevent background playback)
         recaptchaBinding.reCaptchaWebView.loadUrl("about:blank");
 
-        final Intent intent = new Intent(this, dev.jordanempire.youflow.MainActivity.class);
+        final Intent intent = new Intent(this, dev.jordanempire.youflow.ui.YouFlowActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         NavUtils.navigateUpTo(this, intent);
     }
 
 
     private void handleCookiesFromUrl(@Nullable final String url) {
-        if (MainActivity.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Log.d(TAG, "handleCookiesFromUrl: url=" + (url == null ? "null" : url));
         }
 
@@ -188,7 +188,7 @@ public class ReCaptchaActivity extends AppCompatActivity {
             try {
                 handleCookies(Utils.decodeUrlUtf8(url.substring(abuseStart + 13, abuseEnd)));
             } catch (final StringIndexOutOfBoundsException e) {
-                if (MainActivity.DEBUG) {
+                if (BuildConfig.DEBUG) {
                     Log.e(TAG, "handleCookiesFromUrl: invalid google abuse starting at "
                             + abuseStart + " and ending at " + abuseEnd + " for url " + url, e);
                 }
@@ -197,7 +197,7 @@ public class ReCaptchaActivity extends AppCompatActivity {
     }
 
     private void handleCookies(@Nullable final String cookies) {
-        if (MainActivity.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Log.d(TAG, "handleCookies: cookies=" + (cookies == null ? "null" : cookies));
         }
 

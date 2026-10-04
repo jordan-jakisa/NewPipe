@@ -2,7 +2,7 @@ package dev.jordanempire.youflow.local.feed
 
 import android.content.Context
 import android.util.Log
-import dev.jordanempire.youflow.MainActivity.DEBUG
+import dev.jordanempire.youflow.BuildConfig.DEBUG
 import dev.jordanempire.youflow.NewPipeDatabase
 import dev.jordanempire.youflow.database.feed.model.FeedEntity
 import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity

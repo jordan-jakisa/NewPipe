@@ -51,7 +51,7 @@ private val ThemeChoices = listOf(
 )
 
 @Composable
-fun SettingsScreen(onBack: () -> Unit, onOpenClassicSettings: () -> Unit) {
+fun SettingsScreen(onBack: () -> Unit, onOpenPreferences: (screen: String) -> Unit) {
     val context = LocalContext.current
     val app = context.applicationContext as Application
     val settings = remember { AppSettings.get(app) }
@@ -153,9 +153,23 @@ fun SettingsScreen(onBack: () -> Unit, onOpenClassicSettings: () -> Unit) {
             item { Header("More") }
             item {
                 ListItem(
-                    headlineContent = { Text("Classic settings") },
-                    supportingContent = { Text("Downloads, backup and restore, content country and the other options") },
-                    modifier = Modifier.clickable(onClick = onOpenClassicSettings)
+                    headlineContent = { Text("Download settings") },
+                    supportingContent = { Text("Folders, thread count, retries and mobile data") },
+                    modifier = Modifier.clickable { onOpenPreferences(dev.jordanempire.youflow.settings.PreferencesActivity.SCREEN_DOWNLOADS) }
+                )
+            }
+            item {
+                ListItem(
+                    headlineContent = { Text("Content settings") },
+                    supportingContent = { Text("Country, language, restricted mode and feed options") },
+                    modifier = Modifier.clickable { onOpenPreferences(dev.jordanempire.youflow.settings.PreferencesActivity.SCREEN_CONTENT) }
+                )
+            }
+            item {
+                ListItem(
+                    headlineContent = { Text("New upload notifications") },
+                    supportingContent = { Text("Check interval, network and per channel options") },
+                    modifier = Modifier.clickable { onOpenPreferences(dev.jordanempire.youflow.settings.PreferencesActivity.SCREEN_NOTIFICATIONS) }
                 )
             }
             item {

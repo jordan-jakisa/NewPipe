@@ -65,7 +65,7 @@ import dev.jordanempire.youflow.error.UserAction;
 import org.schabi.newpipe.extractor.NewPipe;
 import dev.jordanempire.youflow.streams.io.StoredFileHelper;
 import dev.jordanempire.youflow.util.Localization;
-import dev.jordanempire.youflow.util.NavigationHelper;
+import dev.jordanempire.youflow.ui.YouFlowActivity;
 import dev.jordanempire.youflow.util.external_communication.ShareUtils;
 
 import java.io.File;
@@ -715,7 +715,8 @@ public class MissionAdapter extends Adapter<ViewHolder> implements Handler.Callb
             return true;
         } else if (id == R.id.source) {
             try {
-                Intent intent = NavigationHelper.getIntentByLink(mContext, h.item.mission.source);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(h.item.mission.source))
+                        .setClass(mContext, YouFlowActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
                 mContext.startActivity(intent);
             } catch (Exception e) {

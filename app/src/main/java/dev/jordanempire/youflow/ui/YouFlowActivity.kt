@@ -18,10 +18,9 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
-import dev.jordanempire.youflow.MainActivity
 import dev.jordanempire.youflow.local.feed.notifications.NotificationWorker
 import dev.jordanempire.youflow.media.engine.PlaybackEngine
-import dev.jordanempire.youflow.settings.SettingsActivity
+import dev.jordanempire.youflow.settings.PreferencesActivity
 import dev.jordanempire.youflow.ui.settings.AppSettings
 import dev.jordanempire.youflow.ui.theme.YouFlowTheme
 import kotlinx.coroutines.flow.collect
@@ -56,8 +55,7 @@ class YouFlowActivity : ComponentActivity() {
                 Surface {
                     YouFlowApp(
                         window = window2,
-                        onOpenClassicUi = { startActivity(Intent(this, MainActivity::class.java)) },
-                        onOpenSettings = { startActivity(Intent(this, SettingsActivity::class.java)) }
+                        onOpenPreferences = { screen -> startActivity(PreferencesActivity.intent(this, screen)) }
                     )
                     // Fullscreen means landscape with the system bars hidden.
                     LaunchedEffect(Unit) {

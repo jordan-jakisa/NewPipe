@@ -4,14 +4,8 @@ import android.content.Context
 import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import com.google.android.exoplayer2.ExoPlaybackException
-import com.google.android.exoplayer2.upstream.HttpDataSource
-import com.google.android.exoplayer2.upstream.Loader
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.ktx.isNetworkRelated
-import dev.jordanempire.youflow.player.mediasource.FailedMediaSource
-import dev.jordanempire.youflow.player.resolver.PlaybackResolver
-import dev.jordanempire.youflow.util.text.getText
 import java.net.UnknownHostException
 import kotlinx.parcelize.Parcelize
 import org.schabi.newpipe.extractor.Info
@@ -152,9 +146,7 @@ class ErrorInfo private constructor(
                 return if (formatArgs.isEmpty()) {
                     ctx.getText(stringRes)
                 } else {
-                    // ContextCompat.getString() with formatArgs does not exist, so we just
-                    // replicate its source code but with formatArgs
-                    ctx.resources.getText(stringRes, *formatArgs)
+                    ctx.getString(stringRes, *formatArgs)
                 }
             }
         }
@@ -178,43 +170,6 @@ class ErrorInfo private constructor(
             serviceId: Int?
         ): ErrorMessage {
             return when {
-                // player exceptions
-                // some may be IOException, so do these checks before isNetworkRelated!
-                throwable is ExoPlaybackException -> {
-                    val cause = throwable.cause
-                    when {
-                        cause is HttpDataSource.InvalidResponseCodeException -> {
-                            if (cause.responseCode == 403) {
-                                if (serviceId == YouTube.serviceId) {
-                                    ErrorMessage(R.string.youtube_player_http_403)
-                                } else {
-                                    ErrorMessage(R.string.player_http_403)
-                                }
-                            } else {
-                                ErrorMessage(R.string.player_http_invalid_status, cause.responseCode.toString())
-                            }
-                        }
-
-                        cause is Loader.UnexpectedLoaderException && cause.cause is ExtractionException ->
-                            getMessage(throwable, action, serviceId)
-
-                        throwable.type == ExoPlaybackException.TYPE_SOURCE ->
-                            ErrorMessage(R.string.player_stream_failure)
-
-                        throwable.type == ExoPlaybackException.TYPE_UNEXPECTED ->
-                            ErrorMessage(R.string.player_recoverable_failure)
-
-                        else ->
-                            ErrorMessage(R.string.player_unrecoverable_failure)
-                    }
-                }
-
-                throwable is FailedMediaSource.FailedMediaSourceException ->
-                    getMessage(throwable.cause, action, serviceId)
-
-                throwable is PlaybackResolver.ResolverException ->
-                    ErrorMessage(R.string.player_stream_failure)
-
                 // content not available exceptions
                 throwable is AccountTerminatedException ->
                     throwable.message

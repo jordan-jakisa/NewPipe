@@ -1,6 +1,6 @@
 package dev.jordanempire.youflow.util;
 
-import static dev.jordanempire.youflow.MainActivity.DEBUG;
+import static dev.jordanempire.youflow.BuildConfig.DEBUG;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

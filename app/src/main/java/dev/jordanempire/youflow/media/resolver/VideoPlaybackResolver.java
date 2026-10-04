@@ -18,7 +18,7 @@ import org.schabi.newpipe.extractor.stream.StreamInfo;
 import org.schabi.newpipe.extractor.stream.SubtitlesStream;
 import org.schabi.newpipe.extractor.stream.VideoStream;
 import dev.jordanempire.youflow.media.PlayerDataSource;
-import dev.jordanempire.youflow.player.helper.PlayerHelper;
+import dev.jordanempire.youflow.media.PlayerHelper;
 import dev.jordanempire.youflow.media.mediaitem.MediaItemTag;
 import dev.jordanempire.youflow.media.mediaitem.StreamInfoTag;
 import dev.jordanempire.youflow.util.ListHelper;

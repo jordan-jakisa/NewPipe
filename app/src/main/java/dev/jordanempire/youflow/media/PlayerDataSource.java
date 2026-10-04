@@ -1,6 +1,6 @@
 package dev.jordanempire.youflow.media;
 
-import static dev.jordanempire.youflow.MainActivity.DEBUG;
+import static dev.jordanempire.youflow.BuildConfig.DEBUG;
 
 import android.content.Context;
 import android.util.Log;
@@ -24,7 +24,7 @@ import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor;
 import androidx.media3.datasource.cache.SimpleCache;
 
 import dev.jordanempire.youflow.DownloaderImpl;
-import dev.jordanempire.youflow.player.helper.PlayerHelper;
+import dev.jordanempire.youflow.media.PlayerHelper;
 import org.schabi.newpipe.extractor.services.youtube.dashmanifestcreators.YoutubeOtfDashManifestCreator;
 import org.schabi.newpipe.extractor.services.youtube.dashmanifestcreators.YoutubePostLiveStreamDvrDashManifestCreator;
 import org.schabi.newpipe.extractor.services.youtube.dashmanifestcreators.YoutubeProgressiveDashManifestCreator;

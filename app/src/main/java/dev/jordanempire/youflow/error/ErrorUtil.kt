@@ -14,7 +14,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.google.android.material.snackbar.Snackbar
-import dev.jordanempire.youflow.MainActivity
 import dev.jordanempire.youflow.R
 
 /**
@@ -45,13 +44,7 @@ class ErrorUtil {
          */
         @JvmStatic
         fun openActivity(context: Context, errorInfo: ErrorInfo) {
-            if (PreferenceManager.getDefaultSharedPreferences(context)
-                    .getBoolean(MainActivity.KEY_IS_IN_BACKGROUND, true)
-            ) {
-                createNotification(context, errorInfo)
-            } else {
-                context.startActivity(getErrorActivityIntent(context, errorInfo))
-            }
+            context.startActivity(getErrorActivityIntent(context, errorInfo))
         }
 
         /**

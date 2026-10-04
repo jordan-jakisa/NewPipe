@@ -89,14 +89,6 @@ fun YouScreen(actions: AppActions, contentPadding: PaddingValues, vm: YouViewMod
                 modifier = Modifier.clickable(onClick = actions.openSettings)
             )
         }
-        item(key = "classic") {
-            ListItem(
-                headlineContent = { Text("Classic app") },
-                supportingContent = { Text("Backups, downloads and the original screens") },
-                leadingContent = { Icon(Icons.Outlined.Subscriptions, contentDescription = null) },
-                modifier = Modifier.clickable(onClick = actions.openClassicUi)
-            )
-        }
     }
 }
 

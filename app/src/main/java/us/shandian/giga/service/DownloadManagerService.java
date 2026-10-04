@@ -41,7 +41,7 @@ import androidx.preference.PreferenceManager;
 import dev.jordanempire.youflow.R;
 import dev.jordanempire.youflow.download.DownloadActivity;
 import org.schabi.newpipe.extractor.stream.StreamInfo;
-import dev.jordanempire.youflow.player.helper.LockManager;
+import dev.jordanempire.youflow.util.LockManager;
 import dev.jordanempire.youflow.streams.io.StoredDirectoryHelper;
 import dev.jordanempire.youflow.streams.io.StoredFileHelper;
 import dev.jordanempire.youflow.util.Localization;

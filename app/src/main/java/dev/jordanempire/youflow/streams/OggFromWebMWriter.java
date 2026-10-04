@@ -1,6 +1,6 @@
 package dev.jordanempire.youflow.streams;
 
-import static dev.jordanempire.youflow.MainActivity.DEBUG;
+import static dev.jordanempire.youflow.BuildConfig.DEBUG;
 
 import android.util.Log;
 import android.util.Pair;

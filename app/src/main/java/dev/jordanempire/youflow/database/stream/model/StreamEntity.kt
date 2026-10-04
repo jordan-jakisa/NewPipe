@@ -8,7 +8,6 @@ import androidx.room.PrimaryKey
 import dev.jordanempire.youflow.database.stream.model.StreamEntity.Companion.STREAM_SERVICE_ID
 import dev.jordanempire.youflow.database.stream.model.StreamEntity.Companion.STREAM_TABLE
 import dev.jordanempire.youflow.database.stream.model.StreamEntity.Companion.STREAM_URL
-import dev.jordanempire.youflow.player.playqueue.PlayQueueItem
 import dev.jordanempire.youflow.util.image.ImageStrategy
 import java.io.Serializable
 import java.time.OffsetDateTime
@@ -82,18 +81,6 @@ data class StreamEntity(
         thumbnailUrl = ImageStrategy.imageListToDbUrl(info.thumbnails), viewCount = info.viewCount,
         textualUploadDate = info.textualUploadDate, uploadDate = info.uploadDate?.offsetDateTime(),
         isUploadDateApproximation = info.uploadDate?.isApproximation
-    )
-
-    @Ignore
-    constructor(item: PlayQueueItem) : this(
-        serviceId = item.serviceId,
-        url = item.url,
-        title = item.title,
-        streamType = item.streamType,
-        duration = item.duration,
-        uploader = item.uploader,
-        uploaderUrl = item.uploaderUrl,
-        thumbnailUrl = ImageStrategy.imageListToDbUrl(item.thumbnails)
     )
 
     fun toStreamInfoItem(): StreamInfoItem {

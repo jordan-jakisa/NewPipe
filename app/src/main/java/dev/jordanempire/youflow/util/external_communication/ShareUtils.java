@@ -1,6 +1,6 @@
 package dev.jordanempire.youflow.util.external_communication;
 
-import static dev.jordanempire.youflow.MainActivity.DEBUG;
+import static dev.jordanempire.youflow.BuildConfig.DEBUG;
 import static coil3.Image_androidKt.toBitmap;
 
 import android.content.ActivityNotFoundException;
@@ -24,7 +24,6 @@ import androidx.core.content.FileProvider;
 
 import dev.jordanempire.youflow.BuildConfig;
 import dev.jordanempire.youflow.R;
-import dev.jordanempire.youflow.RouterActivity;
 import org.schabi.newpipe.extractor.Image;
 import dev.jordanempire.youflow.util.image.ImageStrategy;
 
@@ -176,18 +175,6 @@ public final class ShareUtils {
         chooserIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if (setTitleChooser) {
             chooserIntent.putExtra(Intent.EXTRA_TITLE, context.getString(R.string.open_with));
-        }
-
-        // Avoid opening in NewPipe
-        // (Implementation note: if the URL is one for which NewPipe itself
-        // is set as handler on Android >= 12, we actually remove the only eligible app
-        // for this link, and browsers will not be offered to the user. For that, use
-        // `openUrlInBrowser`.)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            chooserIntent.putExtra(
-                    Intent.EXTRA_EXCLUDE_COMPONENTS,
-                    new ComponentName[]{new ComponentName(context, RouterActivity.class)}
-            );
         }
 
         // Migrate any clip data and flags from the original intent.

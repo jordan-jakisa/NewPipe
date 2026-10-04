@@ -17,7 +17,7 @@ import coil3.size.Size
 import coil3.target.Target
 import coil3.toBitmap
 import coil3.transform.Transformation
-import dev.jordanempire.youflow.MainActivity
+import dev.jordanempire.youflow.BuildConfig
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.ktx.scale
 import kotlin.math.min
@@ -81,7 +81,7 @@ object CoilHelper {
                             input: Bitmap,
                             size: Size
                         ): Bitmap {
-                            if (MainActivity.DEBUG) {
+                            if (BuildConfig.DEBUG) {
                                 Log.d(TAG, "Thumbnail - transform() called")
                             }
 

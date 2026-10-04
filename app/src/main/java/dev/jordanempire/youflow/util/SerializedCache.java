@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.LruCache;
 
-import dev.jordanempire.youflow.MainActivity;
+import dev.jordanempire.youflow.BuildConfig;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -16,7 +16,7 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public final class SerializedCache {
-    private static final boolean DEBUG = MainActivity.DEBUG;
+    private static final boolean DEBUG = BuildConfig.DEBUG;
     private static final SerializedCache INSTANCE = new SerializedCache();
     private static final int MAX_ITEMS_ON_CACHE = 5;
     private static final LruCache<String, CacheData<?>> LRU_CACHE =

@@ -21,6 +21,5 @@ data class AppActions(
     val saveVideo: (video: VideoItem) -> Unit,
     /** Plays [videos] as a queue starting at [index]. */
     val playVideos: (videos: List<VideoItem>, index: Int) -> Unit,
-    val openClassicUi: () -> Unit,
     val openSettings: () -> Unit
 )

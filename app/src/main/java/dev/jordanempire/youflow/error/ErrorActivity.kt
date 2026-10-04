@@ -19,7 +19,6 @@ import dev.jordanempire.youflow.databinding.ActivityErrorBinding
 import dev.jordanempire.youflow.util.Localization
 import dev.jordanempire.youflow.util.ThemeHelper
 import dev.jordanempire.youflow.util.external_communication.ShareUtils
-import dev.jordanempire.youflow.util.text.setTextWithLinks
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -86,7 +85,7 @@ class ErrorActivity : AppCompatActivity() {
 
         // normal bugreport
         buildInfo(errorInfo)
-        binding.errorMessageView.setTextWithLinks(errorInfo.getMessage(this))
+        binding.errorMessageView.text = errorInfo.getMessage(this)
         binding.errorView.text = formErrorText(errorInfo.stackTraces)
 
         // print stack trace once again for debugging:

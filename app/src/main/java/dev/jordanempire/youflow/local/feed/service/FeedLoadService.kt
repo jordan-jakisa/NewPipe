@@ -33,7 +33,7 @@ import androidx.core.app.PendingIntentCompat
 import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import dev.jordanempire.youflow.App
-import dev.jordanempire.youflow.MainActivity.DEBUG
+import dev.jordanempire.youflow.BuildConfig.DEBUG
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
 import dev.jordanempire.youflow.local.feed.service.FeedEventManager.Event.ErrorResultEvent

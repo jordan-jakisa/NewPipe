@@ -16,7 +16,6 @@ import androidx.preference.Preference;
 import dev.jordanempire.youflow.DownloaderImpl;
 import dev.jordanempire.youflow.R;
 import org.schabi.newpipe.extractor.NewPipe;
-import dev.jordanempire.youflow.player.helper.PlayerHelper;
 import dev.jordanempire.youflow.util.Localization;
 import dev.jordanempire.youflow.util.image.ImageStrategy;
 import dev.jordanempire.youflow.util.image.PreferredImageQuality;
@@ -32,7 +31,7 @@ public class ContentSettingsFragment extends BasePreferenceFragment {
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
         youtubeRestrictedModeEnabledKey = getString(R.string.youtube_restricted_mode_enabled);
 
-        addPreferencesFromResourceRegistry();
+        addPreferencesFromResource(R.xml.content_settings);
 
         setupAppLanguagePreferences();
         setupImageQualityPref();
@@ -106,6 +105,5 @@ public class ContentSettingsFragment extends BasePreferenceFragment {
         NewPipe.setupLocalization(
             Localization.getPreferredLocalization(context),
             Localization.getPreferredContentCountry(context));
-        PlayerHelper.resetFormat();
     }
 }

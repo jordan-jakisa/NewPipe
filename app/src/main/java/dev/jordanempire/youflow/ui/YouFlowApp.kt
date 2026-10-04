@@ -104,7 +104,7 @@ private fun VideoItem.toEntry() = QueueEntry(url, title, channel, thumbnail)
 
 @OptIn(UnstableApi::class)
 @Composable
-fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSettings: () -> Unit) {
+fun YouFlowApp(window: WatchWindowState, onOpenPreferences: (screen: String) -> Unit) {
     val context = LocalContext.current
     val engine = remember { PlaybackEngine.get(context.applicationContext as Application) }
     val playerState by engine.state.collectAsState()
@@ -167,7 +167,6 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
             engine.play(videos.map { it.toEntry() }, index)
             window.expanded = true
         },
-        openClassicUi = onOpenClassicUi,
         openSettings = {
             push("s|")
             window.expanded = false
@@ -264,7 +263,7 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
                     "l" -> LocalPlaylistScreen(target.toLong(), actions, ::pop)
                     "h" -> HistoryScreen(actions, ::pop)
                     "m" -> ManageSubscriptionsScreen(actions, ::pop)
-                    "s" -> SettingsScreen(onBack = ::pop, onOpenClassicSettings = onOpenSettings)
+                    "s" -> SettingsScreen(onBack = ::pop, onOpenPreferences = onOpenPreferences)
                     else -> PlaylistScreen(target, actions, ::pop)
                 }
             }

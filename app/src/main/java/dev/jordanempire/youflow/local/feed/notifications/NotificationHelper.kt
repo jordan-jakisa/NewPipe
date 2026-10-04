@@ -18,7 +18,6 @@ import androidx.core.net.toUri
 import androidx.preference.PreferenceManager
 import dev.jordanempire.youflow.R
 import dev.jordanempire.youflow.local.feed.service.FeedUpdateInfo
-import dev.jordanempire.youflow.util.NavigationHelper
 import dev.jordanempire.youflow.util.image.CoilHelper
 import org.schabi.newpipe.extractor.stream.StreamInfoItem
 

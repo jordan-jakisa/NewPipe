@@ -48,7 +48,7 @@ public class DownloadSettingsFragment extends BasePreferenceFragment {
 
     @Override
     public void onCreatePreferences(final Bundle savedInstanceState, final String rootKey) {
-        addPreferencesFromResourceRegistry();
+        addPreferencesFromResource(R.xml.download_settings);
 
         downloadPathVideoPreference = getString(R.string.download_path_video_key);
         downloadPathAudioPreference = getString(R.string.download_path_audio_key);

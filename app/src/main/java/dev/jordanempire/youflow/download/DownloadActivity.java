@@ -15,7 +15,6 @@ import dev.jordanempire.youflow.R;
 import dev.jordanempire.youflow.databinding.ActivityDownloaderBinding;
 import dev.jordanempire.youflow.util.DeviceUtils;
 import dev.jordanempire.youflow.util.ThemeHelper;
-import dev.jordanempire.youflow.views.FocusOverlayView;
 
 import us.shandian.giga.service.DownloadManagerService;
 import us.shandian.giga.ui.fragment.MissionsFragment;
@@ -56,10 +55,6 @@ public class DownloadActivity extends AppCompatActivity {
                 getWindow().getDecorView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
             }
         });
-
-        if (DeviceUtils.isTv(this)) {
-            FocusOverlayView.setupFocusObserver(this);
-        }
     }
 
     private void updateFragments() {

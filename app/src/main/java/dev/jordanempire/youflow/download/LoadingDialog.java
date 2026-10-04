@@ -12,7 +12,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
-import dev.jordanempire.youflow.MainActivity;
+import dev.jordanempire.youflow.BuildConfig;
 import dev.jordanempire.youflow.R;
 import dev.jordanempire.youflow.databinding.DownloadLoadingDialogBinding;
 
@@ -21,7 +21,7 @@ import dev.jordanempire.youflow.databinding.DownloadLoadingDialogBinding;
  */
 public class LoadingDialog extends DialogFragment {
     private static final String TAG = "LoadingDialog";
-    private static final boolean DEBUG = MainActivity.DEBUG;
+    private static final boolean DEBUG = BuildConfig.DEBUG;
     private DownloadLoadingDialogBinding dialogLoadingBinding;
     private final @StringRes int title;
 

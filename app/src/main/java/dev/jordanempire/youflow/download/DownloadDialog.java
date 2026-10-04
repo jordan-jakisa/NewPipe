@@ -42,7 +42,7 @@ import com.evernote.android.state.State;
 import com.livefront.bridge.Bridge;
 import com.nononsenseapps.filepicker.Utils;
 
-import dev.jordanempire.youflow.MainActivity;
+import dev.jordanempire.youflow.BuildConfig;
 import dev.jordanempire.youflow.R;
 import dev.jordanempire.youflow.databinding.DownloadDialogBinding;
 import dev.jordanempire.youflow.error.ErrorInfo;
@@ -91,7 +91,7 @@ import us.shandian.giga.service.MissionState;
 public class DownloadDialog extends DialogFragment
         implements RadioGroup.OnCheckedChangeListener, AdapterView.OnItemSelectedListener {
     private static final String TAG = "DialogFragment";
-    private static final boolean DEBUG = MainActivity.DEBUG;
+    private static final boolean DEBUG = BuildConfig.DEBUG;
 
     @State
     StreamInfo currentInfo;
