@@ -12,6 +12,7 @@ import dev.jordanempire.youflow.local.playlist.LocalPlaylistManager
 import dev.jordanempire.youflow.local.subscription.SubscriptionManager
 import dev.jordanempire.youflow.ui.model.ChannelDetails
 import dev.jordanempire.youflow.ui.model.ChannelItem
+import dev.jordanempire.youflow.ui.model.FeedGroupItem
 import dev.jordanempire.youflow.ui.model.ChannelTab
 import dev.jordanempire.youflow.ui.model.CommentItem
 import dev.jordanempire.youflow.ui.model.ContentItem
@@ -110,13 +111,38 @@ class YouTubeRepository(private val context: Context) {
         Paged(more.items.mapNotNull { it.toContent() }, more.nextPage)
     }
 
-    /** Videos from subscribed channels, newest first, with resume progress. */
-    suspend fun feed(): List<VideoItem> = withContext(Dispatchers.IO) {
+    /** Videos from subscribed channels, newest first, with resume progress. [groupId] -1 means all. */
+    suspend fun feed(groupId: Long = FeedGroupEntity.GROUP_ALL_ID): List<VideoItem> = withContext(Dispatchers.IO) {
         val streams = FeedDatabaseManager(context)
-            .getStreams(FeedGroupEntity.GROUP_ALL_ID, true, true, false)
+            .getStreams(groupId, true, true, false)
             .awaitSingleOrNull()
             .orEmpty()
         streams.map { it.stream.toVideo(it.stateProgressMillis) }
+    }
+
+    fun feedGroups(): Flow<List<FeedGroupItem>> =
+        FeedDatabaseManager(context).groups().toObservable().asFlow().map { list ->
+            list.map { FeedGroupItem(it.uid, it.name) }
+        }
+
+    suspend fun groupMembers(groupId: Long): List<Long> = withContext(Dispatchers.IO) {
+        database.feedGroupDAO().getSubscriptionIdsFor(groupId).firstOrError().await()
+    }
+
+    /** Creates the group when [id] is null, otherwise renames it. Members are replaced by [subscriptionIds]. */
+    suspend fun saveGroup(id: Long?, name: String, subscriptionIds: List<Long>) = withContext(Dispatchers.IO) {
+        val manager = FeedDatabaseManager(context)
+        val groupId = if (id == null) {
+            manager.createGroup(name, dev.jordanempire.youflow.local.subscription.FeedGroupIcon.ALL).awaitSingleOrNull() ?: return@withContext
+        } else {
+            manager.getGroup(id).awaitSingleOrNull()?.let { manager.updateGroup(it.copy(name = name)).await() }
+            id
+        }
+        manager.updateSubscriptionsForGroup(groupId, subscriptionIds).await()
+    }
+
+    suspend fun deleteGroup(id: Long) = withContext(Dispatchers.IO) {
+        FeedDatabaseManager(context).deleteGroup(id).await()
     }
 
     /** Fetches new uploads for every subscription. Suspends until the refresh is done. */
@@ -373,7 +399,8 @@ class YouTubeRepository(private val context: Context) {
         avatar = avatarUrl,
         subscribers = subscriberCount,
         description = description,
-        notify = notificationMode == 1
+        notify = notificationMode == 1,
+        uid = uid
     )
 
     suspend fun setNotifications(channelUrl: String, enabled: Boolean) = withContext(Dispatchers.IO) {

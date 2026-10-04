@@ -46,7 +46,7 @@ private fun enqueueImport(context: Context, input: SubscriptionImportInput) {
 
 /** Overflow menu: import from a Google Takeout file or a previous export, and export. */
 @Composable
-fun SubscriptionToolsMenu() {
+fun SubscriptionToolsMenu(onManage: () -> Unit = {}) {
     val context = LocalContext.current
     var open by remember { mutableStateOf(false) }
 
@@ -66,6 +66,7 @@ fun SubscriptionToolsMenu() {
     Box {
         IconButton(onClick = { open = true }) { Icon(Icons.Filled.MoreVert, contentDescription = "Import and export") }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            DropdownMenuItem(text = { Text("Manage channels") }, onClick = { open = false; onManage() })
             DropdownMenuItem(text = { Text("Import from Google Takeout") }, onClick = {
                 open = false
                 takeout.launch(arrayOf("*/*"))

@@ -58,6 +58,7 @@ import dev.jordanempire.youflow.ui.playlist.PlaylistScreen
 import dev.jordanempire.youflow.ui.search.SearchScreen
 import dev.jordanempire.youflow.ui.settings.SettingsScreen
 import dev.jordanempire.youflow.ui.shorts.ShortsScreen
+import dev.jordanempire.youflow.ui.subscriptions.ManageSubscriptionsScreen
 import dev.jordanempire.youflow.ui.subscriptions.SubscriptionsScreen
 import dev.jordanempire.youflow.ui.watch.MiniPlayer
 import dev.jordanempire.youflow.ui.watch.WatchScreen
@@ -139,6 +140,10 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
         openLocalPlaylist = {
             push("l|$it")
             searching = false
+            window.expanded = false
+        },
+        openManageSubscriptions = {
+            push("m|")
             window.expanded = false
         },
         openHistory = {
@@ -258,6 +263,7 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
                     "c" -> ChannelScreen(target, actions, ::pop)
                     "l" -> LocalPlaylistScreen(target.toLong(), actions, ::pop)
                     "h" -> HistoryScreen(actions, ::pop)
+                    "m" -> ManageSubscriptionsScreen(actions, ::pop)
                     "s" -> SettingsScreen(onBack = ::pop, onOpenClassicSettings = onOpenSettings)
                     else -> PlaylistScreen(target, actions, ::pop)
                 }

@@ -32,7 +32,9 @@ data class ChannelItem(
     val subscribers: Long?,
     val description: String?,
     /** 1 when new-upload notifications are on for this subscription. */
-    val notify: Boolean = false
+    val notify: Boolean = false,
+    /** Database id of the subscription, 0 for channels that are not subscribed. */
+    val uid: Long = 0
 ) : ContentItem
 
 @Immutable
@@ -92,3 +94,6 @@ data class CommentItem(
     /** Opaque token to load replies, null when there are none. */
     val repliesToken: Any?
 )
+
+@Immutable
+data class FeedGroupItem(val id: Long, val name: String)
