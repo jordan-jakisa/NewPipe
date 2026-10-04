@@ -27,6 +27,7 @@ import dev.jordanempire.youflow.ui.components.MessageBox
 import dev.jordanempire.youflow.ui.components.StateHost
 import dev.jordanempire.youflow.ui.components.VideoCard
 import dev.jordanempire.youflow.ui.components.VideoTile
+import dev.jordanempire.youflow.ui.data.ListCache
 import dev.jordanempire.youflow.ui.data.YouTubeRepository
 import dev.jordanempire.youflow.ui.model.KioskRef
 import dev.jordanempire.youflow.ui.model.UiState
@@ -83,18 +84,32 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
                 _state.value = UiState.Error("No categories are available right now.")
                 return@launch
             }
-            if (pullToRefresh) _refreshing.value = true else _state.value = UiState.Loading
-            _state.value = try {
-                if (kiosk.id == FEED_ID) {
+            val cacheKey = "home-${kiosk.id}"
+            // Paint the last result straight away, then replace it with the fresh one.
+            val cached = if (pullToRefresh) null else ListCache.read(getApplication(), cacheKey)
+            if (pullToRefresh) {
+                _refreshing.value = true
+            } else if (cached != null) {
+                _state.value = UiState.Content(cached)
+                _refreshing.value = true
+            } else {
+                _state.value = UiState.Loading
+            }
+            try {
+                val videos = if (kiosk.id == FEED_ID) {
                     if (pullToRefresh) runCatching { repo.refreshFeed() }
-                    UiState.Content(repo.feed())
+                    repo.feed()
                 } else {
-                    UiState.Content(repo.kioskVideosWithRetry(kiosk, forceLoad = pullToRefresh))
+                    repo.kioskVideosWithRetry(kiosk, forceLoad = pullToRefresh)
                 }
+                _state.value = UiState.Content(videos)
+                if (videos.isNotEmpty()) ListCache.write(getApplication(), cacheKey, videos)
+                if (kiosk.id != FEED_ID) repo.prefetchStreams(videos.take(2))
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
-                e.toUiError()
+                // Keep showing the cached list when the refresh fails.
+                if (cached == null) _state.value = e.toUiError()
             }
             _refreshing.value = false
         }

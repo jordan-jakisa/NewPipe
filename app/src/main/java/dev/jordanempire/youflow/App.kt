@@ -13,7 +13,6 @@ import coil3.SingletonImageLoader
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.request.allowRgb565
 import coil3.request.crossfade
-import coil3.util.DebugLogger
 import com.jakewharton.processphoenix.ProcessPhoenix
 import dev.jordanempire.youflow.error.ErrorInfo
 import dev.jordanempire.youflow.error.ErrorUtil
@@ -117,13 +116,30 @@ open class App :
         installLocalCrashHandler()
 
         YoutubeStreamExtractor.setPoTokenProvider(PoTokenProviderImpl)
+
+        // Creating the poToken generator (a hidden WebView) takes seconds, so do it at launch
+        // instead of when the first video is opened.
+        Thread {
+            runCatching { PoTokenProviderImpl.getWebClientPoToken("jNQXAC9IVRw") }
+        }.apply {
+            name = "poToken-warmup"
+            isDaemon = true
+        }.start()
     }
 
     override fun newImageLoader(context: Context): ImageLoader = ImageLoader
         .Builder(this)
-        .logger(if (BuildConfig.DEBUG) DebugLogger() else null)
         .allowRgb565(getSystemService<ActivityManager>()!!.isLowRamDevice)
         .crossfade(true)
+        .memoryCache {
+            coil3.memory.MemoryCache.Builder().maxSizePercent(context, 0.25).build()
+        }
+        .diskCache {
+            coil3.disk.DiskCache.Builder()
+                .directory(java.io.File(cacheDir, "images").let { okio.Path.Companion.run { it.absolutePath.toPath() } })
+                .maxSizeBytes(256L * 1024 * 1024)
+                .build()
+        }
         .components {
             add(OkHttpNetworkFetcherFactory(callFactory = DownloaderImpl.getInstance().client))
         }.build()

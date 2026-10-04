@@ -41,7 +41,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.ui.compose.ContentFrame
-import androidx.media3.ui.compose.SURFACE_TYPE_SURFACE_VIEW
+import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
 import dev.jordanempire.youflow.media.engine.PlaybackEngine
 import dev.jordanempire.youflow.media.engine.ShortsPlayer
 import dev.jordanempire.youflow.ui.AppActions
@@ -49,6 +49,7 @@ import dev.jordanempire.youflow.ui.components.ErrorBox
 import dev.jordanempire.youflow.ui.components.LoadingBox
 import dev.jordanempire.youflow.ui.components.MessageBox
 import dev.jordanempire.youflow.ui.components.Thumbnail
+import dev.jordanempire.youflow.ui.data.ListCache
 import dev.jordanempire.youflow.ui.data.YouTubeRepository
 import dev.jordanempire.youflow.ui.model.UiState
 import dev.jordanempire.youflow.ui.model.VideoItem
@@ -69,13 +70,17 @@ class ShortsViewModel(app: Application) : AndroidViewModel(app) {
 
     fun load() {
         viewModelScope.launch {
-            _state.value = UiState.Loading
-            _state.value = try {
-                UiState.Content(repo.shorts())
+            val cached = ListCache.read(getApplication(), "shorts")
+            _state.value = if (cached != null) UiState.Content(cached.shuffled()) else UiState.Loading
+            try {
+                val fresh = repo.shorts()
+                if (fresh.isNotEmpty()) ListCache.write(getApplication(), "shorts", fresh)
+                // Do not swap the list under the user's finger when cached shorts are already playing.
+                if (cached == null) _state.value = UiState.Content(fresh)
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
-                e.toUiError()
+                if (cached == null) _state.value = e.toUiError()
             }
         }
     }
@@ -134,7 +139,7 @@ private fun ShortsPager(items: List<VideoItem>, player: ShortsPlayer, actions: A
             }
         ) {
             if (page == pager.currentPage) {
-                ContentFrame(player.exo, surfaceType = SURFACE_TYPE_SURFACE_VIEW, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize())
+                ContentFrame(player.exo, surfaceType = SURFACE_TYPE_TEXTURE_VIEW, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
             }
             Thumbnail(item.thumbnail, Modifier.fillMaxSize().then(if (page == pager.currentPage && !loading) Modifier.size(0.dp) else Modifier), contentDescription = null)
             Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.55f to Color.Transparent, 1f to Color.Black.copy(alpha = 0.75f))))

@@ -8,6 +8,7 @@ sealed interface ContentItem {
 }
 
 @Immutable
+@kotlinx.serialization.Serializable
 data class VideoItem(
     override val url: String,
     val title: String,

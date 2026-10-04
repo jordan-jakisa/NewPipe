@@ -25,6 +25,7 @@ import dev.jordanempire.youflow.util.KioskTranslator
 import dev.jordanempire.youflow.util.image.ImageStrategy
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -93,6 +94,11 @@ class YouTubeRepository(private val context: Context) {
             }
         }
         return kioskVideos(kiosk, true)
+    }
+
+    /** Warms the stream info cache so opening one of these videos skips the network round trip. */
+    suspend fun prefetchStreams(videos: List<VideoItem>) = withContext(Dispatchers.IO) {
+        videos.forEach { runCatching { ExtractorHelper.getStreamInfo(serviceId, it.url, false).await() } }
     }
 
     suspend fun suggestions(query: String): List<String> = withContext(Dispatchers.IO) {
@@ -382,7 +388,7 @@ class YouTubeRepository(private val context: Context) {
         val limiter = kotlinx.coroutines.sync.Semaphore(4)
         val fromChannels = kotlinx.coroutines.coroutineScope {
             channels.map { channel ->
-                kotlinx.coroutines.async {
+                async {
                     limiter.withPermit {
                         runCatching {
                             val loaded = channel(channel.url)
