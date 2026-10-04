@@ -58,6 +58,8 @@ fun SettingsScreen(onBack: () -> Unit, onOpenPreferences: (screen: String) -> Un
     val theme by settings.theme.collectAsState()
     val dynamic by settings.dynamicColor.collectAsState()
     val autoplay by settings.autoplay.collectAsState()
+    val navOrder by settings.navOrder.collectAsState()
+    val showShorts by settings.showShorts.collectAsState()
     val prefs = remember { PreferenceManager.getDefaultSharedPreferences(app) }
     var history by remember { mutableStateOf(prefs.getBoolean(context.getString(R.string.enable_watch_history_key), true)) }
     var resume by remember { mutableStateOf(prefs.getBoolean(context.getString(R.string.enable_playback_resume_key), true)) }
@@ -89,6 +91,8 @@ fun SettingsScreen(onBack: () -> Unit, onOpenPreferences: (screen: String) -> Un
                     trailingContent = { Switch(checked = dynamic, onCheckedChange = settings::setDynamicColor) }
                 )
             }
+            item { Header("Navigation bar") }
+            item { NavBarEditor(navOrder, showShorts, settings::moveNavTab, settings::setShowShorts) }
             item { Header("Playback") }
             item {
                 ListItem(

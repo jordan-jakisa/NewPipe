@@ -25,6 +25,32 @@ class AppSettings private constructor(app: Application) {
     private val _autoplay = MutableStateFlow(prefs.getBoolean(KEY_AUTOPLAY, true))
     val autoplay: StateFlow<Boolean> = _autoplay.asStateFlow()
 
+    private val _navOrder = MutableStateFlow(readNavOrder())
+
+    /** Bottom bar tab keys in display order; every key is present exactly once. */
+    val navOrder: StateFlow<List<String>> = _navOrder.asStateFlow()
+    private val _showShorts = MutableStateFlow(prefs.getBoolean(KEY_SHOW_SHORTS, true))
+    val showShorts: StateFlow<Boolean> = _showShorts.asStateFlow()
+
+    private fun readNavOrder(): List<String> {
+        val saved = prefs.getString(KEY_NAV_ORDER, null)?.split(',').orEmpty().filter { it in NAV_TABS }.distinct()
+        return saved + NAV_TABS.filter { it !in saved }
+    }
+
+    /** Moves the tab at [index] to position [target]. */
+    fun moveNavTab(index: Int, target: Int) {
+        val list = _navOrder.value.toMutableList()
+        if (index !in list.indices || target !in list.indices) return
+        list.add(target, list.removeAt(index))
+        prefs.edit().putString(KEY_NAV_ORDER, list.joinToString(",")).apply()
+        _navOrder.value = list
+    }
+
+    fun setShowShorts(value: Boolean) {
+        prefs.edit().putBoolean(KEY_SHOW_SHORTS, value).apply()
+        _showShorts.value = value
+    }
+
     fun setTheme(value: String) {
         prefs.edit().putString(KEY_THEME, value).apply()
         _theme.value = value
@@ -44,6 +70,9 @@ class AppSettings private constructor(app: Application) {
         const val KEY_THEME = "youflow_theme"
         const val KEY_DYNAMIC = "youflow_dynamic_color"
         const val KEY_AUTOPLAY = "youflow_autoplay"
+        const val KEY_NAV_ORDER = "youflow_nav_order"
+        const val KEY_SHOW_SHORTS = "youflow_show_shorts"
+        val NAV_TABS = listOf("Home", "Shorts", "Subscriptions", "You")
         private const val KEY_PALETTE_VERSION = "youflow_palette_version"
         const val THEME_SYSTEM = "system"
         const val THEME_LIGHT = "light"

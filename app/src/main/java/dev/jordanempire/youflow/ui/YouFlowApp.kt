@@ -72,13 +72,6 @@ import dev.jordanempire.youflow.ui.watch.MiniPlayer
 import dev.jordanempire.youflow.ui.watch.WatchScreen
 import dev.jordanempire.youflow.ui.you.YouScreen
 
-private enum class Tab(val label: String, val selected: ImageVector, val unselected: ImageVector) {
-    Home("Home", Icons.Rounded.Home, Icons.Outlined.Home),
-    Shorts("Shorts", Icons.Rounded.PlayCircle, Icons.Outlined.PlayCircle),
-    Subscriptions("Subscriptions", Icons.Rounded.Subscriptions, Icons.Outlined.Subscriptions),
-    You("You", Icons.Rounded.VideoLibrary, Icons.Outlined.VideoLibrary)
-}
-
 /** A request that came from outside the app: a shared link or text to search for. */
 sealed interface IncomingLink {
     data class Stream(val url: String) : IncomingLink
@@ -120,7 +113,13 @@ fun YouFlowApp(window: WatchWindowState, onOpenPreferences: (screen: String) -> 
     val playerState by engine.state.collectAsState()
     val repo = remember { dev.jordanempire.youflow.ui.data.YouTubeRepository(context.applicationContext) }
 
-    var tab by rememberSaveable { mutableStateOf(Tab.Home) }
+    val appSettings = remember { dev.jordanempire.youflow.ui.settings.AppSettings.get(context.applicationContext as Application) }
+    val navOrder by appSettings.navOrder.collectAsState()
+    val showShorts by appSettings.showShorts.collectAsState()
+    val tabs = navOrder.mapNotNull { key -> Tab.entries.firstOrNull { it.name == key } }.filter { showShorts || it != Tab.Shorts }
+    var tab by rememberSaveable { mutableStateOf(tabs.first()) }
+    // The current tab can disappear from the bar (Shorts switched off in settings).
+    if (tab !in tabs) tab = tabs.first()
     var searching by rememberSaveable { mutableStateOf(false) }
     var saving by remember { mutableStateOf<VideoItem?>(null) }
     var searchText by rememberSaveable { mutableStateOf<String?>(null) }
@@ -257,7 +256,7 @@ fun YouFlowApp(window: WatchWindowState, onOpenPreferences: (screen: String) -> 
                     MiniPlayer(engine, onExpand = { window.expanded = true }, onClose = { engine.stop() })
                 }
                 ShortNavigationBar {
-                    Tab.entries.forEach { entry ->
+                    tabs.forEach { entry ->
                         ShortNavigationBarItem(
                             selected = tab == entry,
                             onClick = {
