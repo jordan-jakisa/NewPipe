@@ -45,14 +45,27 @@ private fun colorSchemeFor(context: Context, dark: Boolean, dynamic: Boolean): C
     else -> FallbackLight
 }
 
+private fun ColorScheme.pureBlack() = copy(
+    background = Color.Black,
+    surface = Color.Black,
+    surfaceDim = Color.Black,
+    surfaceContainerLowest = Color.Black,
+    surfaceContainerLow = Color(0xFF0A0A0A),
+    surfaceContainer = Color(0xFF111111),
+    surfaceContainerHigh = Color(0xFF181818),
+    surfaceContainerHighest = Color(0xFF202020)
+)
+
 @Composable
 fun YouFlowTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true,
+    pureBlack: Boolean = false,
     content: @Composable () -> Unit
 ) {
+    val scheme = colorSchemeFor(LocalContext.current, darkTheme, dynamicColor)
     MaterialExpressiveTheme(
-        colorScheme = colorSchemeFor(LocalContext.current, darkTheme, dynamicColor),
+        colorScheme = if (darkTheme && pureBlack) scheme.pureBlack() else scheme,
         motionScheme = MotionScheme.expressive(),
         content = content
     )

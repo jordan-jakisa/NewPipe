@@ -305,6 +305,7 @@ class PlaybackEngine private constructor(private val app: Application) {
     }
 
     private fun onEnded() {
+        if (!dev.jordanempire.youflow.ui.settings.AppSettings.get(app).autoplay.value) return
         if (!next()) {
             val type = _state.value.info?.streamType
             if (type == org.schabi.newpipe.extractor.stream.StreamType.LIVE_STREAM ||

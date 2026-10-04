@@ -11,6 +11,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -19,6 +21,7 @@ import androidx.lifecycle.lifecycleScope
 import dev.jordanempire.youflow.MainActivity
 import dev.jordanempire.youflow.media.engine.PlaybackEngine
 import dev.jordanempire.youflow.settings.SettingsActivity
+import dev.jordanempire.youflow.ui.settings.AppSettings
 import dev.jordanempire.youflow.ui.theme.YouFlowTheme
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -33,7 +36,15 @@ class YouFlowActivity : ComponentActivity() {
         engine = PlaybackEngine.get(application)
 
         setContent {
-            YouFlowTheme {
+            val settings = androidx.compose.runtime.remember { AppSettings.get(application) }
+            val themeMode by settings.theme.collectAsState()
+            val dynamic by settings.dynamicColor.collectAsState()
+            val dark = when (themeMode) {
+                AppSettings.THEME_LIGHT -> false
+                AppSettings.THEME_DARK, AppSettings.THEME_BLACK -> true
+                else -> androidx.compose.foundation.isSystemInDarkTheme()
+            }
+            YouFlowTheme(darkTheme = dark, dynamicColor = dynamic, pureBlack = themeMode == AppSettings.THEME_BLACK) {
                 Surface {
                     YouFlowApp(
                         window = window2,

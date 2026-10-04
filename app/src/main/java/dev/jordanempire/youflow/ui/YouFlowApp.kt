@@ -55,6 +55,7 @@ import dev.jordanempire.youflow.ui.library.SaveToPlaylistSheet
 import dev.jordanempire.youflow.ui.model.VideoItem
 import dev.jordanempire.youflow.ui.playlist.PlaylistScreen
 import dev.jordanempire.youflow.ui.search.SearchScreen
+import dev.jordanempire.youflow.ui.settings.SettingsScreen
 import dev.jordanempire.youflow.ui.shorts.ShortsScreen
 import dev.jordanempire.youflow.ui.subscriptions.SubscriptionsScreen
 import dev.jordanempire.youflow.ui.watch.MiniPlayer
@@ -104,7 +105,7 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
             window.expanded = true
         },
         openClassicUi = onOpenClassicUi,
-        openSettings = onOpenSettings
+        openSettings = { push("s|"); window.expanded = false }
     )
 
     // Picture in picture shows only the video.
@@ -173,6 +174,7 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
                     "c" -> ChannelScreen(target, actions, ::pop)
                     "l" -> LocalPlaylistScreen(target.toLong(), actions, ::pop)
                     "h" -> HistoryScreen(actions, ::pop)
+                    "s" -> SettingsScreen(onBack = ::pop, onOpenClassicSettings = onOpenSettings)
                     else -> PlaylistScreen(target, actions, ::pop)
                 }
             }
