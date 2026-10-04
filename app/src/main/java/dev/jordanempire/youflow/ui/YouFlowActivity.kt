@@ -59,6 +59,8 @@ class YouFlowActivity : ComponentActivity() {
             }
         }
 
+        handleIntent(intent)
+
         // Auto enter PiP when leaving while a video is playing on the expanded watch page.
         lifecycleScope.launch {
             snapshotFlow { window2.expanded }.collect { updatePipParams() }
@@ -66,6 +68,25 @@ class YouFlowActivity : ComponentActivity() {
         lifecycleScope.launch {
             engine.state.collect { updatePipParams() }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
+    /** Opens links shared from other apps or tapped in a browser. */
+    private fun handleIntent(intent: Intent?) {
+        intent ?: return
+        val text = when (intent.action) {
+            Intent.ACTION_VIEW -> intent.dataString
+            Intent.ACTION_SEND -> intent.getStringExtra(Intent.EXTRA_TEXT)
+            Intent.ACTION_SEARCH -> intent.getStringExtra(android.app.SearchManager.QUERY)
+            else -> null
+        }?.trim()?.takeIf { it.isNotEmpty() } ?: return
+        window2.incoming = parseIncoming(text)
+        // Clear the intent so rotating or recreating does not replay it.
+        setIntent(Intent(this, YouFlowActivity::class.java))
     }
 
     private fun updatePipParams() {

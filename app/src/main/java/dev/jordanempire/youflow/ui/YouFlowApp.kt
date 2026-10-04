@@ -70,7 +70,29 @@ private enum class Tab(val label: String, val selected: ImageVector, val unselec
 }
 
 /** Window level state the activity needs to react to (PiP, fullscreen). */
+/** A request that came from outside the app: a shared link or text to search for. */
+sealed interface IncomingLink {
+    data class Stream(val url: String) : IncomingLink
+    data class Channel(val url: String) : IncomingLink
+    data class Playlist(val url: String) : IncomingLink
+    data class Search(val text: String) : IncomingLink
+}
+
+/** Classifies shared text: a YouTube link opens the matching screen, anything else becomes a search. */
+fun parseIncoming(text: String): IncomingLink {
+    val url = Regex("https?://\\S+").find(text)?.value ?: text.takeIf { it.startsWith("vnd.youtube") }
+        ?: return IncomingLink.Search(text)
+    val youtube = org.schabi.newpipe.extractor.ServiceList.YouTube
+    return when (runCatching { youtube.getLinkTypeByUrl(url) }.getOrNull()) {
+        org.schabi.newpipe.extractor.StreamingService.LinkType.STREAM -> IncomingLink.Stream(url)
+        org.schabi.newpipe.extractor.StreamingService.LinkType.CHANNEL -> IncomingLink.Channel(url)
+        org.schabi.newpipe.extractor.StreamingService.LinkType.PLAYLIST -> IncomingLink.Playlist(url)
+        else -> IncomingLink.Search(text)
+    }
+}
+
 class WatchWindowState {
+    var incoming by mutableStateOf<IncomingLink?>(null)
     var expanded by mutableStateOf(false)
     var fullscreen by mutableStateOf(false)
     var inPip by mutableStateOf(false)
@@ -88,6 +110,7 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
     var tab by rememberSaveable { mutableStateOf(Tab.Home) }
     var searching by rememberSaveable { mutableStateOf(false) }
     var saving by remember { mutableStateOf<VideoItem?>(null) }
+    var searchText by rememberSaveable { mutableStateOf<String?>(null) }
     // Pushed screens on top of the tabs: "c|<channel url>" or "p|<playlist url>".
     var stack by rememberSaveable { mutableStateOf(ArrayList<String>()) }
     fun push(route: String) { stack = ArrayList(stack + route) }
@@ -107,6 +130,17 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
         openClassicUi = onOpenClassicUi,
         openSettings = { push("s|"); window.expanded = false }
     )
+
+    androidx.compose.runtime.LaunchedEffect(window.incoming) {
+        when (val link = window.incoming) {
+            is IncomingLink.Stream -> actions.openVideo(VideoItem(link.url, "", "", null, null, null, 0, null, null, false, false))
+            is IncomingLink.Channel -> actions.openChannel(link.url)
+            is IncomingLink.Playlist -> actions.openPlaylist(link.url)
+            is IncomingLink.Search -> { searchText = link.text; searching = true }
+            null -> Unit
+        }
+        window.incoming = null
+    }
 
     // Picture in picture shows only the video.
     if (window.inPip) {
@@ -189,7 +223,7 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
         enter = fadeIn() + slideInVertically { it / 12 },
         exit = fadeOut() + slideOutVertically { it / 12 }
     ) {
-        SearchScreen(actions = actions, onClose = { searching = false })
+        SearchScreen(actions = actions, initialQuery = searchText, onClose = { searching = false; searchText = null })
     }
 
     AnimatedVisibility(

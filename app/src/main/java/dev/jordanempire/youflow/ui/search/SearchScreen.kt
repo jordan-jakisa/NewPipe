@@ -163,7 +163,7 @@ class SearchViewModel(app: Application) : AndroidViewModel(app) {
 private val SearchFilters = listOf("All" to null, "Videos" to "videos", "Channels" to "channels", "Playlists" to "playlists")
 
 @Composable
-fun SearchScreen(actions: AppActions, onClose: () -> Unit, vm: SearchViewModel = viewModel()) {
+fun SearchScreen(actions: AppActions, onClose: () -> Unit, initialQuery: String? = null, vm: SearchViewModel = viewModel()) {
     val query by vm.query.collectAsState()
     val suggestions by vm.suggestions.collectAsState()
     val results by vm.results.collectAsState()
@@ -176,7 +176,14 @@ fun SearchScreen(actions: AppActions, onClose: () -> Unit, vm: SearchViewModel =
             .collect { (last, total) -> if (last != null && total > 0 && last >= total - 4) vm.loadMore() }
     }
     val focus = remember { FocusRequester() }
-    LaunchedEffect(Unit) { focus.requestFocus() }
+    LaunchedEffect(initialQuery) {
+        if (initialQuery != null) {
+            vm.onQueryChange(initialQuery)
+            vm.submit(initialQuery)
+        } else {
+            focus.requestFocus()
+        }
+    }
     BackHandler(onBack = onClose)
 
     Scaffold(
