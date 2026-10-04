@@ -51,7 +51,7 @@ private val ThemeChoices = listOf(
 )
 
 @Composable
-fun SettingsScreen(onBack: () -> Unit, onOpenPreferences: (screen: String) -> Unit) {
+fun SettingsScreen(onBack: () -> Unit, onOpenNavBar: () -> Unit, onOpenPreferences: (screen: String) -> Unit) {
     val context = LocalContext.current
     val app = context.applicationContext as Application
     val settings = remember { AppSettings.get(app) }
@@ -91,8 +91,13 @@ fun SettingsScreen(onBack: () -> Unit, onOpenPreferences: (screen: String) -> Un
                     trailingContent = { Switch(checked = dynamic, onCheckedChange = settings::setDynamicColor) }
                 )
             }
-            item { Header("Navigation bar") }
-            item { NavBarEditor(navOrder, showShorts, settings::moveNavTab, settings::setShowShorts) }
+            item {
+                ListItem(
+                    headlineContent = { Text("Navigation bar") },
+                    supportingContent = { Text(navOrder.filter { showShorts || it != "Shorts" }.joinToString(" · ")) },
+                    modifier = Modifier.clickable(onClick = onOpenNavBar)
+                )
+            }
             item { Header("Playback") }
             item {
                 ListItem(

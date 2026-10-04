@@ -64,6 +64,7 @@ import dev.jordanempire.youflow.ui.library.SaveToPlaylistSheet
 import dev.jordanempire.youflow.ui.model.VideoItem
 import dev.jordanempire.youflow.ui.playlist.PlaylistScreen
 import dev.jordanempire.youflow.ui.search.SearchScreen
+import dev.jordanempire.youflow.ui.settings.NavBarScreen
 import dev.jordanempire.youflow.ui.settings.SettingsScreen
 import dev.jordanempire.youflow.ui.shorts.ShortsScreen
 import dev.jordanempire.youflow.ui.subscriptions.ManageSubscriptionsScreen
@@ -297,7 +298,8 @@ fun YouFlowApp(window: WatchWindowState, onOpenPreferences: (screen: String) -> 
                     "h" -> HistoryScreen(actions, ::pop)
                     "d" -> DownloadsScreen(::pop)
                     "m" -> ManageSubscriptionsScreen(actions, ::pop)
-                    "s" -> SettingsScreen(onBack = ::pop, onOpenPreferences = onOpenPreferences)
+                    "s" -> SettingsScreen(onBack = ::pop, onOpenNavBar = { push("n|") }, onOpenPreferences = onOpenPreferences)
+                    "n" -> NavBarScreen(onBack = ::pop)
                     else -> PlaylistScreen(target, actions, ::pop)
                 }
             }
