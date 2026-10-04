@@ -201,22 +201,15 @@ dependencies {
 
     // AndroidX
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.cardview)
-    implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.core)
     implementation(libs.androidx.documentfile)
     implementation(libs.androidx.fragment)
-    implementation(libs.androidx.lifecycle.livedata)
     implementation(libs.androidx.lifecycle.viewmodel)
-    implementation(libs.androidx.localbroadcastmanager)
-    implementation(libs.androidx.media)
     implementation(libs.androidx.preference)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.rxjava3)
     ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.swiperefreshlayout)
-    implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.work.runtime)
     implementation(libs.androidx.work.rxjava3)
     implementation(libs.google.android.material)
@@ -248,19 +241,7 @@ dependencies {
     implementation(libs.androidx.media3.session)
     implementation(libs.androidx.media3.ui.compose)
 
-    // Media player (legacy ExoPlayer 2, removed at cutover)
-    implementation(libs.google.exoplayer.core)
-    implementation(libs.google.exoplayer.dash)
-    implementation(libs.google.exoplayer.database)
-    implementation(libs.google.exoplayer.datasource)
-    implementation(libs.google.exoplayer.hls)
-    implementation(libs.google.exoplayer.mediasession)
-    implementation(libs.google.exoplayer.smoothstreaming)
-    implementation(libs.google.exoplayer.ui)
 
-    // Manager for complex RecyclerView layouts
-    implementation(libs.lisawray.groupie.core)
-    implementation(libs.lisawray.groupie.viewbinding)
 
     // Compose UI (YouFlow)
     implementation(libs.androidx.activity)
@@ -277,9 +258,6 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
-    // Markdown library for Android
-    implementation(libs.noties.markwon.core)
-    implementation(libs.noties.markwon.linkify)
 
     // Properly restarting
     implementation(libs.jakewharton.phoenix)
@@ -287,8 +265,6 @@ dependencies {
     // Reactive extensions for Java VM
     implementation(libs.reactivex.rxjava)
     implementation(libs.reactivex.rxandroid)
-    // RxJava binding APIs for Android UI widgets
-    implementation(libs.jakewharton.rxbinding)
 
     // Date and time formatting
     implementation(libs.ocpsoft.prettytime)

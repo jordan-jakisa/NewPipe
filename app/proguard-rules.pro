@@ -18,7 +18,6 @@
 -dontwarn jdk.dynalink.**
 
 ## Rules for ExoPlayer
--keep class com.google.android.exoplayer2.** { *; }
 
 ## Rules for OkHttp. Copy pasted from https://github.com/square/okhttp
 -dontwarn okhttp3.**
