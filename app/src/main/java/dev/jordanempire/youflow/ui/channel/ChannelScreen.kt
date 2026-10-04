@@ -24,7 +24,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -90,6 +92,12 @@ class ChannelViewModel(app: Application, private val url: String) : AndroidViewM
 
     val subscribed: StateFlow<Boolean> = repo.isSubscribed(url)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+    val notifying: StateFlow<Boolean> = repo.isNotifying(url)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), false)
+
+    fun toggleNotifications() {
+        viewModelScope.launch { repo.setNotifications(url, !notifying.value) }
+    }
 
     init {
         load()
@@ -172,6 +180,7 @@ fun ChannelScreen(url: String, actions: AppActions, onBack: () -> Unit) {
     val tab by vm.tab.collectAsState()
     val items by vm.items.collectAsState()
     val subscribed by vm.subscribed.collectAsState()
+    val notifying by vm.notifying.collectAsState()
     val listState = rememberLazyListState()
 
     LaunchedEffect(listState, items) {
@@ -201,6 +210,8 @@ fun ChannelScreen(url: String, actions: AppActions, onBack: () -> Unit) {
                         ChannelHeader(
                             details = details,
                             subscribed = subscribed,
+                            notifying = notifying,
+                            onToggleNotifications = vm::toggleNotifications,
                             onToggleSubscribe = { vm.toggleSubscribe(details) },
                             onPlayAll = { (items as? UiState.Content)?.data?.filterIsInstance<VideoItem>()?.let { if (it.isNotEmpty()) actions.playVideos(it, 0) } },
                             statusBarTop = padding.calculateTopPadding()
@@ -251,6 +262,8 @@ fun ChannelScreen(url: String, actions: AppActions, onBack: () -> Unit) {
 private fun ChannelHeader(
     details: ChannelDetails,
     subscribed: Boolean,
+    notifying: Boolean,
+    onToggleNotifications: () -> Unit,
     onToggleSubscribe: () -> Unit,
     onPlayAll: () -> Unit,
     statusBarTop: androidx.compose.ui.unit.Dp
@@ -292,6 +305,14 @@ private fun ChannelHeader(
                     OutlinedButton(onClick = onToggleSubscribe) { Text("Subscribed") }
                 } else {
                     Button(onClick = onToggleSubscribe) { Text("Subscribe") }
+                }
+                if (subscribed) {
+                    androidx.compose.material3.FilledIconToggleButton(checked = notifying, onCheckedChange = { onToggleNotifications() }) {
+                        Icon(
+                            if (notifying) Icons.Filled.Notifications else Icons.Outlined.NotificationsNone,
+                            contentDescription = if (notifying) "Turn off notifications" else "Notify me about new videos"
+                        )
+                    }
                 }
                 FilledTonalButton(onClick = onPlayAll) {
                     Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))

@@ -373,8 +373,16 @@ class YouTubeRepository(private val context: Context) {
         name = name.orEmpty(),
         avatar = avatarUrl,
         subscribers = subscriberCount,
-        description = description
+        description = description,
+        notify = notificationMode == 1
     )
+
+    suspend fun setNotifications(channelUrl: String, enabled: Boolean) = withContext(Dispatchers.IO) {
+        SubscriptionManager(context).updateNotificationMode(serviceId, channelUrl, if (enabled) 1 else 0).await()
+    }
+
+    fun isNotifying(channelUrl: String): Flow<Boolean> =
+        subscriptions().map { list -> list.firstOrNull { it.url == channelUrl }?.notify == true }
 
     private fun InfoItem.toContent(): ContentItem? = when (this) {
         is StreamInfoItem -> toVideo()

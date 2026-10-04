@@ -30,7 +30,9 @@ data class ChannelItem(
     val name: String,
     val avatar: String?,
     val subscribers: Long?,
-    val description: String?
+    val description: String?,
+    /** 1 when new-upload notifications are on for this subscription. */
+    val notify: Boolean = false
 ) : ContentItem
 
 @Immutable

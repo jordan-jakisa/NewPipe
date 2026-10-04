@@ -5,6 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -92,15 +95,22 @@ fun SubscriptionsScreen(actions: AppActions, contentPadding: PaddingValues, vm: 
     val top = Modifier.padding(top = contentPadding.calculateTopPadding())
     when {
         channels == null -> Unit
-        channels!!.isEmpty() -> MessageBox(
-            title = "No subscriptions yet",
-            body = "Search for a channel and tap Subscribe, or import a NewPipe backup from the classic app.",
-            actionLabel = "Open classic app",
-            onAction = actions.openClassicUi,
-            modifier = top
-        )
+        channels!!.isEmpty() -> Box(top.fillMaxSize()) {
+            MessageBox(
+                title = "No subscriptions yet",
+                body = "Search for a channel and tap Subscribe, or import your subscriptions from a Google Takeout or a NewPipe export with the menu.",
+                modifier = Modifier
+            )
+            Box(Modifier.align(Alignment.TopEnd)) { SubscriptionToolsMenu() }
+        }
         else -> PullToRefreshBox(isRefreshing = refreshing, onRefresh = vm::refresh, modifier = top) {
             LazyColumn(contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding())) {
+                item(key = "tools") {
+                    Row(Modifier.fillMaxWidth().padding(start = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text("Subscriptions  ${channels!!.size}", style = MaterialTheme.typography.titleMediumEmphasized, modifier = Modifier.weight(1f))
+                        SubscriptionToolsMenu()
+                    }
+                }
                 item(key = "strip") { ChannelStrip(channels!!, actions) }
                 if (refreshing) item(key = "progress") {
                     LinearWavyProgressIndicator(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp))
