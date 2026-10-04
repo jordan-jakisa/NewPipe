@@ -1,0 +1,30 @@
+# Draft recipe for https://gitlab.com/fdroid/fdroiddata (metadata/dev.jordanempire.youflow.yml).
+# Not submitted. Fill in after the first tagged release; see README.md in this folder.
+Categories:
+  - Multimedia
+  - Internet
+License: GPL-3.0-or-later
+AuthorName: Jordan Mungujakisa
+WebSite: https://github.com/jordan-jakisa/NewPipe
+SourceCode: https://github.com/jordan-jakisa/NewPipe
+IssueTracker: https://github.com/jordan-jakisa/NewPipe/issues
+
+AntiFeatures:
+  NonFreeNet:
+    en-US: Depends on YouTube, a proprietary network service.
+
+RepoType: git
+Repo: https://github.com/jordan-jakisa/NewPipe
+
+Builds:
+  - versionName: 0.1.0
+    versionCode: 1
+    commit: v0.1.0
+    submodules: true
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 0.1.0
+CurrentVersionCode: 1

@@ -1,40 +1,44 @@
-# YT Client (working title)
+# YouFlow
 
-A personal, YouTube-only Android client. It is a fork of [NewPipe](https://github.com/TeamNewPipe/NewPipe)
-that is being stripped down to YouTube and then given a new Jetpack Compose UI built on Material 3
-Expressive.
+A free, private YouTube client for Android with a Material 3 Expressive interface. YouFlow is a
+fork of [NewPipe](https://github.com/TeamNewPipe/NewPipe): the YouTube parsing comes from
+[NewPipeExtractor](https://github.com/TeamNewPipe/NewPipeExtractor), the screens and the player are
+new.
 
-This is a personal project. It is not affiliated with NewPipe, TeamNewPipe or NewPipe e.V., it is not
-published anywhere, and it does not use the NewPipe name or branding. "NewPipe" is a registered word
-mark of its owners, so the working title above is a placeholder until a final name is chosen.
+YouFlow is not affiliated with NewPipe, TeamNewPipe or NewPipe e.V. and does not use their name or
+branding.
 
-## What it is
+## Features
 
-- A lightweight YouTube front-end: search, watch, background play, subscriptions without an account,
-  local history and playlists.
-- Built on the legacy NewPipe app (Views, Fragments, RxJava, ExoPlayer 2) with a small Compose module
-  in `shared/`. The plan is to rewrite the UI and player in phases.
-- YouTube only. SoundCloud, PeerTube, media.ccc.de and Bandcamp support is being removed.
-- No update checker, no crash reporting service, no donation links, no external reporting. Errors are
-  shown locally and can be copied or shared by hand.
+- Home with a local "For you" feed built on the device from your history, likes and subscriptions
+- Shorts feed with preloading, likes, saving and sharing
+- Search, channels, playlists, comments, chapters, captions
+- Subscriptions without an account, feed groups, import and export (NewPipe backups work)
+- Background play, picture in picture, mini player, audio-only mode, sleep timer, queue
+- Downloads
+- Local history, watch later and playlists
+- A reorderable bottom bar, with Shorts optional
+- No Google services, no ads, no tracking, no account. Nothing leaves the device except the requests
+  YouTube itself needs.
 
-The full plan, scope and phases are in [docs/spec/youtube-client-spec.md](docs/spec/youtube-client-spec.md).
-
-## Status
-
-Phase 0 (strip to YouTube) is in progress on the `youtube-only` branch. Expect an app that does not
-build or run correctly at every commit while the removal work is going on.
+Android 12 (API 31) or newer. English only.
 
 ## Building
 
-Requires JDK 21 and the Android SDK.
+Needs JDK 17 or newer and the Android SDK. NewPipeExtractor is a git submodule pinned to one commit,
+so clone with submodules:
 
 ```
-./gradlew assembleDebug
+git clone --recurse-submodules https://github.com/jordan-jakisa/NewPipe
+cd NewPipe
+./gradlew assembleRelease     # unsigned APK in app/build/outputs/apk/release
 ./gradlew testDebugUnitTest
 ```
 
-Code style is checked with ktlint on demand: `./gradlew :app:runKtlint` and `./gradlew :app:formatKtlint`.
+Style is checked with ktlint: `./gradlew :app:runKtlint` and `./gradlew :app:formatKtlint`.
+
+The design and scope are written up in [docs/spec/youtube-client-spec.md](docs/spec/youtube-client-spec.md).
+Notes for publishing on F-Droid are in [docs/fdroid/README.md](docs/fdroid/README.md).
 
 ## Credits
 
@@ -42,16 +46,13 @@ Code style is checked with ktlint on demand: `./gradlew :app:runKtlint` and `./g
   is forked from.
 - [NewPipeExtractor](https://github.com/TeamNewPipe/NewPipeExtractor), which does all the YouTube
   parsing.
-- The other open-source libraries used are listed on the About screen inside the app.
+- AndroidX, Jetpack Compose, Media3, Room, OkHttp, Coil, RxJava and the other open-source libraries
+  listed in `gradle/libs.versions.toml`.
 
 ## License
 
-This project is free software, licensed under the GNU General Public License, version 3 or (at your
-option) any later version. See [LICENSE](LICENSE).
-
-Copyright is held by the NewPipe contributors and by the authors of this fork, as recorded in the
-file headers and the git history. This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY, without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
-PARTICULAR PURPOSE.
-
-Source: https://github.com/jordan-jakisa/NewPipe
+Free software under the GNU General Public License, version 3 or (at your option) any later
+version. See [LICENSE](LICENSE). Copyright is held by the NewPipe contributors and by the authors of
+this fork, as recorded in the file headers and the git history. This program is distributed in the
+hope that it will be useful, but WITHOUT ANY WARRANTY, without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.

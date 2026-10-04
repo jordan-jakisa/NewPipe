@@ -1,0 +1,13 @@
+YouFlow is a free YouTube client with a Material 3 Expressive interface. It needs no Google account and no Google services, and it has no ads and no tracking. It is a fork of NewPipe and uses the NewPipe Extractor to read YouTube.
+
+<b>Features</b>
+• Home with a "For you" feed that is worked out on your device from your history, likes and subscriptions
+• Shorts feed with preloading, like, save and share
+• Search, channels, playlists, comments, chapters and captions
+• Subscriptions without an account, feed groups, import and export (NewPipe backups can be imported)
+• Background play, picture in picture, mini player, audio-only mode, sleep timer and a queue
+• Downloads
+• Local history, watch later and playlists
+• Reorderable bottom bar, Shorts can be hidden
+
+YouFlow is not affiliated with NewPipe or YouTube. Requires Android 12 or newer.

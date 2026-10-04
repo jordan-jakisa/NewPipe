@@ -45,6 +45,12 @@ configure<ApplicationExtension> {
     }
     namespace = NEWPIPE_APPLICATION_ID_OLD
 
+    // F-Droid rejects the Google-signed dependency metadata block AGP adds to APKs by default.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
+
     defaultConfig {
         applicationId = NEWPIPE_APPLICATION_ID_OLD
         resValue("string", "app_name", "YouFlow")
@@ -110,6 +116,8 @@ configure<ApplicationExtension> {
         lintConfig = file("lint.xml")
         // Continue the debug build even when errors are found
         abortOnError = false
+        // The release lint pass crashes on JDK 17 (a detector calls a JDK 21 API) and is not needed to build.
+        checkReleaseBuilds = false
     }
 
     compileOptions {

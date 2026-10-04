@@ -26,12 +26,10 @@ dependencyResolutionManagement {
 }
 include(":app") // androidApp
 
-// Use a local copy of NewPipe Extractor by uncommenting the lines below.
-// We assume, that NewPipe and NewPipe Extractor have the same parent directory.
-// If this is not the case, please change the path in includeBuild().
-
-// JitPack has not built the pinned commit, so the extractor is built from the sibling checkout.
-includeBuild("../NewPipeExtractor") {
+// NewPipe Extractor is a git submodule pinned to the commit in gradle/libs.versions.toml. It is built
+// as part of this build (JitPack never built that commit), so a fresh clone needs
+// `git submodule update --init`.
+includeBuild("NewPipeExtractor") {
     dependencySubstitution {
         substitute(module("com.github.TeamNewPipe:NewPipeExtractor"))
             .using(project(":extractor"))
