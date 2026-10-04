@@ -112,7 +112,7 @@ fun SubscriptionsScreen(actions: AppActions, contentPadding: PaddingValues, vm: 
                     Text("No new videos yet. Pull down to refresh.", modifier = Modifier.padding(16.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 items(feed, key = { it.url }) { video ->
-                    VideoCard(video, onClick = { actions.openVideo(video) }, onChannelClick = { video.channelUrl?.let(actions.openChannel) })
+                    VideoCard(video, onClick = { actions.openVideo(video) }, onChannelClick = { video.channelUrl?.let(actions.openChannel) }, onSave = { actions.saveVideo(video) })
                 }
             }
         }

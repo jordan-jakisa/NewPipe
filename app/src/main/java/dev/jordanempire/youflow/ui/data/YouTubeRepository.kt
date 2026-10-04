@@ -18,6 +18,7 @@ import dev.jordanempire.youflow.util.image.ImageStrategy
 import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import kotlinx.coroutines.Dispatchers
+import dev.jordanempire.youflow.local.playlist.LocalPlaylistManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -44,6 +45,10 @@ import org.schabi.newpipe.extractor.stream.StreamType
 
 /** Single entry point the Compose UI uses for YouTube data and the local library. */
 class YouTubeRepository(private val context: Context) {
+    companion object {
+        const val WATCH_LATER = "Watch later"
+    }
+
 
     private val serviceId = ServiceList.YouTube.serviceId
     private val database get() = NewPipeDatabase.getInstance(context)
@@ -137,19 +142,79 @@ class YouTubeRepository(private val context: Context) {
             list.map { it.streamEntity.toVideo() }
         }
 
+    private val playlistManager get() = LocalPlaylistManager(database)
+
     fun playlists(): Flow<List<PlaylistItem>> =
-        dev.jordanempire.youflow.local.playlist.LocalPlaylistManager(database)
-            .playlists.toObservable().asFlow().map { list ->
-                list.map {
-                    PlaylistItem(
-                        url = "local:${it.uid}",
-                        name = it.orderingName.orEmpty(),
-                        thumbnail = it.thumbnailUrl,
-                        uploader = null,
-                        streamCount = it.streamCount
-                    )
-                }
+        playlistManager.playlists.toObservable().asFlow().map { list ->
+            list.map {
+                PlaylistItem(
+                    url = "local:${it.uid}",
+                    name = it.orderingName.orEmpty(),
+                    thumbnail = it.thumbnailUrl,
+                    uploader = null,
+                    streamCount = it.streamCount
+                )
             }
+        }
+
+    private fun VideoItem.toStreamEntity() = StreamEntity(
+        serviceId = serviceId,
+        url = url,
+        title = title,
+        streamType = if (isLive) StreamType.LIVE_STREAM else StreamType.VIDEO_STREAM,
+        duration = durationSeconds,
+        uploader = channel,
+        uploaderUrl = channelUrl,
+        thumbnailUrl = thumbnail,
+        viewCount = views,
+        textualUploadDate = uploaded
+    )
+
+    /** Creates a playlist containing [first] when given. Returns its id. */
+    suspend fun createPlaylist(name: String, first: VideoItem?): Long = withContext(Dispatchers.IO) {
+        val ids = playlistManager.createPlaylist(name, listOfNotNull(first?.toStreamEntity())).awaitSingleOrNull()
+        ids?.firstOrNull() ?: -1L
+    }
+
+    suspend fun addToPlaylist(playlistId: Long, video: VideoItem) = withContext(Dispatchers.IO) {
+        playlistManager.appendToPlaylist(playlistId, listOf(video.toStreamEntity())).awaitSingleOrNull()
+        Unit
+    }
+
+    /** The "Watch later" playlist, created on first use. */
+    suspend fun addToWatchLater(video: VideoItem) = withContext(Dispatchers.IO) {
+        val existing = playlistManager.playlists.firstOrError().await().firstOrNull { it.orderingName == WATCH_LATER }
+        if (existing != null) {
+            playlistManager.appendToPlaylist(existing.uid, listOf(video.toStreamEntity())).awaitSingleOrNull()
+        } else {
+            playlistManager.createPlaylist(WATCH_LATER, listOf(video.toStreamEntity())).awaitSingleOrNull()
+        }
+        Unit
+    }
+
+    fun playlistVideos(playlistId: Long): Flow<List<Pair<Long, VideoItem>>> =
+        playlistManager.getPlaylistStreams(playlistId).toObservable().asFlow().map { list ->
+            list.map { it.streamId to it.streamEntity.toVideo(it.progressMillis) }
+        }
+
+    fun playlistName(playlistId: Long): Flow<String> =
+        playlists().map { list -> list.firstOrNull { it.url == "local:$playlistId" }?.name.orEmpty() }
+
+    suspend fun removeFromPlaylist(playlistId: Long, streamId: Long) = withContext(Dispatchers.IO) {
+        val remaining = playlistManager.getPlaylistStreams(playlistId).firstOrError().await()
+            .filter { it.streamId != streamId }.map { it.streamId }
+        playlistManager.updateJoin(playlistId, remaining).await()
+    }
+
+    suspend fun deletePlaylist(playlistId: Long) = withContext(Dispatchers.IO) {
+        database.playlistDAO().deletePlaylist(playlistId)
+        Unit
+    }
+
+    suspend fun renamePlaylist(playlistId: Long, name: String) = withContext(Dispatchers.IO) {
+        playlistManager.renamePlaylist(playlistId, name).awaitSingleOrNull()
+        Unit
+    }
 
     /** One page of a list plus the token for the next one. */
     class Paged<T>(val items: List<T>, val next: Page?)

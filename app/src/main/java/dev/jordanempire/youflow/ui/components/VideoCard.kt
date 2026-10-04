@@ -13,6 +13,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -40,7 +44,9 @@ fun VideoCard(
     video: VideoItem,
     onClick: () -> Unit,
     onChannelClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** When set, a three dot button offers "Save to playlist". */
+    onSave: (() -> Unit)? = null
 ) {
     Column(modifier.fillMaxWidth().clickable(onClick = onClick).padding(bottom = 16.dp)) {
         Box(Modifier.padding(horizontal = 12.dp)) {
@@ -72,6 +78,11 @@ fun VideoCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+            }
+            if (onSave != null) {
+                IconButton(onClick = onSave, modifier = Modifier.size(32.dp)) {
+                    Icon(Icons.Filled.MoreVert, contentDescription = "Save to playlist", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
         }
     }

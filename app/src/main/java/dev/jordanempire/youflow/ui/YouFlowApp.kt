@@ -49,6 +49,8 @@ import dev.jordanempire.youflow.media.engine.PlaybackEngine
 import dev.jordanempire.youflow.media.engine.QueueEntry
 import dev.jordanempire.youflow.ui.channel.ChannelScreen
 import dev.jordanempire.youflow.ui.home.HomeScreen
+import dev.jordanempire.youflow.ui.library.LocalPlaylistScreen
+import dev.jordanempire.youflow.ui.library.SaveToPlaylistSheet
 import dev.jordanempire.youflow.ui.model.VideoItem
 import dev.jordanempire.youflow.ui.playlist.PlaylistScreen
 import dev.jordanempire.youflow.ui.search.SearchScreen
@@ -83,6 +85,7 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
 
     var tab by rememberSaveable { mutableStateOf(Tab.Home) }
     var searching by rememberSaveable { mutableStateOf(false) }
+    var saving by remember { mutableStateOf<VideoItem?>(null) }
     // Pushed screens on top of the tabs: "c|<channel url>" or "p|<playlist url>".
     var stack by rememberSaveable { mutableStateOf(ArrayList<String>()) }
     fun push(route: String) { stack = ArrayList(stack + route) }
@@ -92,6 +95,8 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
         openVideo = { video -> engine.play(listOf(video.toEntry())); window.expanded = true },
         openChannel = { push("c|$it"); searching = false; window.expanded = false },
         openPlaylist = { push("p|$it"); searching = false; window.expanded = false },
+        openLocalPlaylist = { push("l|$it"); searching = false; window.expanded = false },
+        saveVideo = { saving = it },
         playVideos = { videos, index ->
             engine.play(videos.map { it.toEntry() }, index)
             window.expanded = true
@@ -162,11 +167,17 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
             Surface(Modifier.weight(1f)) {
                 val kind = route.substringBefore('|')
                 val target = route.substringAfter('|')
-                if (kind == "c") ChannelScreen(target, actions, ::pop) else PlaylistScreen(target, actions, ::pop)
+                when (kind) {
+                    "c" -> ChannelScreen(target, actions, ::pop)
+                    "l" -> LocalPlaylistScreen(target.toLong(), actions, ::pop)
+                    else -> PlaylistScreen(target, actions, ::pop)
+                }
             }
             if (hasVideo) MiniPlayer(engine, onExpand = { window.expanded = true }, onClose = { engine.stop() })
         }
     }
+
+    saving?.let { SaveToPlaylistSheet(it, onDismiss = { saving = null }) }
 
     AnimatedVisibility(
         visible = searching,

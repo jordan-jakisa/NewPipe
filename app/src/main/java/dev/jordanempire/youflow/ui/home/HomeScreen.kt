@@ -101,7 +101,8 @@ fun HomeScreen(actions: AppActions, contentPadding: PaddingValues, vm: HomeViewM
                     VideoCard(
                         video,
                         onClick = { actions.openVideo(video) },
-                        onChannelClick = { video.channelUrl?.let(actions.openChannel) }
+                        onChannelClick = { video.channelUrl?.let(actions.openChannel) },
+                        onSave = { actions.saveVideo(video) }
                     )
                 }
             }

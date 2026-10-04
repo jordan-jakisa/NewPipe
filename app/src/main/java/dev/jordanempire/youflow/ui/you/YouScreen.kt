@@ -62,7 +62,7 @@ fun YouScreen(actions: AppActions, contentPadding: PaddingValues, vm: YouViewMod
                 Text("Playlists you create will show up here.", modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         } else {
-            items(playlists, key = { it.url }) { playlist -> PlaylistRow(playlist, onClick = {}) }
+            items(playlists, key = { it.url }) { playlist -> PlaylistRow(playlist, onClick = { actions.openLocalPlaylist(playlist.url.removePrefix("local:").toLong()) }) }
         }
         item(key = "more-header") { SectionHeader("More") }
         item(key = "settings") {

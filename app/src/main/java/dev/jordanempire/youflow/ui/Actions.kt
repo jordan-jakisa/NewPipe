@@ -9,6 +9,10 @@ data class AppActions(
     val openVideo: (video: VideoItem) -> Unit,
     val openChannel: (url: String) -> Unit,
     val openPlaylist: (url: String) -> Unit,
+    /** Local playlist by id. */
+    val openLocalPlaylist: (id: Long) -> Unit,
+    /** Opens the "Save to" sheet. */
+    val saveVideo: (video: VideoItem) -> Unit,
     /** Plays [videos] as a queue starting at [index]. */
     val playVideos: (videos: List<VideoItem>, index: Int) -> Unit,
     val openClassicUi: () -> Unit,

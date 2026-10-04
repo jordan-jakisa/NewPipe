@@ -27,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Headphones
 import androidx.compose.material.icons.outlined.OpenInBrowser
+import androidx.compose.material.icons.outlined.PlaylistAdd
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.ThumbUp
 import androidx.compose.material3.AssistChip
@@ -150,7 +151,7 @@ fun WatchScreen(
             }
             if (info != null) {
                 item(key = "channel") { ChannelRow(info, subscribed, actions, onSubscribe = { vm.toggleSubscribe(info) }) }
-                item(key = "actions") { ActionRow(info, engine) }
+                item(key = "actions") { ActionRow(info, engine, onSave = { actions.saveVideo(info.toVideoItemForSave()) }) }
                 item(key = "description") { DescriptionCard(info) }
                 item(key = "comments") { CommentsTeaser(info.url, onClick = { showComments = true }) }
                 val related = info.relatedItems.filterIsInstance<StreamInfoItem>()
@@ -159,6 +160,7 @@ fun WatchScreen(
                         item.toVideoItem(),
                         onClick = { engine.play(listOf(QueueEntry(item.url, item.name, item.uploaderName.orEmpty(), null))) },
                         onChannelClick = { item.uploaderUrl?.let(actions.openChannel) },
+                        onSave = { actions.saveVideo(item.toVideoItem()) },
                         modifier = Modifier.padding(top = 12.dp)
                     )
                 }
@@ -216,7 +218,7 @@ private fun ChannelRow(info: StreamInfo, subscribed: Boolean, actions: AppAction
 }
 
 @Composable
-private fun ActionRow(info: StreamInfo, engine: PlaybackEngine) {
+private fun ActionRow(info: StreamInfo, engine: PlaybackEngine, onSave: () -> Unit) {
     val context = LocalContext.current
     Row(
         Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 4.dp),
@@ -236,6 +238,11 @@ private fun ActionRow(info: StreamInfo, engine: PlaybackEngine) {
             },
             label = { Text("Share") },
             leadingIcon = { Icon(Icons.Outlined.Share, null, Modifier.size(18.dp)) }
+        )
+        AssistChip(
+            onClick = onSave,
+            label = { Text("Save") },
+            leadingIcon = { Icon(Icons.Outlined.PlaylistAdd, null, Modifier.size(18.dp)) }
         )
         AssistChip(
             onClick = { engine.setVideoEnabled(false) },
@@ -296,3 +303,17 @@ private fun formatUploaded(info: StreamInfo): String? {
     }
     return info.textualUploadDate?.takeIf { it.isNotBlank() }
 }
+
+internal fun StreamInfo.toVideoItemForSave() = VideoItem(
+    url = url,
+    title = name,
+    channel = uploaderName.orEmpty(),
+    channelUrl = uploaderUrl,
+    thumbnail = ImageStrategy.choosePreferredImage(thumbnails),
+    avatar = ImageStrategy.choosePreferredImage(uploaderAvatars),
+    durationSeconds = duration,
+    views = viewCount.takeIf { it >= 0 },
+    uploaded = textualUploadDate,
+    isLive = streamType == org.schabi.newpipe.extractor.stream.StreamType.LIVE_STREAM,
+    isShort = false
+)
