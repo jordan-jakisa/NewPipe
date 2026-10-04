@@ -3,6 +3,10 @@ package dev.jordanempire.youflow.ui.you
 import android.app.Application
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.Alignment
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -46,7 +50,12 @@ fun YouScreen(actions: AppActions, contentPadding: PaddingValues, vm: YouViewMod
     val playlists by vm.playlists.collectAsState()
 
     LazyColumn(contentPadding = contentPadding) {
-        item(key = "history-header") { SectionHeader("History") }
+        item(key = "history-header") {
+            Row(Modifier.fillMaxWidth().clickable(onClick = actions.openHistory), verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.weight(1f)) { SectionHeader("History") }
+                Text("View all", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge, modifier = Modifier.padding(end = 16.dp))
+            }
+        }
         item(key = "history") {
             if (history.isEmpty()) {
                 Text("Videos you watch will show up here.", modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.onSurfaceVariant)

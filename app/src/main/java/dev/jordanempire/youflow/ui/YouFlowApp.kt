@@ -49,6 +49,7 @@ import dev.jordanempire.youflow.media.engine.PlaybackEngine
 import dev.jordanempire.youflow.media.engine.QueueEntry
 import dev.jordanempire.youflow.ui.channel.ChannelScreen
 import dev.jordanempire.youflow.ui.home.HomeScreen
+import dev.jordanempire.youflow.ui.library.HistoryScreen
 import dev.jordanempire.youflow.ui.library.LocalPlaylistScreen
 import dev.jordanempire.youflow.ui.library.SaveToPlaylistSheet
 import dev.jordanempire.youflow.ui.model.VideoItem
@@ -96,6 +97,7 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
         openChannel = { push("c|$it"); searching = false; window.expanded = false },
         openPlaylist = { push("p|$it"); searching = false; window.expanded = false },
         openLocalPlaylist = { push("l|$it"); searching = false; window.expanded = false },
+        openHistory = { push("h|"); window.expanded = false },
         saveVideo = { saving = it },
         playVideos = { videos, index ->
             engine.play(videos.map { it.toEntry() }, index)
@@ -170,6 +172,7 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
                 when (kind) {
                     "c" -> ChannelScreen(target, actions, ::pop)
                     "l" -> LocalPlaylistScreen(target.toLong(), actions, ::pop)
+                    "h" -> HistoryScreen(actions, ::pop)
                     else -> PlaylistScreen(target, actions, ::pop)
                 }
             }

@@ -19,7 +19,9 @@ import dev.jordanempire.youflow.database.feed.model.FeedGroupEntity
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import kotlinx.coroutines.Dispatchers
 import dev.jordanempire.youflow.local.playlist.LocalPlaylistManager
+import dev.jordanempire.youflow.local.history.HistoryRecordManager
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.rx3.asFlow
@@ -150,6 +152,25 @@ class YouTubeRepository(private val context: Context) {
         database.streamHistoryDAO().history.toObservable().asFlow().map { list ->
             list.map { it.streamEntity.toVideo() }
         }
+
+    /** Started but unfinished videos, most recently watched first. */
+    fun continueWatching(): Flow<List<VideoItem>> = combine(
+        database.streamHistoryDAO().history.toObservable().asFlow(),
+        database.streamStateDAO().getAll().toObservable().asFlow()
+    ) { history, states ->
+        val byStream = states.associateBy { it.streamUid }
+        history.mapNotNull { h ->
+            val state = byStream[h.streamId] ?: return@mapNotNull null
+            if (state.progressMillis <= 0 || state.isFinished(h.streamEntity.duration)) null
+            else h.streamEntity.toVideo(state.progressMillis)
+        }.distinctBy { it.url }.take(12)
+    }
+
+    suspend fun clearHistory() = withContext(Dispatchers.IO) {
+        HistoryRecordManager(context).deleteWholeStreamHistory().await()
+        HistoryRecordManager(context).deleteCompleteStreamStateHistory().await()
+        Unit
+    }
 
     private val playlistManager get() = LocalPlaylistManager(database)
 

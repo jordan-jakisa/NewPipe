@@ -113,6 +113,14 @@ fun VideoTile(video: VideoItem, onClick: () -> Unit, modifier: Modifier = Modifi
                     .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             )
             DurationBadge(video, Modifier.align(Alignment.BottomEnd).padding(6.dp))
+            if (video.progress > 0f) {
+                LinearProgressIndicator(
+                    progress = { video.progress },
+                    color = Color(0xFFE53935),
+                    trackColor = Color.Black.copy(alpha = 0.4f),
+                    modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(horizontal = 8.dp, vertical = 2.dp).clip(RoundedCornerShape(50))
+                )
+            }
         }
         Text(video.title, style = MaterialTheme.typography.bodyMedium, maxLines = 2, overflow = TextOverflow.Ellipsis, modifier = Modifier.padding(top = 6.dp))
         Text(video.channel, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)

@@ -2,6 +2,10 @@ package dev.jordanempire.youflow.ui.home
 
 import dev.jordanempire.youflow.ui.util.toUiError
 import android.app.Application
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.MaterialTheme
+import dev.jordanempire.youflow.ui.components.VideoTile
+import kotlinx.coroutines.flow.stateIn
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -45,6 +49,9 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
     val refreshing = _refreshing.asStateFlow()
     private var job: Job? = null
 
+    val continueWatching: kotlinx.coroutines.flow.StateFlow<List<VideoItem>> = repo.continueWatching()
+        .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5_000), emptyList())
+
     init {
         load(pullToRefresh = false)
     }
@@ -83,10 +90,21 @@ fun HomeScreen(actions: AppActions, contentPadding: PaddingValues, vm: HomeViewM
     val state by vm.state.collectAsState()
     val selected by vm.selected.collectAsState()
     val refreshing by vm.refreshing.collectAsState()
+    val continueWatching by vm.continueWatching.collectAsState()
 
     PullToRefreshBox(isRefreshing = refreshing, onRefresh = vm::refresh, modifier = Modifier.padding(top = contentPadding.calculateTopPadding())) {
         StateHost(state, onRetry = vm::refresh, isEmpty = { it.isEmpty() }) { videos ->
             LazyColumn(contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding())) {
+                if (continueWatching.isNotEmpty()) {
+                    item(key = "continue") {
+                        Column(Modifier.padding(top = 8.dp)) {
+                            Text("Continue watching", style = MaterialTheme.typography.titleMediumEmphasized, modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp))
+                            LazyRow(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                items(continueWatching, key = { it.url }) { video -> VideoTile(video, onClick = { actions.openVideo(video) }) }
+                            }
+                        }
+                    }
+                }
                 item(key = "chips") {
                     LazyRow(
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
