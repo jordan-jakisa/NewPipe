@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,8 +29,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.media3.ui.compose.ContentFrame
+import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
 import dev.jordanempire.youflow.media.engine.PlaybackEngine
 import dev.jordanempire.youflow.ui.components.Thumbnail
 
@@ -47,10 +51,23 @@ fun MiniPlayer(engine: PlaybackEngine, onExpand: () -> Unit, onClose: () -> Unit
     ) {
         Column {
             Row(Modifier.height(64.dp), verticalAlignment = Alignment.CenterVertically) {
-                Thumbnail(
-                    state.info?.thumbnails?.let { dev.jordanempire.youflow.util.image.ImageStrategy.choosePreferredImage(it) } ?: entry.thumbnail,
-                    Modifier.width(114.dp).height(64.dp).background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                )
+                val audioOnly by engine.audioOnly.collectAsState()
+                Box(Modifier.width(114.dp).height(64.dp).background(MaterialTheme.colorScheme.surfaceContainerHighest)) {
+                    if (audioOnly) {
+                        Thumbnail(
+                            state.info?.thumbnails?.let { dev.jordanempire.youflow.util.image.ImageStrategy.choosePreferredImage(it) } ?: entry.thumbnail,
+                            Modifier.fillMaxSize()
+                        )
+                    } else {
+                        // The same player that plays on the watch page keeps drawing in the mini player.
+                        ContentFrame(
+                            player = engine.exo,
+                            surfaceType = SURFACE_TYPE_TEXTURE_VIEW,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
                 Column(Modifier.weight(1f).padding(horizontal = 12.dp)) {
                     Text(state.info?.name ?: entry.title, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     Text(state.info?.uploaderName ?: entry.uploader, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
