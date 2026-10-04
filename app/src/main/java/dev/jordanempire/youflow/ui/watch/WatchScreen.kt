@@ -25,6 +25,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Headphones
 import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.PlaylistAdd
@@ -159,7 +160,7 @@ fun WatchScreen(
             }
             if (info != null) {
                 item(key = "channel") { ChannelRow(info, subscribed, actions, onSubscribe = { vm.toggleSubscribe(info) }) }
-                item(key = "actions") { ActionRow(info, engine, queueSize = state.queue.size, onQueue = { showQueue = true }, onSave = { actions.saveVideo(info.toVideoItemForSave()) }) }
+                item(key = "actions") { ActionRow(info, engine, queueSize = state.queue.size, onQueue = { showQueue = true }, onSave = { actions.saveVideo(info.toVideoItemForSave()) }, onDownload = { actions.download(info.url) }) }
                 item(key = "description") { DescriptionCard(info, engine) }
                 item(key = "comments") { CommentsTeaser(info.url, onClick = { showComments = true }) }
                 val related = info.relatedItems.filterIsInstance<StreamInfoItem>()
@@ -229,7 +230,7 @@ private fun ChannelRow(info: StreamInfo, subscribed: Boolean, actions: AppAction
 }
 
 @Composable
-private fun ActionRow(info: StreamInfo, engine: PlaybackEngine, queueSize: Int, onQueue: () -> Unit, onSave: () -> Unit) {
+private fun ActionRow(info: StreamInfo, engine: PlaybackEngine, queueSize: Int, onQueue: () -> Unit, onSave: () -> Unit, onDownload: () -> Unit) {
     val context = LocalContext.current
     Row(
         Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 16.dp, vertical = 4.dp),
@@ -261,6 +262,11 @@ private fun ActionRow(info: StreamInfo, engine: PlaybackEngine, queueSize: Int, 
             onClick = onSave,
             label = { Text("Save") },
             leadingIcon = { Icon(Icons.Outlined.PlaylistAdd, null, Modifier.size(18.dp)) }
+        )
+        AssistChip(
+            onClick = onDownload,
+            label = { Text("Download") },
+            leadingIcon = { Icon(Icons.Outlined.Download, null, Modifier.size(18.dp)) }
         )
         AssistChip(
             onClick = { engine.setVideoEnabled(false) },

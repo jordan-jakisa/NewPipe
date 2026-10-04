@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Download
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Subscriptions
 import androidx.compose.material3.Icon
@@ -74,6 +75,13 @@ fun YouScreen(actions: AppActions, contentPadding: PaddingValues, vm: YouViewMod
             items(playlists, key = { it.url }) { playlist -> PlaylistRow(playlist, onClick = { actions.openLocalPlaylist(playlist.url.removePrefix("local:").toLong()) }) }
         }
         item(key = "more-header") { SectionHeader("More") }
+        item(key = "downloads") {
+            ListItem(
+                headlineContent = { Text("Downloads") },
+                leadingContent = { Icon(Icons.Outlined.Download, contentDescription = null) },
+                modifier = Modifier.clickable(onClick = actions.openDownloads)
+            )
+        }
         item(key = "settings") {
             ListItem(
                 headlineContent = { Text("Settings") },

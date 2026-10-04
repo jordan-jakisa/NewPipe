@@ -1,6 +1,7 @@
 package dev.jordanempire.youflow.ui
 
 import android.app.Application
+import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -122,6 +123,10 @@ fun YouFlowApp(window: WatchWindowState, onOpenClassicUi: () -> Unit, onOpenSett
         openPlaylist = { push("p|$it"); searching = false; window.expanded = false },
         openLocalPlaylist = { push("l|$it"); searching = false; window.expanded = false },
         openHistory = { push("h|"); window.expanded = false },
+        download = { url ->
+            context.startActivity(Intent(context, DownloadHostActivity::class.java).putExtra(DownloadHostActivity.EXTRA_URL, url))
+        },
+        openDownloads = { context.startActivity(Intent(context, dev.jordanempire.youflow.download.DownloadActivity::class.java)) },
         playNext = { engine.playNext(it.toEntry()); android.widget.Toast.makeText(context, "Playing next", android.widget.Toast.LENGTH_SHORT).show() },
         enqueue = { engine.enqueue(it.toEntry()); android.widget.Toast.makeText(context, "Added to queue", android.widget.Toast.LENGTH_SHORT).show() },
         saveVideo = { saving = it },
