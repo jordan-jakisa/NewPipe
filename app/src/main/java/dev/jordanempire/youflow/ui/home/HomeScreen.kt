@@ -5,6 +5,7 @@ import android.app.Application
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import dev.jordanempire.youflow.ui.components.VideoTile
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -26,9 +27,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.jordanempire.youflow.ui.AppActions
+import dev.jordanempire.youflow.ui.components.MessageBox
 import dev.jordanempire.youflow.ui.components.StateHost
 import dev.jordanempire.youflow.ui.components.VideoCard
 import dev.jordanempire.youflow.ui.data.YouTubeRepository
+import dev.jordanempire.youflow.ui.model.KioskRef
 import dev.jordanempire.youflow.ui.model.UiState
 import dev.jordanempire.youflow.ui.model.VideoItem
 import kotlinx.coroutines.CancellationException
@@ -37,11 +40,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+private const val FEED_ID = "feed"
+
 class HomeViewModel(app: Application) : AndroidViewModel(app) {
     private val repo = YouTubeRepository(app)
-    val kiosks = repo.kiosks
+    /** "Following" shows your subscription feed, the rest are YouTube's own lists. */
+    val kiosks = listOf(KioskRef(FEED_ID, "", "Following")) + repo.kiosks
 
-    private val _selected = MutableStateFlow(0)
+    private val _selected = MutableStateFlow(1.coerceAtMost(kiosks.lastIndex))
     val selected = _selected.asStateFlow()
     private val _state = MutableStateFlow<UiState<List<VideoItem>>>(UiState.Loading)
     val state = _state.asStateFlow()
@@ -53,7 +59,11 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
         .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5_000), emptyList())
 
     init {
-        load(pullToRefresh = false)
+        // Start on the subscription feed when there is one, otherwise on the first YouTube list.
+        viewModelScope.launch {
+            if (repo.subscriptions().first().isNotEmpty()) _selected.value = 0
+            load(pullToRefresh = false)
+        }
     }
 
     fun select(index: Int) {
@@ -74,7 +84,12 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
             }
             if (pullToRefresh) _refreshing.value = true else _state.value = UiState.Loading
             _state.value = try {
-                UiState.Content(repo.kioskVideosWithRetry(kiosk, forceLoad = pullToRefresh))
+                if (kiosk.id == FEED_ID) {
+                    if (pullToRefresh) runCatching { repo.refreshFeed() }
+                    UiState.Content(repo.feed())
+                } else {
+                    UiState.Content(repo.kioskVideosWithRetry(kiosk, forceLoad = pullToRefresh))
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
@@ -93,7 +108,17 @@ fun HomeScreen(actions: AppActions, contentPadding: PaddingValues, vm: HomeViewM
     val continueWatching by vm.continueWatching.collectAsState()
 
     PullToRefreshBox(isRefreshing = refreshing, onRefresh = vm::refresh, modifier = Modifier.padding(top = contentPadding.calculateTopPadding())) {
-        StateHost(state, onRetry = vm::refresh, isEmpty = { it.isEmpty() }) { videos ->
+        StateHost(
+            state,
+            onRetry = vm::refresh,
+            isEmpty = { it.isEmpty() },
+            emptyContent = {
+                MessageBox(
+                    if (vm.kiosks.getOrNull(selected)?.id == FEED_ID) "Nothing new yet" else "No videos",
+                    if (vm.kiosks.getOrNull(selected)?.id == FEED_ID) "Subscribe to channels, then pull down to fetch their latest uploads." else null
+                )
+            }
+        ) { videos ->
             LazyColumn(contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding())) {
                 if (continueWatching.isNotEmpty()) {
                     item(key = "continue") {
