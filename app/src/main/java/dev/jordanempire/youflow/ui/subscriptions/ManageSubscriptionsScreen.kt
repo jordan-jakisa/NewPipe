@@ -66,7 +66,9 @@ fun ManageSubscriptionsScreen(actions: AppActions, onBack: () -> Unit, vm: Manag
         val list = channels
         when {
             list == null -> Unit
+
             list.isEmpty() -> MessageBox("No subscriptions", "Subscribe to a channel and it shows up here.", modifier = Modifier.padding(padding))
+
             else -> LazyColumn(
                 Modifier.fillMaxSize().padding(top = padding.calculateTopPadding()),
                 contentPadding = WindowInsets.navigationBars.asPaddingValues()

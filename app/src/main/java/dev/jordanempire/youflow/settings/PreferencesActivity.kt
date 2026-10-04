@@ -40,7 +40,6 @@ class PreferencesActivity : AppCompatActivity() {
         const val SCREEN_CONTENT = "content"
         const val SCREEN_NOTIFICATIONS = "notifications"
 
-        fun intent(context: Context, screen: String): Intent =
-            Intent(context, PreferencesActivity::class.java).putExtra(EXTRA_SCREEN, screen)
+        fun intent(context: Context, screen: String): Intent = Intent(context, PreferencesActivity::class.java).putExtra(EXTRA_SCREEN, screen)
     }
 }

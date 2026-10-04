@@ -71,11 +71,17 @@ fun FeedGroupSheet(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             if (onDelete != null) {
-                OutlinedButton(onClick = { onDelete(); onDismiss() }) { Text("Delete") }
+                OutlinedButton(onClick = {
+                    onDelete()
+                    onDismiss()
+                }) { Text("Delete") }
             }
             Button(
                 enabled = name.isNotBlank(),
-                onClick = { onSave(name.trim(), selected.toList()); onDismiss() },
+                onClick = {
+                    onSave(name.trim(), selected.toList())
+                    onDismiss()
+                },
                 modifier = Modifier.weight(1f)
             ) { Text("Save") }
         }

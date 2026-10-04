@@ -13,7 +13,6 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.compose)
     alias(libs.plugins.jetbrains.kotlin.parcelize)
     alias(libs.plugins.jetbrains.kotlinx.serialization)
-    alias(libs.plugins.about.libraries)
 }
 
 val gitWorkingBranch = providers.exec {
@@ -191,7 +190,6 @@ dependencies {
     coreLibraryDesugaring(libs.android.desugar)
 
     // NewPipe libraries
-    implementation(projects.shared)
     implementation(libs.newpipe.nanojson)
     implementation(libs.newpipe.extractor)
     implementation(libs.newpipe.filepicker)
@@ -284,19 +282,3 @@ dependencies {
     androidTestImplementation(libs.assertj.core)
 }
 
-aboutLibraries {
-    collect {
-        configPath = file("../config/aboutlibraries")
-    }
-    export {
-        outputFile = file("../shared/src/androidMain/assets/aboutlibraries.json")
-        prettyPrint = true
-        excludeFields.addAll("organization", "scm", "funding")
-    }
-    library {
-        exclusionPatterns = listOf(
-            Pattern.compile("^com\\.github\\.TeamNewPipe:NewPipeExtractor$"),
-            Pattern.compile("^com\\.evernote:android-state$")
-        )
-    }
-}

@@ -141,6 +141,7 @@ fun SubscriptionsScreen(actions: AppActions, contentPadding: PaddingValues, vm: 
     val top = Modifier.padding(top = contentPadding.calculateTopPadding())
     when {
         channels == null -> Unit
+
         channels!!.isEmpty() -> Box(top.fillMaxSize()) {
             MessageBox(
                 title = "No subscriptions yet",
@@ -149,6 +150,7 @@ fun SubscriptionsScreen(actions: AppActions, contentPadding: PaddingValues, vm: 
             )
             Box(Modifier.align(Alignment.TopEnd)) { SubscriptionToolsMenu(onManage = actions.openManageSubscriptions) }
         }
+
         else -> PullToRefreshBox(isRefreshing = refreshing, onRefresh = vm::refresh, modifier = top) {
             LazyColumn(contentPadding = PaddingValues(bottom = contentPadding.calculateBottomPadding())) {
                 item(key = "tools") {

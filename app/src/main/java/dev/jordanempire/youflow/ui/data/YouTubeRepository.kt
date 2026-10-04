@@ -12,10 +12,10 @@ import dev.jordanempire.youflow.local.playlist.LocalPlaylistManager
 import dev.jordanempire.youflow.local.subscription.SubscriptionManager
 import dev.jordanempire.youflow.ui.model.ChannelDetails
 import dev.jordanempire.youflow.ui.model.ChannelItem
-import dev.jordanempire.youflow.ui.model.FeedGroupItem
 import dev.jordanempire.youflow.ui.model.ChannelTab
 import dev.jordanempire.youflow.ui.model.CommentItem
 import dev.jordanempire.youflow.ui.model.ContentItem
+import dev.jordanempire.youflow.ui.model.FeedGroupItem
 import dev.jordanempire.youflow.ui.model.KioskRef
 import dev.jordanempire.youflow.ui.model.PlaylistDetails
 import dev.jordanempire.youflow.ui.model.PlaylistItem
@@ -120,10 +120,9 @@ class YouTubeRepository(private val context: Context) {
         streams.map { it.stream.toVideo(it.stateProgressMillis) }
     }
 
-    fun feedGroups(): Flow<List<FeedGroupItem>> =
-        FeedDatabaseManager(context).groups().toObservable().asFlow().map { list ->
-            list.map { FeedGroupItem(it.uid, it.name) }
-        }
+    fun feedGroups(): Flow<List<FeedGroupItem>> = FeedDatabaseManager(context).groups().toObservable().asFlow().map { list ->
+        list.map { FeedGroupItem(it.uid, it.name) }
+    }
 
     suspend fun groupMembers(groupId: Long): List<Long> = withContext(Dispatchers.IO) {
         database.feedGroupDAO().getSubscriptionIdsFor(groupId).firstOrError().await()
