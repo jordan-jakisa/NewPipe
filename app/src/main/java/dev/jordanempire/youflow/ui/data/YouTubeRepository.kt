@@ -155,9 +155,11 @@ class YouTubeRepository(private val context: Context) {
     /**
      * "For you": videos related to what you watched and liked recently, plus unseen uploads of
      * channels you follow. Everything is computed on the device from local data, nothing is sent
-     * anywhere except the normal requests for related videos.
+     * anywhere except the normal requests for related videos. Seeds, search terms and scores are
+     * sampled with some randomness, and anything in [avoid] (the list already on screen) sinks to
+     * the bottom, so every refresh brings something new.
      */
-    suspend fun recommendations(): List<VideoItem> = withContext(Dispatchers.IO) {
+    suspend fun recommendations(avoid: Set<String> = emptySet()): List<VideoItem> = withContext(Dispatchers.IO) {
         val history = database.streamHistoryDAO().history.firstOrError().await()
         val states = database.streamStateDAO().getAll().firstOrError().await().associateBy { it.streamUid }
         val liked = likedVideos().first()
@@ -173,7 +175,9 @@ class YouTubeRepository(private val context: Context) {
             val weight = Math.pow(0.9, rank.toDouble()) * (0.6 + progress) * (1 + 0.2 * (entry.repeatCount - 1).coerceIn(0, 3))
             seeds.merge(entry.streamEntity.url, weight) { a, b -> a + b }
         }
-        val topSeeds = seeds.entries.sortedByDescending { it.value }.take(8)
+        // Weighted random sample (Efraimidis-Spirakis) of the 20 strongest seeds: favourites come up most.
+        val topSeeds = seeds.entries.sortedByDescending { it.value }.take(20)
+            .sortedByDescending { Math.pow(Math.random(), 1.0 / it.value.coerceAtLeast(0.01)) }.take(8)
 
         val taste = TasteProfile.from(
             liked.map { it.title to 3.0 } + history.sortedByDescending { it.accessDate }.take(30).mapIndexed { rank, entry ->
@@ -209,7 +213,7 @@ class YouTubeRepository(private val context: Context) {
         }
         // Similar videos by taste: search for the words you favour most.
         if (!taste.isEmpty) {
-            val terms = taste.topTerms(4)
+            val terms = taste.topTerms(8).shuffled().take(4)
             val queries = listOfNotNull(
                 terms.take(2).joinToString(" ").takeIf { terms.size >= 2 },
                 terms.drop(2).take(2).joinToString(" ").takeIf { terms.size >= 4 },
@@ -246,7 +250,9 @@ class YouTubeRepository(private val context: Context) {
                 val affinity = 1 + 0.3 * (channelWatches[channel] ?: 0).coerceAtMost(3) +
                     (if (channel in subscribedUrls) 0.5 else 0.0) +
                     (if (channel in likedChannels) 0.5 else 0.0)
-                video to (scores[video.url] ?: 0.0) * affinity * (1 + 0.8 * taste.overlap(video.title))
+                val jitter = 0.8 + 0.4 * Math.random()
+                video to (scores[video.url] ?: 0.0) * affinity * (1 + 0.8 * taste.overlap(video.title)) * jitter *
+                    (if (video.url in avoid) 0.05 else 1.0)
             }
             .sortedByDescending { it.second }
             .map { it.first }

@@ -101,7 +101,9 @@ class HomeViewModel(app: Application) : AndroidViewModel(app) {
             }
             try {
                 val videos = if (kiosk.id == FOR_YOU_ID) {
-                    repo.recommendations()
+                    repo.recommendations(
+                        if (pullToRefresh) (_state.value as? UiState.Content)?.data?.map { it.url }?.toSet().orEmpty() else emptySet()
+                    )
                 } else if (kiosk.id == FEED_ID) {
                     if (pullToRefresh) runCatching { repo.refreshFeed() }
                     repo.feed()
