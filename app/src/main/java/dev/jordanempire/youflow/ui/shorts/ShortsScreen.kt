@@ -118,30 +118,40 @@ fun ShortsScreen(actions: AppActions, vm: ShortsViewModel = viewModel()) {
 @Composable
 private fun ShortsPager(items: List<VideoItem>, player: ShortsPlayer, actions: AppActions) {
     val pager = rememberPagerState { items.size }
-    val loading by player.loading.collectAsState()
+    val loadingSlots by player.loading.collectAsState()
     var paused by remember { mutableStateOf(false) }
 
     LaunchedEffect(pager, items) {
         snapshotFlow { pager.settledPage }.collect { page ->
             paused = false
-            player.play(items[page].url)
+            player.focus(page, items.map { it.url })
         }
     }
 
-    VerticalPager(pager, Modifier.fillMaxSize(), beyondViewportPageCount = 0) { page ->
+    // One page either side is composed too, so the next short's first frame is already drawn.
+    VerticalPager(pager, Modifier.fillMaxSize(), beyondViewportPageCount = 1) { page ->
         val item = items[page]
+        val loading = (page % 3) in loadingSlots
         Box(
             Modifier.fillMaxSize().pointerInput(page) {
                 detectTapGestures(onTap = {
-                    player.togglePlayPause()
+                    player.togglePlayPause(page)
                     paused = !paused
                 })
             }
         ) {
-            if (page == pager.currentPage) {
-                ContentFrame(player.exo, surfaceType = SURFACE_TYPE_TEXTURE_VIEW, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+            if (kotlin.math.abs(page - pager.currentPage) <= 1) {
+                ContentFrame(
+                    player.exoFor(page),
+                    surfaceType = SURFACE_TYPE_TEXTURE_VIEW,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
-            Thumbnail(item.thumbnail, Modifier.fillMaxSize().then(if (page == pager.currentPage && !loading) Modifier.size(0.dp) else Modifier), contentDescription = null)
+            // The poster stays until the first frame is ready.
+            if (loading || kotlin.math.abs(page - pager.currentPage) > 1) {
+                Thumbnail(item.thumbnail, Modifier.fillMaxSize(), contentDescription = null)
+            }
             Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0.55f to Color.Transparent, 1f to Color.Black.copy(alpha = 0.75f))))
             Column(Modifier.align(Alignment.BottomStart).padding(start = 16.dp, end = 80.dp, bottom = 24.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
