@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -51,7 +51,7 @@ fun QueueSheet(engine: PlaybackEngine, state: PlayerState, onDismiss: () -> Unit
                             Text(entry.uploader, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
                         }
                     }
-                    IconButton(onClick = { engine.removeFromQueue(index) }) { Icon(Icons.Outlined.Close, "Remove from queue") }
+                    IconButton(onClick = { engine.removeFromQueue(index) }) { Icon(Icons.Rounded.Close, "Remove from queue") }
                 }
             }
         }

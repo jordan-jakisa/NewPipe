@@ -13,12 +13,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Shuffle
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.RemoveCircleOutline
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.RemoveCircleOutline
+import androidx.compose.material.icons.rounded.Shuffle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
@@ -76,12 +76,12 @@ fun LocalPlaylistScreen(playlistId: Long, actions: AppActions, onBack: () -> Uni
         topBar = {
             TopAppBar(
                 title = { Text(name, maxLines = 1) },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Back") } },
+                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back") } },
                 actions = {
                     if (name != YouTubeRepository.WATCH_LATER) {
-                        IconButton(onClick = { renaming = true }) { Icon(Icons.Outlined.Edit, "Rename") }
+                        IconButton(onClick = { renaming = true }) { Icon(Icons.Rounded.Edit, "Rename") }
                     }
-                    IconButton(onClick = { confirmDelete = true }) { Icon(Icons.Outlined.Delete, "Delete playlist") }
+                    IconButton(onClick = { confirmDelete = true }) { Icon(Icons.Rounded.Delete, "Delete playlist") }
                 }
             )
         }
@@ -96,11 +96,11 @@ fun LocalPlaylistScreen(playlistId: Long, actions: AppActions, onBack: () -> Uni
                 item("actions") {
                     Row(Modifier.padding(16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Button(onClick = { actions.playVideos(list.map { it.second }, 0) }) {
-                            Icon(Icons.Filled.PlayArrow, null, Modifier.size(18.dp))
+                            Icon(Icons.Rounded.PlayArrow, null, Modifier.size(18.dp))
                             Text("Play all", Modifier.padding(start = 6.dp))
                         }
                         FilledTonalButton(onClick = { actions.playVideos(list.map { it.second }.shuffled(), 0) }) {
-                            Icon(Icons.Filled.Shuffle, null, Modifier.size(18.dp))
+                            Icon(Icons.Rounded.Shuffle, null, Modifier.size(18.dp))
                             Text("Shuffle", Modifier.padding(start = 6.dp))
                         }
                     }
@@ -108,7 +108,7 @@ fun LocalPlaylistScreen(playlistId: Long, actions: AppActions, onBack: () -> Uni
                 itemsIndexed(list, key = { index, item -> "$index:${item.first}" }) { index, (streamId, video) ->
                     Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
                         VideoRow(video, index = index, modifier = Modifier.weight(1f), onClick = { actions.playVideos(list.map { it.second }, index) })
-                        IconButton(onClick = { vm.remove(streamId) }) { Icon(Icons.Outlined.RemoveCircleOutline, "Remove from playlist") }
+                        IconButton(onClick = { vm.remove(streamId) }) { Icon(Icons.Rounded.RemoveCircleOutline, "Remove from playlist") }
                     }
                 }
             }

@@ -13,9 +13,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -56,9 +56,9 @@ fun MiniPlayer(engine: PlaybackEngine, onExpand: () -> Unit, onClose: () -> Unit
                     Text(state.info?.uploaderName ?: entry.uploader, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 IconButton(onClick = engine::togglePlayPause) {
-                    Icon(if (state.playWhenReady) Icons.Filled.Pause else Icons.Filled.PlayArrow, contentDescription = "Play or pause")
+                    Icon(if (state.playWhenReady) Icons.Rounded.Pause else Icons.Rounded.PlayArrow, contentDescription = "Play or pause")
                 }
-                IconButton(onClick = onClose) { Icon(Icons.Filled.Close, contentDescription = "Close") }
+                IconButton(onClick = onClose) { Icon(Icons.Rounded.Close, contentDescription = "Close") }
             }
             if (state.durationMs > 0 && !state.isLive) {
                 LinearProgressIndicator(

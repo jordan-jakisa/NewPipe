@@ -22,15 +22,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Fullscreen
-import androidx.compose.material.icons.filled.FullscreenExit
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Replay
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.SkipNext
-import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material.icons.rounded.Fullscreen
+import androidx.compose.material.icons.rounded.FullscreenExit
+import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Replay
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.SkipNext
+import androidx.compose.material.icons.rounded.SkipPrevious
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
@@ -180,11 +180,11 @@ fun PlayerControls(
                 // Top bar
                 Row(Modifier.align(Alignment.TopStart).fillMaxWidth().padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = onCollapse, modifier = Modifier.size(40.dp)) {
-                        Icon(Icons.Filled.KeyboardArrowDown, contentDescription = "Minimize", tint = Color.White, modifier = Modifier.size(28.dp))
+                        Icon(Icons.Rounded.KeyboardArrowDown, contentDescription = "Minimize", tint = Color.White, modifier = Modifier.size(28.dp))
                     }
                     Box(Modifier.weight(1f))
                     IconButton(onClick = onSettings, modifier = Modifier.size(40.dp)) {
-                        Icon(Icons.Filled.Settings, contentDescription = "Player settings", tint = Color.White, modifier = Modifier.size(22.dp))
+                        Icon(Icons.Rounded.Settings, contentDescription = "Player settings", tint = Color.White, modifier = Modifier.size(22.dp))
                     }
                 }
                 // Transport
@@ -193,7 +193,7 @@ fun PlayerControls(
                     horizontalArrangement = Arrangement.spacedBy(if (compact) 14.dp else 24.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    CircleButton(Icons.Filled.SkipPrevious, "Previous", enabled = true, size = if (compact) 38.dp else 48.dp) {
+                    CircleButton(Icons.Rounded.SkipPrevious, "Previous", enabled = true, size = if (compact) 38.dp else 48.dp) {
                         engine.previous()
                         interaction++
                     }
@@ -201,7 +201,7 @@ fun PlayerControls(
                         engine.togglePlayPause()
                         interaction++
                     }
-                    CircleButton(Icons.Filled.SkipNext, "Next", enabled = state.hasNext, size = if (compact) 38.dp else 48.dp) {
+                    CircleButton(Icons.Rounded.SkipNext, "Next", enabled = state.hasNext, size = if (compact) 38.dp else 48.dp) {
                         engine.next()
                         interaction++
                     }
@@ -213,7 +213,7 @@ fun PlayerControls(
                         TimeLabel(engine, state, onChapters, Modifier.weight(1f))
                         IconButton(onClick = onToggleFullscreen, modifier = Modifier.size(36.dp)) {
                             Icon(
-                                if (fullscreen) Icons.Filled.FullscreenExit else Icons.Filled.Fullscreen,
+                                if (fullscreen) Icons.Rounded.FullscreenExit else Icons.Rounded.Fullscreen,
                                 contentDescription = if (fullscreen) "Exit fullscreen" else "Fullscreen",
                                 tint = Color.White,
                                 modifier = Modifier.size(24.dp)
@@ -259,7 +259,7 @@ fun PlayerControls(
                         )
                     }) { Text("Verify") }
                 } else {
-                    IconButton(onClick = { engine.skipTo(state.index) }) { Icon(Icons.Filled.Replay, "Retry", tint = Color.White) }
+                    IconButton(onClick = { engine.skipTo(state.index) }) { Icon(Icons.Rounded.Replay, "Retry", tint = Color.White) }
                 }
             }
         }
@@ -294,9 +294,9 @@ private fun PlayPauseButton(state: PlayerState, size: androidx.compose.ui.unit.D
         Box(contentAlignment = Alignment.Center) {
             Icon(
                 when {
-                    state.phase == Phase.Ended -> Icons.Filled.Replay
-                    state.playWhenReady -> Icons.Filled.Pause
-                    else -> Icons.Filled.PlayArrow
+                    state.phase == Phase.Ended -> Icons.Rounded.Replay
+                    state.playWhenReady -> Icons.Rounded.Pause
+                    else -> Icons.Rounded.PlayArrow
                 },
                 contentDescription = if (state.playWhenReady) "Pause" else "Play",
                 modifier = Modifier.size(size * 0.55f)

@@ -12,9 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.outlined.NotificationsNone
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.NotificationsNone
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -59,7 +59,7 @@ fun ManageSubscriptionsScreen(actions: AppActions, onBack: () -> Unit, vm: Manag
         topBar = {
             TopAppBar(
                 title = { Text("Manage channels") },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Back") } }
+                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back") } }
             )
         }
     ) { padding ->
@@ -87,7 +87,7 @@ fun ManageSubscriptionsScreen(actions: AppActions, onBack: () -> Unit, vm: Manag
                         }
                         IconButton(onClick = { vm.setNotify(channel, !channel.notify) }) {
                             Icon(
-                                if (channel.notify) Icons.Filled.Notifications else Icons.Outlined.NotificationsNone,
+                                if (channel.notify) Icons.Rounded.Notifications else Icons.Rounded.NotificationsNone,
                                 contentDescription = if (channel.notify) "Turn off notifications" else "Notify me about new videos"
                             )
                         }

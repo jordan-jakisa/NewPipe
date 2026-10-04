@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.DeleteSweep
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -54,8 +54,8 @@ fun HistoryScreen(actions: AppActions, onBack: () -> Unit, vm: HistoryViewModel 
         topBar = {
             TopAppBar(
                 title = { Text("History") },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Back") } },
-                actions = { IconButton(onClick = { confirm = true }) { Icon(Icons.Outlined.DeleteSweep, "Clear history") } }
+                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back") } },
+                actions = { IconButton(onClick = { confirm = true }) { Icon(Icons.Rounded.DeleteSweep, "Clear history") } }
             )
         }
     ) { padding ->

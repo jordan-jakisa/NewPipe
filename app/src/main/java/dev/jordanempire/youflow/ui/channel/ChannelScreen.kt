@@ -22,10 +22,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.outlined.NotificationsNone
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.NotificationsNone
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -193,7 +193,7 @@ fun ChannelScreen(url: String, actions: AppActions, onBack: () -> Unit) {
             TopAppBar(
                 title = {},
                 navigationIcon = {
-                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back") }
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back") }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = androidx.compose.ui.graphics.Color.Transparent)
             )
@@ -317,13 +317,13 @@ private fun ChannelHeader(
                 if (subscribed) {
                     androidx.compose.material3.FilledIconToggleButton(checked = notifying, onCheckedChange = { onToggleNotifications() }) {
                         Icon(
-                            if (notifying) Icons.Filled.Notifications else Icons.Outlined.NotificationsNone,
+                            if (notifying) Icons.Rounded.Notifications else Icons.Rounded.NotificationsNone,
                             contentDescription = if (notifying) "Turn off notifications" else "Notify me about new videos"
                         )
                     }
                 }
                 FilledTonalButton(onClick = onPlayAll) {
-                    Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Rounded.PlayArrow, contentDescription = null, modifier = Modifier.size(18.dp))
                     Text("Play all", modifier = Modifier.padding(start = 6.dp))
                 }
             }

@@ -17,12 +17,12 @@ import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
-import androidx.compose.material.icons.filled.OpenInFull
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
 import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material.icons.rounded.OpenInFull
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LoadingIndicator
@@ -207,15 +207,15 @@ private fun ShortsPager(items: List<VideoItem>, player: ShortsPlayer, actions: A
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 val isLiked = item.url in liked
-                RailButton(if (isLiked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp, if (isLiked) "Unlike" else "Like", isLiked) { vm.toggleLike(item) }
-                RailButton(Icons.AutoMirrored.Filled.PlaylistAdd, "Save") { actions.saveVideo(item) }
-                RailButton(Icons.Filled.Share, "Share") {
+                RailButton(if (isLiked) Icons.Rounded.ThumbUp else Icons.Outlined.ThumbUp, if (isLiked) "Unlike" else "Like", isLiked) { vm.toggleLike(item) }
+                RailButton(Icons.AutoMirrored.Rounded.PlaylistAdd, "Save") { actions.saveVideo(item) }
+                RailButton(Icons.Rounded.Share, "Share") {
                     context.startActivity(
                         Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, item.url), null)
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     )
                 }
-                RailButton(Icons.Filled.OpenInFull, "Full video") {
+                RailButton(Icons.Rounded.OpenInFull, "Full video") {
                     player.stop()
                     actions.openVideo(item)
                 }
@@ -223,7 +223,7 @@ private fun ShortsPager(items: List<VideoItem>, player: ShortsPlayer, actions: A
             if (page == pager.currentPage) ShortsProgress(player, page, Modifier.align(Alignment.BottomCenter))
             if (page == pager.currentPage) {
                 if (loading) LoadingIndicator(Modifier.align(Alignment.Center).size(48.dp), color = Color.White)
-                if (paused) Icon(Icons.Filled.PlayArrow, null, tint = Color.White.copy(alpha = 0.9f), modifier = Modifier.align(Alignment.Center).size(72.dp))
+                if (paused) Icon(Icons.Rounded.PlayArrow, null, tint = Color.White.copy(alpha = 0.9f), modifier = Modifier.align(Alignment.Center).size(72.dp))
             }
         }
     }

@@ -12,10 +12,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Download
-import androidx.compose.material.icons.outlined.History
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Subscriptions
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Subscriptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -78,14 +78,14 @@ fun YouScreen(actions: AppActions, contentPadding: PaddingValues, vm: YouViewMod
         item(key = "downloads") {
             ListItem(
                 headlineContent = { Text("Downloads") },
-                leadingContent = { Icon(Icons.Outlined.Download, contentDescription = null) },
+                leadingContent = { Icon(Icons.Rounded.Download, contentDescription = null) },
                 modifier = Modifier.clickable(onClick = actions.openDownloads)
             )
         }
         item(key = "settings") {
             ListItem(
                 headlineContent = { Text("Settings") },
-                leadingContent = { Icon(Icons.Outlined.Settings, contentDescription = null) },
+                leadingContent = { Icon(Icons.Rounded.Settings, contentDescription = null) },
                 modifier = Modifier.clickable(onClick = actions.openSettings)
             )
         }

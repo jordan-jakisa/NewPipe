@@ -20,11 +20,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -194,9 +194,9 @@ fun DownloadsScreen(onBack: () -> Unit, vm: DownloadsViewModel = viewModel()) {
         topBar = {
             TopAppBar(
                 title = { Text("Downloads") },
-                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Back") } },
+                navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back") } },
                 actions = {
-                    IconButton(onClick = { menu = true }) { Icon(Icons.Filled.MoreVert, "More") }
+                    IconButton(onClick = { menu = true }) { Icon(Icons.Rounded.MoreVert, "More") }
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                         DropdownMenuItem(text = { Text("Pause all") }, onClick = {
                             menu = false
@@ -245,7 +245,7 @@ fun DownloadsScreen(onBack: () -> Unit, vm: DownloadsViewModel = viewModel()) {
                                 headlineContent = { Text(row.name, maxLines = 2, overflow = TextOverflow.Ellipsis) },
                                 supportingContent = { Text(formatBytes(row.length)) },
                                 trailingContent = {
-                                    IconButton(onClick = { deleting = row }) { Icon(Icons.Outlined.Delete, "Delete") }
+                                    IconButton(onClick = { deleting = row }) { Icon(Icons.Rounded.Delete, "Delete") }
                                 },
                                 modifier = Modifier.clickable { open(context, row) }
                             )
@@ -319,11 +319,11 @@ private fun PendingRow(row: DownloadRow, onToggle: () -> Unit, onDelete: () -> U
             }
             IconButton(onClick = onToggle) {
                 Icon(
-                    if (row.state == DownloadState.Running) Icons.Filled.Pause else Icons.Filled.PlayArrow,
+                    if (row.state == DownloadState.Running) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
                     contentDescription = if (row.state == DownloadState.Running) "Pause" else "Resume"
                 )
             }
-            IconButton(onClick = onDelete) { Icon(Icons.Outlined.Delete, "Cancel download") }
+            IconButton(onClick = onDelete) { Icon(Icons.Rounded.Delete, "Cancel download") }
         }
         if (row.length > 0) {
             LinearWavyProgressIndicator(

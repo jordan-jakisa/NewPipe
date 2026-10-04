@@ -25,14 +25,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ThumbUp
-import androidx.compose.material.icons.outlined.Download
-import androidx.compose.material.icons.outlined.Headphones
-import androidx.compose.material.icons.outlined.OpenInBrowser
-import androidx.compose.material.icons.outlined.PlaylistAdd
-import androidx.compose.material.icons.outlined.QueueMusic
-import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.Headphones
+import androidx.compose.material.icons.rounded.OpenInBrowser
+import androidx.compose.material.icons.rounded.PlaylistAdd
+import androidx.compose.material.icons.rounded.QueueMusic
+import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
@@ -225,7 +225,7 @@ private fun PlayerBox(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(Icons.Outlined.Headphones, null, tint = Color.White, modifier = Modifier.size(40.dp))
+                Icon(Icons.Rounded.Headphones, null, tint = Color.White, modifier = Modifier.size(40.dp))
                 Text("Audio only", color = Color.White, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 8.dp))
                 androidx.compose.material3.FilledTonalButton(
                     onClick = { engine.setAudioOnly(false) },
@@ -275,7 +275,7 @@ private fun ActionRow(info: StreamInfo, engine: PlaybackEngine, liked: Boolean, 
             selected = liked,
             onClick = onLike,
             label = { Text(if (info.likeCount >= 0) formatCount(info.likeCount + if (liked) 1 else 0, "").trim() else "Like") },
-            leadingIcon = { Icon(if (liked) Icons.Filled.ThumbUp else Icons.Outlined.ThumbUp, null, Modifier.size(18.dp)) }
+            leadingIcon = { Icon(if (liked) Icons.Rounded.ThumbUp else Icons.Outlined.ThumbUp, null, Modifier.size(18.dp)) }
         )
         AssistChip(
             onClick = {
@@ -287,36 +287,36 @@ private fun ActionRow(info: StreamInfo, engine: PlaybackEngine, liked: Boolean, 
                 )
             },
             label = { Text("Share") },
-            leadingIcon = { Icon(Icons.Outlined.Share, null, Modifier.size(18.dp)) }
+            leadingIcon = { Icon(Icons.Rounded.Share, null, Modifier.size(18.dp)) }
         )
         if (queueSize > 1) {
             AssistChip(
                 onClick = onQueue,
                 label = { Text("Queue $queueSize") },
-                leadingIcon = { Icon(Icons.Outlined.QueueMusic, null, Modifier.size(18.dp)) }
+                leadingIcon = { Icon(Icons.Rounded.QueueMusic, null, Modifier.size(18.dp)) }
             )
         }
         AssistChip(
             onClick = onSave,
             label = { Text("Save") },
-            leadingIcon = { Icon(Icons.Outlined.PlaylistAdd, null, Modifier.size(18.dp)) }
+            leadingIcon = { Icon(Icons.Rounded.PlaylistAdd, null, Modifier.size(18.dp)) }
         )
         AssistChip(
             onClick = onDownload,
             label = { Text("Download") },
-            leadingIcon = { Icon(Icons.Outlined.Download, null, Modifier.size(18.dp)) }
+            leadingIcon = { Icon(Icons.Rounded.Download, null, Modifier.size(18.dp)) }
         )
         val audioOnly by engine.audioOnly.collectAsState()
         FilterChip(
             selected = audioOnly,
             onClick = { engine.setAudioOnly(!audioOnly) },
             label = { Text("Audio only") },
-            leadingIcon = { Icon(Icons.Outlined.Headphones, null, Modifier.size(18.dp)) }
+            leadingIcon = { Icon(Icons.Rounded.Headphones, null, Modifier.size(18.dp)) }
         )
         AssistChip(
             onClick = { context.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(info.url))) },
             label = { Text("Browser") },
-            leadingIcon = { Icon(Icons.Outlined.OpenInBrowser, null, Modifier.size(18.dp)) }
+            leadingIcon = { Icon(Icons.Rounded.OpenInBrowser, null, Modifier.size(18.dp)) }
         )
     }
 }

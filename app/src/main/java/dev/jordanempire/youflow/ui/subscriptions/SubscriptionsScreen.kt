@@ -18,8 +18,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -179,12 +179,12 @@ fun SubscriptionsScreen(actions: AppActions, contentPadding: PaddingValues, vm: 
                                 selected = false,
                                 onClick = { creating = true },
                                 label = { Text("New group") },
-                                leadingIcon = { Icon(Icons.Filled.Add, null, Modifier.size(18.dp)) }
+                                leadingIcon = { Icon(Icons.Rounded.Add, null, Modifier.size(18.dp)) }
                             )
                         }
                         groups.firstOrNull { it.id == group }?.let { selected ->
                             item {
-                                IconButton(onClick = { editing = selected }) { Icon(Icons.Outlined.Edit, contentDescription = "Edit group") }
+                                IconButton(onClick = { editing = selected }) { Icon(Icons.Rounded.Edit, contentDescription = "Edit group") }
                             }
                         }
                     }

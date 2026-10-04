@@ -17,9 +17,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.PushPin
-import androidx.compose.material.icons.outlined.ThumbUp
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.PushPin
+import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -196,7 +196,7 @@ private fun CommentRow(comment: CommentItem, onToggleReplies: () -> Unit, expand
         Thumbnail(comment.avatar, Modifier.size(if (indent) 28.dp else 36.dp).clip(CircleShape).background(MaterialTheme.colorScheme.secondaryContainer))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                if (comment.pinned) Icon(Icons.Filled.PushPin, contentDescription = "Pinned", modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (comment.pinned) Icon(Icons.Rounded.PushPin, contentDescription = "Pinned", modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 Text(
                     comment.author,
                     style = MaterialTheme.typography.labelLarge,
@@ -211,11 +211,11 @@ private fun CommentRow(comment: CommentItem, onToggleReplies: () -> Unit, expand
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 comment.likes?.let {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Icon(Icons.Outlined.ThumbUp, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Icon(Icons.Rounded.ThumbUp, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
-                if (comment.hearted) Icon(Icons.Filled.Favorite, contentDescription = "Liked by creator", modifier = Modifier.size(14.dp), tint = androidx.compose.ui.graphics.Color(0xFFE53935))
+                if (comment.hearted) Icon(Icons.Rounded.Favorite, contentDescription = "Liked by creator", modifier = Modifier.size(14.dp), tint = androidx.compose.ui.graphics.Color(0xFFE53935))
             }
             if (comment.replyCount > 0 && comment.repliesToken != null) {
                 TextButton(onClick = onToggleReplies, contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)) {

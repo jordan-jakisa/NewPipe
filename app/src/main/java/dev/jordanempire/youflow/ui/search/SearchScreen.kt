@@ -15,9 +15,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -191,7 +191,7 @@ fun SearchScreen(actions: AppActions, onClose: () -> Unit, initialQuery: String?
         topBar = {
             TopAppBar(
                 navigationIcon = {
-                    IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "Back") }
+                    IconButton(onClick = onClose) { Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back") }
                 },
                 title = {
                     TextField(
@@ -212,7 +212,7 @@ fun SearchScreen(actions: AppActions, onClose: () -> Unit, initialQuery: String?
                 },
                 actions = {
                     if (query.isNotEmpty()) {
-                        IconButton(onClick = { vm.onQueryChange("") }) { Icon(Icons.Outlined.Close, contentDescription = "Clear") }
+                        IconButton(onClick = { vm.onQueryChange("") }) { Icon(Icons.Rounded.Close, contentDescription = "Clear") }
                     }
                 }
             )
@@ -226,7 +226,7 @@ fun SearchScreen(actions: AppActions, onClose: () -> Unit, initialQuery: String?
                         Modifier.fillMaxWidth().clickable { vm.submit(suggestion) }.padding(horizontal = 16.dp, vertical = 14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Outlined.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Icon(Icons.Rounded.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(suggestion, modifier = Modifier.padding(start = 16.dp))
                     }
                 }

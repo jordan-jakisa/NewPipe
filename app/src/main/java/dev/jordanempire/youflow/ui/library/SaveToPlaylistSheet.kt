@@ -12,9 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.WatchLater
-import androidx.compose.material.icons.outlined.PlaylistPlay
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.PlaylistPlay
+import androidx.compose.material.icons.rounded.WatchLater
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -88,7 +88,7 @@ fun SaveToPlaylistSheet(video: VideoItem, onDismiss: () -> Unit, vm: LibraryView
             item("watch-later") {
                 ListItem(
                     headlineContent = { Text("Watch later") },
-                    leadingContent = { Icon(Icons.Filled.WatchLater, null) },
+                    leadingContent = { Icon(Icons.Rounded.WatchLater, null) },
                     modifier = Modifier.clickable { vm.watchLater(video) { saved("Watch later") } }
                 )
             }
@@ -96,14 +96,14 @@ fun SaveToPlaylistSheet(video: VideoItem, onDismiss: () -> Unit, vm: LibraryView
                 ListItem(
                     headlineContent = { Text(playlist.name) },
                     supportingContent = { Text("${playlist.streamCount} videos") },
-                    leadingContent = { Icon(Icons.Outlined.PlaylistPlay, null) },
+                    leadingContent = { Icon(Icons.Rounded.PlaylistPlay, null) },
                     modifier = Modifier.clickable { vm.save(video, playlist) { saved(playlist.name) } }
                 )
             }
             item("new") {
                 ListItem(
                     headlineContent = { Text("New playlist") },
-                    leadingContent = { Icon(Icons.Filled.Add, null) },
+                    leadingContent = { Icon(Icons.Rounded.Add, null) },
                     modifier = Modifier.clickable { creating = true }
                 )
             }
